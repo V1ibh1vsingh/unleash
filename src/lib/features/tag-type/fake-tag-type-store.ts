@@ -6,10 +6,7 @@ export default class FakeTagTypeStore implements ITagTypeStore {
     tagTypes: ITagType[] = [];
 
     async bulkImport(tagTypes: ITagType[]): Promise<ITagType[]> {
-        tagTypes.forEach((tT) => {
-            this.tagTypes.push(tT);
-        });
-        return tagTypes;
+        throw new Error("STUB");
     }
 
     async createTagType(newTagType: ITagType): Promise<void> {
@@ -18,23 +15,23 @@ export default class FakeTagTypeStore implements ITagTypeStore {
 
     async delete(key: string): Promise<void> {
         this.tagTypes.splice(
-            this.tagTypes.findIndex((tt) => tt.name === key),
+            this.tagTypes.findIndex((tt) => { throw new Error("STUB"); }),
             1,
         );
     }
 
     async deleteAll(): Promise<void> {
-        this.tagTypes = [];
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async exists(key: string): Promise<boolean> {
-        return this.tagTypes.some((t) => t.name === key);
+        return this.tagTypes.some((t) => { throw new Error("STUB"); });
     }
 
     async get(key: string): Promise<ITagType> {
-        const tagType = this.tagTypes.find((t) => t.name === key);
+        const tagType = this.tagTypes.find((t) => { throw new Error("STUB"); });
         if (tagType) {
             return tagType;
         }
@@ -46,7 +43,6 @@ export default class FakeTagTypeStore implements ITagTypeStore {
     }
 
     async updateTagType(tagType: ITagType): Promise<void> {
-        await this.delete(tagType.name);
-        return this.createTagType(tagType);
+        throw new Error("STUB");
     }
 }

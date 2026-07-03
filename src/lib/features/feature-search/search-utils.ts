@@ -29,20 +29,7 @@ export const applySearchFilters = (
     searchParams: string[] | undefined,
     columns: string[],
 ): void => {
-    const hasSearchParams = searchParams?.length;
-    if (hasSearchParams) {
-        const sqlParameters = searchParams.map((item) => `%${item}%`);
-        const sqlQueryParameters = sqlParameters.map(() => '?').join(',');
-
-        qb.where((builder) => {
-            columns.forEach((column) => {
-                builder.orWhereRaw(
-                    `(${column}) ILIKE ANY (ARRAY[${sqlQueryParameters}])`,
-                    sqlParameters,
-                );
-            });
-        });
-    }
+    throw new Error("STUB");
 };
 
 export const applyGenericQueryParams = (
@@ -50,27 +37,7 @@ export const applyGenericQueryParams = (
     queryParams: IQueryParam[],
 ): void => {
     queryParams.forEach((param) => {
-        const isSingleParam = param.values.length === 1;
-        switch (param.operator) {
-            case 'IS':
-            case 'IS_ANY_OF':
-                query.whereIn(param.field, param.values);
-                break;
-            case 'IS_NOT':
-            case 'IS_NONE_OF':
-                if (isSingleParam) {
-                    query.whereNot(param.field, param.values[0]);
-                } else {
-                    query.whereNotIn(param.field, param.values);
-                }
-                break;
-            case 'IS_BEFORE':
-                query.where(param.field, '<', param.values[0]);
-                break;
-            case 'IS_ON_OR_AFTER':
-                query.where(param.field, '>=', param.values[0]);
-                break;
-        }
+        throw new Error("STUB");
     });
 };
 
@@ -82,8 +49,8 @@ export const normalizeQueryParams = (
 
     const normalizedQuery = query
         ?.split(',')
-        .map((query) => query.trim())
-        .filter((query) => query);
+        .map((query) => { throw new Error("STUB"); })
+        .filter((query) => { throw new Error("STUB"); });
 
     const maxLimit = defaults.maxLimit || 1000;
     const normalizedLimit =
@@ -116,7 +83,7 @@ export const parseSearchOperatorValue = (
         return {
             field,
             operator: match[1] as IQueryOperator,
-            values: match[2].split(',').map((value) => value.trim()),
+            values: match[2].split(',').map((value) => { throw new Error("STUB"); }),
         };
     }
 

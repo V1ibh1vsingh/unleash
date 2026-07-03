@@ -11,22 +11,7 @@ const requestLogger: (config: IUnleashConfig) => RequestHandler = (config) => {
     const requestLoggerEnabled = config.server.enableRequestLogger;
     const impactMetrics = config.flagResolver.impactMetrics;
     return (req, res, next) => {
-        res.on('finish', () => {
-            if (impactMetrics) {
-                if (res.statusCode >= 400 && res.statusCode < 500) {
-                    impactMetrics.incrementCounter(CLIENT_ERROR_COUNT);
-                }
-                if (res.statusCode >= 500) {
-                    impactMetrics.incrementCounter(SERVER_ERROR_COUNT);
-                }
-            }
-
-            if (requestLoggerEnabled) {
-                const { pathname } = url.parse(req.originalUrl);
-                logger.info(`${res.statusCode} ${req.method} ${pathname}`);
-            }
-        });
-        next();
+        throw new Error("STUB");
     };
 };
 

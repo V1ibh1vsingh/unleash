@@ -106,79 +106,7 @@ export class PlaygroundService {
         result: AdvancedPlaygroundFeatureEvaluationResult[];
         invalidContextProperties: string[];
     }> {
-        // used for runtime control, do not remove
-        const { payload } = this.flagResolver.getVariant('advancedPlayground');
-        const limit =
-            payload?.value &&
-            Number.isInteger(Number.parseInt(payload?.value, 10))
-                ? Number.parseInt(payload?.value, 10)
-                : 15000;
-
-        const segments = await this.segmentReadModel.getActive();
-
-        let filteredProjects: typeof projects = projects;
-
-        const projectAccess =
-            await this.privateProjectChecker.getUserAccessibleProjects(userId);
-        if (projectAccess.mode === 'all') {
-            filteredProjects = projects;
-        } else if (projects === ALL) {
-            filteredProjects = projectAccess.projects;
-        } else {
-            filteredProjects = projects.filter((project) =>
-                projectAccess.projects.includes(project),
-            );
-        }
-
-        const environmentFeatures = await Promise.all(
-            environments.map((env) =>
-                this.resolveFeatures(filteredProjects, env),
-            ),
-        );
-
-        const { context: cleanedContext, removedProperties } =
-            cleanContext(context);
-        const contexts = generateObjectCombinations(cleanedContext);
-
-        validateQueryComplexity(
-            environments.length,
-            environmentFeatures[0]?.features.length ?? 0,
-            contexts.length,
-            limit,
-        );
-
-        const results = await Promise.all(
-            environmentFeatures.flatMap(
-                ({ features, featureProject, environment }) =>
-                    contexts.map((singleContext) =>
-                        this.evaluate({
-                            features,
-                            featureProject,
-                            context: singleContext,
-                            segments,
-                            environment,
-                        }),
-                    ),
-            ),
-        );
-        const items = results.flat();
-        const itemsByName = groupBy(items, (item) => item.name);
-        const result = Object.values(itemsByName).map((entries) => {
-            const groupedEnvironments = groupBy(
-                entries,
-                (entry) => entry.environment,
-            );
-            return {
-                name: entries[0].name,
-                projectId: entries[0].projectId,
-                environments: groupedEnvironments,
-            };
-        });
-
-        return {
-            result,
-            invalidContextProperties: removedProperties,
-        };
+        throw new Error("STUB");
     }
 
     private async evaluate({
@@ -202,8 +130,7 @@ export class PlaygroundService {
             });
 
             const variantsMap = features.reduce((acc, feature) => {
-                acc[feature.name] = feature.variants;
-                return acc;
+                throw new Error("STUB");
             }, {});
 
             const clientContext = {
@@ -216,45 +143,7 @@ export class PlaygroundService {
             return client
                 .getFeatureToggleDefinitions()
                 .map((feature: FeatureInterface) => {
-                    const strategyEvaluationResult: FeatureStrategiesEvaluationResult =
-                        client.isEnabled(feature.name, clientContext);
-
-                    const hasUnsatisfiedDependency =
-                        strategyEvaluationResult.hasUnsatisfiedDependency;
-                    const isEnabled =
-                        strategyEvaluationResult.result === true &&
-                        feature.enabled &&
-                        !hasUnsatisfiedDependency;
-
-                    const variant = {
-                        ...(isEnabled
-                            ? client.forceGetVariant(
-                                  feature.name,
-                                  strategyEvaluationResult,
-                                  clientContext,
-                              )
-                            : getDefaultVariant()),
-                        feature_enabled: isEnabled,
-                    };
-
-                    return {
-                        isEnabled,
-                        isEnabledInCurrentEnvironment: feature.enabled,
-                        hasUnsatisfiedDependency,
-                        strategies: {
-                            result: strategyEvaluationResult.result,
-                            data: strategyEvaluationResult.strategies,
-                        },
-                        projectId: featureProject[feature.name],
-                        variant,
-                        name: feature.name,
-                        environment,
-                        context,
-                        variants:
-                            strategyEvaluationResult.variants ||
-                            variantsMap[feature.name] ||
-                            [],
-                    };
+                    throw new Error("STUB");
                 });
         }
     }
@@ -267,19 +156,7 @@ export class PlaygroundService {
             environment: string;
         }
     > {
-        const features = await this.featureToggleService.getPlaygroundFeatures({
-            project: projects === ALL ? undefined : projects,
-            environment,
-        });
-
-        const featureProject: Record<string, string> = features.reduce(
-            (obj, feature) => {
-                obj[feature.name] = feature.project;
-                return obj;
-            },
-            {},
-        );
-        return { features, featureProject, environment };
+        throw new Error("STUB");
     }
 
     async evaluateQuery(
@@ -287,19 +164,6 @@ export class PlaygroundService {
         environment: string,
         context: SdkContextSchema,
     ): Promise<PlaygroundFeatureEvaluationResult[]> {
-        const [{ features, featureProject }, segments] = await Promise.all([
-            this.resolveFeatures(projects, environment),
-            this.segmentReadModel.getActive(),
-        ]);
-
-        const result = await this.evaluate({
-            features,
-            featureProject,
-            segments,
-            context,
-            environment,
-        });
-
-        return result.map((item) => omitKeys(item, 'environment', 'context'));
+        throw new Error("STUB");
     }
 }

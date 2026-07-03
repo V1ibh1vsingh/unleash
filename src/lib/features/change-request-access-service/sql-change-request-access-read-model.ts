@@ -72,13 +72,7 @@ export class ChangeRequestAccessReadModel
     ): Promise<boolean> {
         const result = await this.db('change_request_settings')
             .join('project_environments', function () {
-                return this.on(
-                    'change_request_settings.project',
-                    'project_environments.project_id',
-                ).andOn(
-                    'change_request_settings.environment',
-                    'project_environments.environment_name',
-                );
+                throw new Error("STUB");
             })
             .where('change_request_settings.project', project)
             .select('change_request_settings.project')

@@ -81,10 +81,7 @@ class ProjectStore implements IProjectStore {
         this.db = db;
         this.logger = getLogger('project-store.ts');
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'project',
-                action,
-            });
+            { throw new Error("STUB"); };
         this.isOss = isOss;
     }
 
@@ -175,14 +172,7 @@ class ProjectStore implements IProjectStore {
     }
 
     async hasProject(id: string): Promise<boolean> {
-        const stop = this.timer('hasProject');
-        const result = await this.db.raw(
-            `SELECT EXISTS(SELECT 1 FROM ${TABLE} WHERE id = ?) AS present`,
-            [id],
-        );
-        const { present } = result.rows[0];
-        stop();
-        return present;
+        throw new Error("STUB");
     }
 
     async hasActiveProject(id: string): Promise<boolean> {
@@ -197,12 +187,7 @@ class ProjectStore implements IProjectStore {
     }
 
     async updateHealth(healthUpdate: IProjectHealthUpdate): Promise<void> {
-        const stop = this.timer('updateHealth');
-        await this.db(TABLE).where({ id: healthUpdate.id }).update({
-            health: healthUpdate.health,
-            updated_at: new Date(),
-        });
-        stop();
+        throw new Error("STUB");
     }
 
     async create(project: IProjectInsert): Promise<IProject> {
@@ -270,80 +255,22 @@ class ProjectStore implements IProjectStore {
     async updateProjectEnterpriseSettings(
         data: IProjectEnterpriseSettingsUpdate,
     ): Promise<void> {
-        const stop = this.timer('updateProjectEnterpriseSettings');
-        try {
-            const link_templates = JSON.stringify(
-                data.linkTemplates ? data.linkTemplates : [],
-            );
-
-            if (await this.hasProjectSettings(data.id)) {
-                await this.db(SETTINGS_TABLE)
-                    .where({ project: data.id })
-                    .update({
-                        project_mode: data.mode,
-                        feature_naming_pattern: data.featureNaming?.pattern,
-                        feature_naming_example: data.featureNaming?.example,
-                        feature_naming_description:
-                            data.featureNaming?.description,
-                        link_templates,
-                    });
-            } else {
-                await this.db(SETTINGS_TABLE).insert({
-                    project: data.id,
-                    project_mode: data.mode,
-                    feature_naming_pattern: data.featureNaming?.pattern,
-                    feature_naming_example: data.featureNaming?.example,
-                    feature_naming_description: data.featureNaming?.description,
-                    link_templates,
-                });
-            }
-        } catch (err) {
-            this.logger.error(
-                'Could not update project settings, error: ',
-                err,
-            );
-        } finally {
-            stop();
-        }
+        throw new Error("STUB");
     }
 
     async importProjects(
         projects: IProjectInsert[],
         environments?: IEnvironment[],
     ): Promise<IProject[]> {
-        const stop = this.timer('importProjects');
-        const rows = await this.db(TABLE)
-            .insert(projects.map(this.fieldToRow))
-            .returning(COLUMNS)
-            .onConflict('id')
-            .ignore();
-        stop();
-        if (environments && rows.length > 0) {
-            environments.forEach((env) => {
-                projects.forEach(async (project) => {
-                    await this.addEnvironmentToProject(project.id, env.name);
-                });
-            });
-            return rows.map(this.mapRow, this);
-        }
-        return [];
+        throw new Error("STUB");
     }
 
     async addDefaultEnvironment(projects: any[]): Promise<void> {
-        const environments = projects.map((project) => ({
-            project_id: project.id,
-            environment_name: DEFAULT_ENV,
-        }));
-        await this.db('project_environments')
-            .insert(environments)
-            .onConflict(['project_id', 'environment_name'])
-            .ignore();
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        const stop = this.timer('deleteAll');
-        await this.db(TABLE).del();
-        stop();
+        throw new Error("STUB");
     }
 
     async delete(id: string): Promise<void> {
@@ -358,10 +285,7 @@ class ProjectStore implements IProjectStore {
     }
 
     async archive(id: string): Promise<void> {
-        const stop = this.timer('archive');
-        const now = new Date();
-        await this.db(TABLE).where({ id }).update({ archived_at: now });
-        stop();
+        throw new Error("STUB");
     }
 
     async revive(id: string): Promise<void> {
@@ -383,12 +307,7 @@ class ProjectStore implements IProjectStore {
         id: string,
         environment: string,
     ): Promise<void> {
-        await this.db('project_environments')
-            .where({
-                project_id: id,
-                environment_name: environment,
-            })
-            .del();
+        throw new Error("STUB");
     }
 
     async addEnvironmentToProject(
@@ -408,170 +327,28 @@ class ProjectStore implements IProjectStore {
         environment: string,
         projects: string[],
     ): Promise<void> {
-        const rows = await Promise.all(
-            projects.map(async (projectId) => {
-                return {
-                    project_id: projectId,
-                    environment_name: environment,
-                };
-            }),
-        );
-
-        await this.db('project_environments')
-            .insert(rows)
-            .onConflict(['project_id', 'environment_name'])
-            .ignore();
+        throw new Error("STUB");
     }
 
     async getEnvironmentsForProject(id: string): Promise<ProjectEnvironment[]> {
-        const rows = await this.db(PROJECT_ENVIRONMENTS)
-            .where({
-                project_id: id,
-            })
-            .innerJoin(
-                'environments',
-                'project_environments.environment_name',
-                'environments.name',
-            )
-            .orderBy('environments.sort_order', 'asc')
-            .orderBy('project_environments.environment_name', 'asc')
-            .returning([
-                'project_environments.environment_name',
-                'project_environments.default_strategy',
-            ]);
-
-        return rows.map(this.mapProjectEnvironmentRow, this);
+        throw new Error("STUB");
     }
 
     async getMembersCountByProject(projectId: string): Promise<number> {
-        const membersQuery = this.db
-            .select('user_id')
-            .from('role_user')
-            .leftJoin('roles', 'role_user.role_id', 'roles.id')
-            .where((builder) =>
-                builder.where('project', projectId).whereNot('type', 'root'),
-            )
-            .union((queryBuilder) => {
-                queryBuilder
-                    .select('user_id')
-                    .from('group_role')
-                    .leftJoin(
-                        'group_user',
-                        'group_user.group_id',
-                        'group_role.group_id',
-                    )
-                    .where('project', projectId);
-            })
-            .as('query');
-
-        const members = await this.db.from(membersQuery).count().first();
-        return Number(members.count);
+        throw new Error("STUB");
     }
 
     async getMembersCountByProjectAfterDate(
         projectId: string,
         date: string,
     ): Promise<number> {
-        const membersQuery = this.db
-            .select('user_id')
-            .from('role_user')
-            .leftJoin('roles', 'role_user.role_id', 'roles.id')
-            .where((builder) =>
-                builder
-                    .where('project', projectId)
-                    .whereNot('type', 'root')
-                    .andWhere('role_user.created_at', '>=', date),
-            )
-            .union((queryBuilder) => {
-                queryBuilder
-                    .select('user_id')
-                    .from('group_role')
-                    .leftJoin(
-                        'group_user',
-                        'group_user.group_id',
-                        'group_role.group_id',
-                    )
-                    .where('project', projectId)
-                    .andWhere('group_role.created_at', '>=', date);
-            })
-            .as('query');
-
-        const members = await this.db.from(membersQuery).count().first();
-        return Number(members.count);
+        throw new Error("STUB");
     }
 
     async getApplicationsByProject(
         params: IProjectApplicationsSearchParams,
     ): Promise<IProjectApplications> {
-        const { project, limit, sortOrder, searchParams, offset } = params;
-        const validatedSortOrder =
-            sortOrder === 'asc' || sortOrder === 'desc' ? sortOrder : 'asc';
-        const query = this.db
-            .with('applications', (qb) => {
-                qb.select('project', 'app_name', 'environment')
-                    .distinct()
-                    .from('client_metrics_env as cme')
-                    .leftJoin('features as f', 'cme.feature_name', 'f.name')
-                    .where('project', project);
-            })
-            .with('ranked', (qb) => {
-                applySearchFilters(qb, searchParams, [
-                    'a.app_name',
-                    'a.environment',
-                    'ci.instance_id',
-                    'ci.sdk_version',
-                ]);
-
-                qb.select(
-                    'a.app_name',
-                    'a.environment',
-                    'ci.instance_id',
-                    'ci.sdk_version',
-                    this.db.raw(
-                        `DENSE_RANK() OVER (ORDER BY a.app_name ${validatedSortOrder}) AS rank`,
-                    ),
-                )
-                    .from('applications as a')
-                    .innerJoin(
-                        'client_applications as ca',
-                        'a.app_name',
-                        'ca.app_name',
-                    )
-                    .leftJoin('client_instances as ci', function () {
-                        this.on('ci.app_name', '=', 'a.app_name').andOn(
-                            'ci.environment',
-                            '=',
-                            'a.environment',
-                        );
-                    });
-            })
-            .with(
-                'final_ranks',
-                this.db.raw(
-                    'select row_number() over (order by min(rank)) as final_rank from ranked group by app_name',
-                ),
-            )
-            .with(
-                'total',
-                this.db.raw('select count(*) as total from final_ranks'),
-            )
-            .select('*')
-            .from('ranked')
-            .joinRaw('CROSS JOIN total')
-            .whereBetween('rank', [offset + 1, offset + limit]);
-        const rows = await query;
-        if (rows.length !== 0) {
-            const applications = this.getAggregatedApplicationsData(rows);
-            return {
-                applications,
-                total: Number(rows[0].total) || 0,
-            };
-        }
-
-        return {
-            applications: [],
-            total: 0,
-        };
+        throw new Error("STUB");
     }
 
     async getDefaultStrategy(
@@ -593,17 +370,7 @@ class ProjectStore implements IProjectStore {
         environment: string,
         strategy: CreateFeatureStrategySchema,
     ): Promise<CreateFeatureStrategySchema> {
-        const rows = await this.db(PROJECT_ENVIRONMENTS)
-            .update({
-                default_strategy: strategy,
-            })
-            .where({
-                project_id: projectId,
-                environment_name: environment,
-            })
-            .returning('default_strategy');
-
-        return rows[0].default_strategy;
+        throw new Error("STUB");
     }
 
     async count(): Promise<number> {
@@ -611,7 +378,7 @@ class ProjectStore implements IProjectStore {
 
         count = count.where(`${TABLE}.archived_at`, null);
 
-        return count.then((res) => Number(res[0].count));
+        return count.then((res) => { throw new Error("STUB"); });
     }
 
     async getProjectModeCounts(): Promise<ProjectModeCount[]> {
@@ -641,18 +408,12 @@ class ProjectStore implements IProjectStore {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     private mapProjectModeCount(row): ProjectModeCount {
-        return {
-            mode: row.mode,
-            count: Number(row.count),
-        };
+        throw new Error("STUB");
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     private mapLinkRow(row): IEnvironmentProjectLink {
-        return {
-            environmentName: row.environment_name,
-            projectId: row.project_id,
-        };
+        throw new Error("STUB");
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -685,70 +446,11 @@ class ProjectStore implements IProjectStore {
         environment_name: string;
         default_strategy: CreateFeatureStrategySchema;
     }): ProjectEnvironment {
-        return {
-            environment: row.environment_name,
-            defaultStrategy:
-                row.default_strategy === null
-                    ? undefined
-                    : row.default_strategy,
-        };
+        throw new Error("STUB");
     }
 
     private getAggregatedApplicationsData(rows): IProjectApplication[] {
-        const entriesMap = new Map<string, IProjectApplication>();
-
-        rows.forEach((row) => {
-            const { app_name, environment, instance_id, sdk_version } = row;
-            let entry = entriesMap.get(app_name);
-
-            if (!entry) {
-                entry = {
-                    name: app_name,
-                    environments: [],
-                    instances: [],
-                    sdks: [],
-                };
-                entriesMap.set(app_name, entry);
-            }
-
-            if (!entry.environments.includes(environment)) {
-                entry.environments.push(environment);
-            }
-
-            if (!entry.instances.includes(instance_id)) {
-                entry.instances.push(instance_id);
-            }
-
-            if (sdk_version) {
-                const sdkParts = sdk_version.split(':');
-                const sdkName = sdkParts[0];
-                const sdkVersion = sdkParts[1] || '';
-                let sdk = entry.sdks.find((sdk) => sdk.name === sdkName);
-
-                if (!sdk) {
-                    sdk = {
-                        name: sdkName,
-                        versions: [],
-                    };
-                    entry.sdks.push(sdk);
-                }
-
-                if (sdkVersion && !sdk.versions.includes(sdkVersion)) {
-                    sdk.versions.push(sdkVersion);
-                }
-            }
-        });
-
-        entriesMap.forEach((entry) => {
-            entry.environments.sort();
-            entry.instances.sort();
-            entry.sdks.forEach((sdk) => {
-                sdk.versions.sort();
-            });
-            entry.sdks.sort((a, b) => a.name.localeCompare(b.name));
-        });
-
-        return Array.from(entriesMap.values());
+        throw new Error("STUB");
     }
 }
 

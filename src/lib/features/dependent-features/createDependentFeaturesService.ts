@@ -19,21 +19,7 @@ import {
 export const createDependentFeaturesService =
     (config: IUnleashConfig) =>
     (db: Db): DependentFeaturesService => {
-        const eventService = createEventsService(db, config);
-        const dependentFeaturesStore = new DependentFeaturesStore(db);
-        const dependentFeaturesReadModel = new DependentFeaturesReadModel(db);
-        const changeRequestAccessReadModel = createChangeRequestAccessReadModel(
-            db,
-            config,
-        );
-        const featuresReadModel = new FeaturesReadModel(db);
-        return new DependentFeaturesService({
-            dependentFeaturesStore,
-            dependentFeaturesReadModel,
-            changeRequestAccessReadModel,
-            featuresReadModel,
-            eventService,
-        });
+        throw new Error("STUB");
     };
 
 export const createFakeDependentFeaturesService = (

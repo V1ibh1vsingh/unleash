@@ -22,19 +22,7 @@ const getPotentiallyStaleCount = (
     const today = Date.now();
 
     return features.filter((feature) => {
-        const diff = feature.createdAt
-            ? today - feature.createdAt.valueOf()
-            : 0;
-        const featureTypeExpectedLifetime = featureTypes.find(
-            (t) => t.id === feature.type,
-        )?.lifetimeDays;
-
-        return (
-            !feature.stale &&
-            featureTypeExpectedLifetime !== null &&
-            featureTypeExpectedLifetime !== undefined &&
-            diff >= featureTypeExpectedLifetime * hoursToMilliseconds(24)
-        );
+        throw new Error("STUB");
     }).length;
 };
 
@@ -46,8 +34,8 @@ export const calculateProjectHealth = (
     'staleCount' | 'potentiallyStaleCount' | 'activeCount'
 > => ({
     potentiallyStaleCount: getPotentiallyStaleCount(features, featureTypes),
-    activeCount: features.filter((f) => !f.stale).length,
-    staleCount: features.filter((f) => f.stale).length,
+    activeCount: features.filter((f) => { throw new Error("STUB"); }).length,
+    staleCount: features.filter((f) => { throw new Error("STUB"); }).length,
 });
 
 export const calculateHealthRating = (
@@ -74,13 +62,4 @@ export const calculateProjectHealthRating =
         featureTypeStore: IFeatureTypeStore,
         featureToggleStore: IFeatureToggleStore,
     ) =>
-    async ({ id }: Pick<IProject, 'id'>): Promise<number> => {
-        const featureTypes = await featureTypeStore.getAll();
-
-        const toggles = await featureToggleStore.getAll({
-            project: id,
-            archived: false,
-        });
-
-        return calculateHealthRating(toggles, featureTypes);
-    };
+    { throw new Error("STUB"); };

@@ -33,8 +33,7 @@ export class FrontendApiRepository
     }
 
     getTogglesWithSegmentData(): EnhancedFeatureInterface[] {
-        // TODO: add real implementation
-        return [];
+        throw new Error("STUB");
     }
 
     getSegment(id: number): Segment | undefined {

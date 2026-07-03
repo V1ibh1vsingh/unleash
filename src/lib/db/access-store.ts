@@ -61,83 +61,23 @@ export class AccessStore implements IAccessStore {
     constructor(db: Db, eventBus: EventEmitter, _getLogger: Function) {
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'access-store',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     private permissionHasName = (permission: PermissionRef): boolean => {
-        return (permission as NamePermissionRef).name !== undefined;
+        throw new Error("STUB");
     };
 
     private permissionIdsToNames = async (
         permissions: IdPermissionRef[],
     ): Promise<NameAndIdPermission[]> => {
-        const permissionIds = (permissions ?? [])
-            .filter((p) => p.id !== undefined)
-            .map((p) => p.id);
-
-        if (permissionIds.length === 0) {
-            return [];
-        }
-
-        const stopTimer = this.timer('permissionIdsToNames');
-
-        const rows = await this.db
-            .select('id', 'permission')
-            .from(T.PERMISSIONS)
-            .whereIn('id', permissionIds);
-
-        const rowByPermissionId = rows.reduce(
-            (acc, row) => {
-                acc[row.id] = row;
-                return acc;
-            },
-            {} as Map<string, IPermissionRow>,
-        );
-
-        const permissionsWithNames = permissions.map((permission) => ({
-            name: rowByPermissionId[permission.id].permission,
-            ...permission,
-        }));
-
-        stopTimer();
-        return permissionsWithNames;
+        throw new Error("STUB");
     };
 
     resolvePermissions = async (
         permissions: PermissionRef[],
     ): Promise<NamePermissionRef[]> => {
-        if (permissions === undefined || permissions.length === 0) {
-            return [];
-        }
-        // permissions without names (just ids)
-        const permissionsWithoutNames = permissions.filter(
-            (p) => !this.permissionHasName(p),
-        ) as IdPermissionRef[];
-
-        if (permissionsWithoutNames.length === permissions.length) {
-            // all permissions without names
-            return await this.permissionIdsToNames(permissionsWithoutNames);
-        } else if (permissionsWithoutNames.length === 0) {
-            // all permissions have names
-            return permissions as NamePermissionRef[];
-        }
-
-        // some permissions have names, some don't (should not happen!)
-        const namedPermissionsFromIds = await this.permissionIdsToNames(
-            permissionsWithoutNames,
-        );
-        return permissions.map((permission) => {
-            if (this.permissionHasName(permission)) {
-                return permission as NamePermissionRef;
-            } else {
-                return namedPermissionsFromIds.find(
-                    (p) => p.id === (permission as IdPermissionRef).id,
-                )!;
-            }
-        });
+        throw new Error("STUB");
     };
 
     async delete(key: number): Promise<void> {
@@ -145,7 +85,7 @@ export class AccessStore implements IAccessStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(T.ROLES).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -188,12 +128,7 @@ export class AccessStore implements IAccessStore {
     }
 
     mapPermission(permission: IPermissionRow): IPermission {
-        return {
-            id: permission.id,
-            name: permission.permission,
-            displayName: permission.display_name,
-            type: permission.type,
-        };
+        throw new Error("STUB");
     }
 
     async getPermissionsForUser(userId: number): Promise<IUserPermission[]> {
@@ -212,39 +147,11 @@ export class AccessStore implements IAccessStore {
             .where('ur.user_id', '=', userId);
 
         userPermissionQuery = userPermissionQuery.union((db) => {
-            db.select(
-                'project',
-                'rp.permission',
-                'environment',
-                'p.type',
-                'gr.role_id',
-            )
-                .from<IPermissionRow>(`${T.GROUP_USER} AS gu`)
-                .join(`${T.GROUPS} AS g`, 'g.id', 'gu.group_id')
-                .join(`${T.GROUP_ROLE} AS gr`, 'gu.group_id', 'gr.group_id')
-                .join(`${T.ROLE_PERMISSION} AS rp`, 'rp.role_id', 'gr.role_id')
-                .join(`${T.PERMISSIONS} AS p`, 'p.permission', 'rp.permission')
-                .andWhere('gu.user_id', '=', userId);
+            throw new Error("STUB");
         });
 
         userPermissionQuery = userPermissionQuery.union((db) => {
-            db.select(
-                this.db.raw("'default' as project"),
-                'rp.permission',
-                'environment',
-                'p.type',
-                'g.root_role_id as role_id',
-            )
-                .from<IPermissionRow>(`${T.GROUP_USER} as gu`)
-                .join(`${T.GROUPS} AS g`, 'g.id', 'gu.group_id')
-                .join(
-                    `${T.ROLE_PERMISSION} as rp`,
-                    'rp.role_id',
-                    'g.root_role_id',
-                )
-                .join(`${T.PERMISSIONS} as p`, 'p.permission', 'rp.permission')
-                .whereNotNull('g.root_role_id')
-                .andWhere('gu.user_id', '=', userId);
+            throw new Error("STUB");
         });
         const rows = await userPermissionQuery;
         stopTimer();
@@ -252,24 +159,7 @@ export class AccessStore implements IAccessStore {
     }
 
     mapUserPermission(row: IPermissionRow): IUserPermission {
-        let project: string | undefined;
-        // Since the editor should have access to the default project,
-        // we map the project to the project and environment specific
-        // permissions that are connected to the editor role.
-        if (row.type !== ROOT_PERMISSION_TYPE) {
-            project = row.project;
-        }
-
-        const environment =
-            row.type === ENVIRONMENT_PERMISSION_TYPE
-                ? row.environment
-                : undefined;
-
-        return {
-            project,
-            environment,
-            permission: row.permission,
-        };
+        throw new Error("STUB");
     }
 
     async getPermissionsForRole(roleId: number): Promise<IPermission[]> {
@@ -287,13 +177,7 @@ export class AccessStore implements IAccessStore {
             .where('rp.role_id', '=', roleId);
         stopTimer();
         return rows.map((permission) => {
-            return {
-                id: permission.id,
-                name: permission.permission,
-                environment: permission.environment,
-                displayName: permission.display_name,
-                type: permission.type,
-            };
+            throw new Error("STUB");
         });
     }
 
@@ -301,93 +185,36 @@ export class AccessStore implements IAccessStore {
         role_id: number,
         permissions: PermissionRef[],
     ): Promise<void> {
-        const resolvedPermissions = await this.resolvePermissions(permissions);
-
-        const rows = resolvedPermissions.map((permission) => {
-            return {
-                role_id,
-                permission: permission.name,
-                environment: permission.environment,
-            };
-        });
-        await this.db.batchInsert(T.ROLE_PERMISSION, rows);
+        throw new Error("STUB");
     }
 
     async unlinkUserRoles(userId: number): Promise<void> {
-        return this.db(T.ROLE_USER)
-            .where({
-                user_id: userId,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async unlinkUserGroups(userId: number): Promise<void> {
-        return this.db(T.GROUP_USER)
-            .where({
-                user_id: userId,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async clearUserPersonalAccessTokens(userId: number): Promise<void> {
-        return this.db(T.PERSONAL_ACCESS_TOKENS)
-            .where({
-                user_id: userId,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async clearPublicSignupUserTokens(userId: number): Promise<void> {
-        return this.db(T.PUBLIC_SIGNUP_TOKENS_USER)
-            .where({
-                user_id: userId,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async getProjectUsersForRole(
         roleId: number,
         projectId?: string,
     ): Promise<IUserRole[]> {
-        const rows = await this.db
-            .select(['user_id', 'ru.created_at'])
-            .from<IRole>(`${T.ROLE_USER} AS ru`)
-            .join(`${T.ROLES} as r`, 'ru.role_id', 'id')
-            .where('r.id', roleId)
-            .andWhere('ru.project', projectId);
-        return rows.map((r) => ({
-            userId: r.user_id,
-            roleId,
-            addedAt: r.created_at,
-        }));
+        throw new Error("STUB");
     }
 
     async getProjectUsers(
         projectId?: string,
     ): Promise<IUserWithProjectRoles[]> {
-        const rows = await this.db
-            .select(['user_id', 'ru.created_at', 'ru.role_id'])
-            .from<IRole>(`${T.ROLE_USER} AS ru`)
-            .join(`${T.ROLES} as r`, 'ru.role_id', 'id')
-            .whereIn('r.type', PROJECT_ROLE_TYPES)
-            .andWhere('ru.project', projectId);
-
-        return rows.reduce((acc, row) => {
-            const existingUser = acc.find((user) => user.id === row.user_id);
-
-            if (existingUser) {
-                existingUser.roles.push(row.role_id);
-            } else {
-                acc.push({
-                    id: row.user_id,
-                    addedAt: row.created_at,
-                    roleId: row.role_id,
-                    roles: [row.role_id],
-                });
-            }
-
-            return acc;
-        }, []);
+        throw new Error("STUB");
     }
 
     async getRolesForUserId(userId: number): Promise<IRoleWithProject[]> {
@@ -409,9 +236,7 @@ export class AccessStore implements IAccessStore {
             .innerJoin(`${T.ROLE_USER} as ru`, 'ru.role_id', 'id')
             .where('ru.user_id', '=', userId)
             .andWhere((builder) => {
-                builder
-                    .where('ru.project', '=', project)
-                    .orWhere('type', '=', 'root');
+                throw new Error("STUB");
             })
             .union([
                 this.db
@@ -425,9 +250,7 @@ export class AccessStore implements IAccessStore {
                     )
                     .where('gu.user_id', '=', userId)
                     .andWhere((builder) => {
-                        builder
-                            .where('gr.project', '=', project)
-                            .orWhere('type', '=', 'root');
+                        throw new Error("STUB");
                     }),
             ]);
         stopTimer();
@@ -449,62 +272,17 @@ export class AccessStore implements IAccessStore {
             .select(['user_id'])
             .from<IRole>(T.ROLE_USER)
             .where('role_id', roleId);
-        return rows.map((r) => r.user_id);
+        return rows.map((r) => { throw new Error("STUB"); });
     }
 
     async getGroupIdsForRole(roleId: number): Promise<number[]> {
-        const rows = await this.db
-            .select(['group_id'])
-            .from<IRole>(T.GROUP_ROLE)
-            .where('role_id', roleId);
-        return rows.map((r) => r.group_id);
+        throw new Error("STUB");
     }
 
     async getProjectUserAndGroupCountsForRole(
         roleId: number,
     ): Promise<IProjectRoleUsage[]> {
-        const query = await this.db.raw(
-            `
-            SELECT
-                uq.project,
-                sum(uq.user_count) AS user_count,
-                sum(uq.svc_account_count) AS svc_account_count,
-                sum(uq.group_count) AS group_count
-            FROM (
-                SELECT
-                    project,
-                    0 AS user_count,
-                    0 AS svc_account_count,
-                    count(project) AS group_count
-                FROM group_role
-                WHERE role_id = ?
-                GROUP BY project
-
-                UNION SELECT
-                    project,
-                    count(us.id) AS user_count,
-                    count(svc.id) AS svc_account_count,
-                    0 AS group_count
-                FROM role_user AS usr_r
-                LEFT OUTER JOIN public.users AS us ON us.id = usr_r.user_id AND us.is_service = 'false'
-                LEFT OUTER JOIN public.users AS svc ON svc.id = usr_r.user_id AND svc.is_service = 'true'
-                WHERE usr_r.role_id = ?
-                GROUP BY usr_r.project
-            ) AS uq
-            GROUP BY uq.project
-        `,
-            [roleId, roleId],
-        );
-
-        return query.rows.map((r) => {
-            return {
-                project: r.project,
-                role: roleId,
-                userCount: Number(r.user_count),
-                groupCount: Number(r.group_count),
-                serviceAccountCount: Number(r.svc_account_count),
-            };
-        });
+        throw new Error("STUB");
     }
 
     async addUserToRole(
@@ -527,13 +305,7 @@ export class AccessStore implements IAccessStore {
         roleId: number,
         projectId?: string,
     ): Promise<void> {
-        return this.db(T.ROLE_USER)
-            .where({
-                user_id: userId,
-                role_id: roleId,
-                project: projectId,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async addGroupToRole(
@@ -542,12 +314,7 @@ export class AccessStore implements IAccessStore {
         createdBy: string,
         projectId?: string,
     ): Promise<void> {
-        return this.db(T.GROUP_ROLE).insert({
-            group_id: groupId,
-            role_id: roleId,
-            project: projectId,
-            created_by: createdBy,
-        });
+        throw new Error("STUB");
     }
 
     async updateUserProjectRole(
@@ -555,16 +322,7 @@ export class AccessStore implements IAccessStore {
         roleId: number,
         projectId: string,
     ): Promise<void> {
-        return this.db(T.ROLE_USER)
-            .where({
-                user_id: userId,
-                project: projectId,
-            })
-            .whereNotIn(
-                'role_id',
-                this.db(T.ROLES).select('id as role_id').where('type', 'root'),
-            )
-            .update('role_id', roleId);
+        throw new Error("STUB");
     }
 
     async addAccessToProject(
@@ -574,92 +332,7 @@ export class AccessStore implements IAccessStore {
         projectId: string,
         createdBy: string,
     ): Promise<void> {
-        const validatedProjectRoleIds = await this.db(T.ROLES)
-            .select('id')
-            .whereIn('id', roles)
-            .whereIn('type', PROJECT_ROLE_TYPES)
-            .pluck('id');
-
-        if (validatedProjectRoleIds.length !== roles.length) {
-            const invalidRoles = roles.filter(
-                (role) => !validatedProjectRoleIds.includes(role),
-            );
-
-            throw new BadDataError(
-                `You can't add access to a project with roles that aren't project roles or that don't exist. These roles are not valid: ${invalidRoles.join(
-                    ', ',
-                )}`,
-            );
-        }
-
-        const groupRows = groups.flatMap((group) =>
-            validatedProjectRoleIds.map((role) => ({
-                group_id: group,
-                project: projectId,
-                role_id: role,
-                created_by: createdBy,
-            })),
-        );
-
-        const userRows = users.flatMap((user) =>
-            validatedProjectRoleIds.map((role) => ({
-                user_id: user,
-                project: projectId,
-                role_id: role,
-            })),
-        );
-
-        await inTransaction(this.db, async (tx) => {
-            const errors: string[] = [];
-            if (groupRows.length > 0) {
-                await tx(T.GROUP_ROLE)
-                    .insert(groupRows)
-                    .onConflict(['project', 'role_id', 'group_id'])
-                    .merge()
-                    .catch((err) => {
-                        if (
-                            err.message.includes(
-                                `violates foreign key constraint "group_role_group_id_fkey"`,
-                            )
-                        ) {
-                            errors.push(
-                                `Your request contains one or more group IDs that do not exist. You sent these group IDs: ${groups.join(
-                                    ', ',
-                                )}.`,
-                            );
-                        }
-                    });
-            }
-            if (userRows.length > 0) {
-                await tx(T.ROLE_USER)
-                    .insert(userRows)
-                    .onConflict(['project', 'role_id', 'user_id'])
-                    .merge()
-                    .catch((err) => {
-                        if (
-                            err.message.includes(
-                                `violates foreign key constraint "role_user_user_id_fkey"`,
-                            )
-                        ) {
-                            errors.push(
-                                `Your request contains one or more user IDs that do not exist. You sent these user IDs: ${users.join(
-                                    ', ',
-                                )}.`,
-                            );
-                        }
-                    });
-            }
-
-            if (errors.length) {
-                const mapped = errors.map((message) => ({
-                    message,
-                }));
-
-                // because TS doesn't understand that the non-empty
-                // array is guaranteed to have at least one element
-                throw new BadDataError('', [mapped[0], ...mapped.slice(1)]);
-            }
-        });
+        throw new Error("STUB");
     }
 
     async setProjectRolesForUser(
@@ -667,35 +340,7 @@ export class AccessStore implements IAccessStore {
         userId: number,
         roles: number[],
     ): Promise<void> {
-        const projectRoleIds = await this.db(T.ROLES)
-            .select('id')
-            .whereIn('type', PROJECT_ROLE_TYPES)
-            .pluck('id');
-
-        const projectRoleIdsSet = new Set(projectRoleIds);
-
-        const userRows = roles
-            .filter((role) => projectRoleIdsSet.has(role))
-            .map((role) => ({
-                user_id: userId,
-                project: projectId,
-                role_id: role,
-            }));
-
-        await inTransaction(this.db, async (tx) => {
-            await tx(T.ROLE_USER)
-                .where('project', projectId)
-                .andWhere('user_id', userId)
-                .whereIn('role_id', projectRoleIds)
-                .delete();
-
-            if (userRows.length > 0) {
-                await tx(T.ROLE_USER)
-                    .insert(userRows)
-                    .onConflict(['project', 'role_id', 'user_id'])
-                    .ignore();
-            }
-        });
+        throw new Error("STUB");
     }
 
     async getProjectRolesForUser(
@@ -708,7 +353,7 @@ export class AccessStore implements IAccessStore {
             .where('ru.project', projectId)
             .whereIn('r.type', PROJECT_ROLE_TYPES)
             .andWhere('ru.user_id', userId);
-        return rows.map((r) => r.role_id as number);
+        return rows.map((r) => { throw new Error("STUB"); });
     }
 
     async setProjectRolesForGroup(
@@ -717,78 +362,22 @@ export class AccessStore implements IAccessStore {
         roles: number[],
         createdBy: string,
     ): Promise<void> {
-        const projectRoleIds = await this.db(T.ROLES)
-            .select('id')
-            .whereIn('type', PROJECT_ROLE_TYPES)
-            .pluck('id');
-
-        const projectRoleIdsSet = new Set(projectRoleIds);
-
-        const groupRows = roles
-            .filter((role) => projectRoleIdsSet.has(role))
-            .map((role) => ({
-                group_id: groupId,
-                project: projectId,
-                role_id: role,
-                created_by: createdBy,
-            }));
-
-        await inTransaction(this.db, async (tx) => {
-            await tx(T.GROUP_ROLE)
-                .where('project', projectId)
-                .andWhere('group_id', groupId)
-                .whereIn('role_id', projectRoleIds)
-                .delete();
-            if (groupRows.length > 0) {
-                await tx(T.GROUP_ROLE)
-                    .insert(groupRows)
-                    .onConflict(['project', 'role_id', 'group_id'])
-                    .ignore();
-            }
-        });
+        throw new Error("STUB");
     }
 
     async getProjectRolesForGroup(
         projectId: string,
         groupId: number,
     ): Promise<number[]> {
-        const rows = await this.db(`${T.GROUP_ROLE} as gr`)
-            .join(`${T.ROLES} as r`, 'gr.role_id', 'r.id')
-            .select('gr.role_id')
-            .where('gr.project', projectId)
-            .whereIn('r.type', PROJECT_ROLE_TYPES)
-            .andWhere('gr.group_id', groupId);
-        return rows.map((row) => row.role_id as number);
+        throw new Error("STUB");
     }
 
     async removeUserAccess(projectId: string, userId: number): Promise<void> {
-        return this.db(T.ROLE_USER)
-            .where({
-                user_id: userId,
-                project: projectId,
-            })
-            .whereIn(
-                'role_id',
-                this.db(T.ROLES)
-                    .select('id as role_id')
-                    .whereIn('type', PROJECT_ROLE_TYPES),
-            )
-            .delete();
+        throw new Error("STUB");
     }
 
     async removeGroupAccess(projectId: string, groupId: number): Promise<void> {
-        return this.db(T.GROUP_ROLE)
-            .where({
-                group_id: groupId,
-                project: projectId,
-            })
-            .whereIn(
-                'role_id',
-                this.db(T.ROLES)
-                    .select('id as role_id')
-                    .whereIn('type', PROJECT_ROLE_TYPES),
-            )
-            .delete();
+        throw new Error("STUB");
     }
 
     async removeRolesOfTypeForUser(
@@ -811,24 +400,7 @@ export class AccessStore implements IAccessStore {
         permissions: PermissionRef[] | string[],
         environment?: string,
     ): Promise<void> {
-        const permissionsAsRefs = (permissions ?? []).map((p) => {
-            if (typeof p === 'string') {
-                return { name: p };
-            } else {
-                return p;
-            }
-        });
-        // no need to pass down the environment in this particular case because it'll be overriden
-        const permissionsWithNames =
-            await this.resolvePermissions(permissionsAsRefs);
-
-        const newRoles = permissionsWithNames.map((p) => ({
-            role_id,
-            environment,
-            permission: p.name,
-        }));
-
-        return this.db.batchInsert(T.ROLE_PERMISSION, newRoles);
+        throw new Error("STUB");
     }
 
     async removePermissionFromRole(
@@ -836,81 +408,21 @@ export class AccessStore implements IAccessStore {
         permission: string,
         environment?: string,
     ): Promise<void> {
-        return this.db(T.ROLE_PERMISSION)
-            .where({
-                role_id,
-                permission,
-                environment,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async wipePermissionsFromRole(role_id: number): Promise<void> {
-        return this.db(T.ROLE_PERMISSION)
-            .where({
-                role_id,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async cloneEnvironmentPermissions(
         sourceEnvironment: string,
         destinationEnvironment: string,
     ): Promise<void> {
-        return this.db.raw(
-            `insert into role_permission
-                (role_id, permission, environment)
-                (select role_id, permission, ?
-                from ${T.ROLE_PERMISSION} where environment = ?)`,
-            [destinationEnvironment, sourceEnvironment],
-        );
+        throw new Error("STUB");
     }
 
     async getUserAccessOverview(): Promise<IUserAccessOverview[]> {
-        const result =
-            await this.db.raw(`SELECT u.id, u.created_at, u.name, u.email, u.seen_at, up.p_array as projects, gr.p_array as groups, gp.p_array as group_projects, r.name as root_role
-                FROM users u, LATERAL (
-                SELECT ARRAY (
-                    SELECT ru.project
-                    FROM   role_user ru
-                    WHERE  ru.user_id = u.id
-                    ) AS p_array
-                ) up, LATERAL (
-                    SELECT r.name
-                    FROM   role_user ru
-                    INNER JOIN roles r on ru.role_id = r.id
-                    WHERE ru.user_id = u.id and r.type IN (${ROOT_ROLE_TYPES.map(
-                        (type) => `'${type}'`,
-                    ).join(',')})
-                ) r, LATERAL (
-                SELECT ARRAY (
-                    SELECT g.name FROM group_user gu
-                    JOIN groups g on g.id = gu.group_id
-                    WHERE  gu.user_id = u.id
-                    ) AS p_array
-                ) gr, LATERAL (
-                SELECT ARRAY (
-                    SELECT  gr.project
-                        FROM group_user gu
-                        JOIN group_role gr ON gu.group_id = gr.group_id
-                    WHERE gu.user_id = u.id
-                    )
-                    AS p_array
-                ) gp
-
-                order by u.id;`);
-        return result.rows.map((row) => {
-            return {
-                userId: row.id,
-                createdAt: row.created_at,
-                userName: row.name,
-                userEmail: row.email,
-                lastSeen: row.seen_at,
-                accessibleProjects: row.projects,
-                groups: row.groups,
-                rootRole: row.root_role,
-                groupProjects: row.group_projects,
-            };
-        });
+        throw new Error("STUB");
     }
 }

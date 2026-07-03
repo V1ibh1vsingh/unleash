@@ -73,7 +73,7 @@ export class TrafficDataUsageStore implements ITrafficDataUsageStore {
             .del();
     }
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
     destroy(): void {}
 
@@ -102,32 +102,7 @@ export class TrafficDataUsageStore implements ITrafficDataUsageStore {
         from: Date,
         to: Date,
     ): Promise<IStatMonthlyTrafficUsage[]> {
-        const rows = await this.db(TABLE)
-            .select(
-                'traffic_group',
-                'status_code_series',
-                this.db.raw(`to_char(day, 'YYYY-MM') AS month`),
-                this.db.raw(`SUM(count) AS count`),
-            )
-            .where('day', '>=', startOfDay(from))
-            .andWhere('day', '<=', endOfDay(to))
-            .groupBy([
-                'traffic_group',
-                this.db.raw(`to_char(day, 'YYYY-MM')`),
-                'status_code_series',
-            ])
-            .orderBy([
-                { column: 'month', order: 'desc' },
-                { column: 'traffic_group', order: 'asc' },
-            ]);
-        return rows.map(
-            ({ traffic_group, status_code_series, month, count }) => ({
-                trafficGroup: traffic_group,
-                statusCodeSeries: status_code_series,
-                month,
-                count: Number.parseInt(count, 10),
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async getTrafficDataUsageForPeriod(

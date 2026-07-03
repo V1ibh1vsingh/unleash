@@ -38,34 +38,7 @@ interface ITokenRow extends ITokenInsert {
 }
 
 const tokenRowReducer = (acc, tokenRow) => {
-    const { project, ...token } = tokenRow;
-    if (!acc[tokenRow.secret]) {
-        acc[tokenRow.secret] = {
-            secret: token.secret,
-            tokenName: token.token_name ? token.token_name : token.username,
-            // backend token type needs to be supported in Edge before being able to return them in the API
-            type: (token.type === ApiTokenType.BACKEND
-                ? ApiTokenType.CLIENT
-                : token.type
-            ).toLowerCase(),
-            project: ALL,
-            projects: [ALL],
-            environment: token.environment ? token.environment : ALL,
-            expiresAt: token.expires_at,
-            createdAt: token.created_at,
-            alias: token.alias,
-            seenAt: token.seen_at,
-        };
-    }
-    const currentToken = acc[tokenRow.secret];
-    if (tokenRow.project) {
-        if (isAllProjects(currentToken.projects)) {
-            currentToken.projects = [];
-        }
-        currentToken.projects.push(tokenRow.project);
-        currentToken.project = currentToken.projects.join(',');
-    }
-    return acc;
+    throw new Error("STUB");
 };
 
 const toRow = (newToken: IApiTokenCreate, createdByUserId: number) => ({
@@ -101,10 +74,7 @@ export class ApiTokenStore implements IApiTokenStore {
         this.db = db;
         this.logger = getLogger('api-tokens.js');
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'api-tokens',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     // helper function that we can move to utils
@@ -120,7 +90,7 @@ export class ApiTokenStore implements IApiTokenStore {
     async count(): Promise<number> {
         return this.db(TABLE)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async countByType(): Promise<Map<string, number>> {
@@ -129,11 +99,7 @@ export class ApiTokenStore implements IApiTokenStore {
             .count('*')
             .groupBy('type')
             .then((res) => {
-                const map = new Map<string, number>();
-                res.forEach((row) => {
-                    map.set(row.type.toString(), Number(row.count));
-                });
-                return map;
+                throw new Error("STUB");
             });
     }
 
@@ -145,27 +111,15 @@ export class ApiTokenStore implements IApiTokenStore {
     }
 
     async getUserDefinedTokens(): Promise<IApiToken[]> {
-        const stopTimer = this.timer('getAllFilterEnterpriseEdgeTokens');
-        const rows = await this.filterEdgeTokens(this.makeTokenProjectQuery());
-        stopTimer();
-        return toTokens(rows);
+        throw new Error("STUB");
     }
 
     filterEdgeTokens(query: Knex.QueryBuilder<any, any>) {
-        return query.whereNotExists((qb) => {
-            qb.select(1)
-                .from('edge_api_tokens as e')
-                .whereRaw('?? = ??', ['e.token_value', 'tokens.secret']);
-        });
+        throw new Error("STUB");
     }
 
     async getAllActive(): Promise<IApiToken[]> {
-        const stopTimer = this.timer('getAllActive');
-        const rows = await this.makeTokenProjectQuery()
-            .where('expires_at', 'IS', null)
-            .orWhere('expires_at', '>', 'now()');
-        stopTimer();
-        return toTokens(rows);
+        throw new Error("STUB");
     }
 
     private makeTokenProjectQuery() {
@@ -194,28 +148,7 @@ export class ApiTokenStore implements IApiTokenStore {
         createdByUserId: number,
     ): Promise<IApiToken> {
         const response = await inTransaction(this.db, async (tx) => {
-            const [row] = await tx<ITokenInsert>(TABLE).insert(
-                toRow(newToken, createdByUserId),
-                ['created_at'],
-            );
-
-            const updateProjectTasks = (newToken.projects || [])
-                .filter((project) => {
-                    return project !== ALL_PROJECTS;
-                })
-                .map((project) => {
-                    return tx.raw(
-                        `INSERT INTO ${API_LINK_TABLE} VALUES (?, ?)`,
-                        [newToken.secret, project],
-                    );
-                });
-            await Promise.all(updateProjectTasks);
-            return {
-                ...newToken,
-                alias: newToken.alias || null,
-                project: newToken.projects?.join(',') || '*',
-                createdAt: row.created_at,
-            };
+            throw new Error("STUB");
         });
         return response;
     }
@@ -246,29 +179,15 @@ export class ApiTokenStore implements IApiTokenStore {
     }
 
     async deleteAll(): Promise<void> {
-        return this.db<ITokenRow>(TABLE).del();
+        throw new Error("STUB");
     }
 
     async setExpiry(secret: string, expiresAt: Date): Promise<IApiToken> {
-        const rows = await this.makeTokenProjectQuery()
-            .update({ expires_at: expiresAt })
-            .where({ secret })
-            .returning('*');
-        if (rows.length > 0) {
-            return toTokens(rows)[0];
-        }
-        throw new NotFoundError('Could not find api-token.');
+        throw new Error("STUB");
     }
 
     async markSeenAt(secrets: string[]): Promise<void> {
-        const now = new Date();
-        try {
-            await this.db(TABLE)
-                .whereIn('secret', secrets)
-                .update({ seen_at: now });
-        } catch (err) {
-            this.logger.error('Could not update lastSeen, error: ', err);
-        }
+        throw new Error("STUB");
     }
 
     async countDeprecatedTokens(): Promise<{
@@ -278,20 +197,11 @@ export class ApiTokenStore implements IApiTokenStore {
         activeLegacyTokens: number;
     }> {
         const allLegacyCount = this.withTimer('allLegacyCount', () =>
-            this.db<ITokenRow>(`${TABLE} as tokens`)
-                .where('tokens.secret', 'NOT LIKE', '%:%')
-                .count()
-                .first()
-                .then((res) => Number(res?.count) || 0),
+            { throw new Error("STUB"); },
         );
 
         const activeLegacyCount = this.withTimer('activeLegacyCount', () =>
-            this.db<ITokenRow>(`${TABLE} as tokens`)
-                .where('tokens.secret', 'NOT LIKE', '%:%')
-                .andWhereRaw("tokens.seen_at > NOW() - INTERVAL '3 MONTH'")
-                .count()
-                .first()
-                .then((res) => Number(res?.count) || 0),
+            { throw new Error("STUB"); },
         );
 
         const orphanedTokensQuery = this.db<ITokenRow>(`${TABLE} as tokens`)
@@ -304,27 +214,15 @@ export class ApiTokenStore implements IApiTokenStore {
             .andWhere('tokens.secret', 'NOT LIKE', '*:%') // Exclude intentionally wildcard tokens
             .andWhere('tokens.secret', 'LIKE', '%:%') // Exclude legacy tokens
             .andWhere((builder) => {
-                builder
-                    .where('tokens.type', ApiTokenType.BACKEND)
-                    .orWhere('tokens.type', ApiTokenType.CLIENT)
-                    .orWhere('tokens.type', ApiTokenType.FRONTEND);
+                throw new Error("STUB");
             });
 
         const allOrphanedCount = this.withTimer('allOrphanedCount', () =>
-            orphanedTokensQuery
-                .clone()
-                .count()
-                .first()
-                .then((res) => Number(res?.count) || 0),
+            { throw new Error("STUB"); },
         );
 
         const activeOrphanedCount = this.withTimer('activeOrphanedCount', () =>
-            orphanedTokensQuery
-                .clone()
-                .andWhereRaw("tokens.seen_at > NOW() - INTERVAL '3 MONTH'")
-                .count()
-                .first()
-                .then((res) => Number(res?.count) || 0),
+            { throw new Error("STUB"); },
         );
 
         const [
@@ -348,10 +246,6 @@ export class ApiTokenStore implements IApiTokenStore {
     }
 
     async countProjectTokens(projectId: string): Promise<number> {
-        const count = await this.db(API_LINK_TABLE)
-            .where({ project: projectId })
-            .count()
-            .first();
-        return Number(count?.count ?? 0);
+        throw new Error("STUB");
     }
 }

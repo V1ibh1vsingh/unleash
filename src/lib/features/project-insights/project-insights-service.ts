@@ -48,57 +48,11 @@ export class ProjectInsightsService {
     }
 
     async getDoraMetrics(projectId: string): Promise<ProjectDoraMetricsSchema> {
-        const activeFeatureToggles = (
-            await this.featureToggleStore.getAll({ project: projectId })
-        ).map((feature) => feature.name);
-
-        const archivedFeatureToggles = (
-            await this.featureToggleStore.getAll({
-                project: projectId,
-                archived: true,
-            })
-        ).map((feature) => feature.name);
-
-        const featureToggleNames = [
-            ...activeFeatureToggles,
-            ...archivedFeatureToggles,
-        ];
-
-        const projectAverage = calculateAverageTimeToProd(
-            await this.projectStatsStore.getTimeToProdDates(projectId),
-        );
-
-        const toggleAverage =
-            await this.projectStatsStore.getTimeToProdDatesForFeatureToggles(
-                projectId,
-                featureToggleNames,
-            );
-
-        return {
-            features: toggleAverage,
-            projectAverage: projectAverage,
-        };
+        throw new Error("STUB");
     }
 
     private async getHealthInsights(projectId: string) {
-        const [overview, featureTypes] = await Promise.all([
-            this.getProjectHealth(projectId, false, undefined),
-            this.featureTypeStore.getAll(),
-        ]);
-
-        const { activeCount, potentiallyStaleCount, staleCount } =
-            calculateProjectHealth(overview.features, featureTypes);
-
-        return {
-            activeCount,
-            potentiallyStaleCount,
-            staleCount,
-            technicalDebt: overview.technicalDebt,
-            /**
-             * @deprecated
-             */
-            rating: overview.health,
-        };
+        throw new Error("STUB");
     }
 
     private async getProjectHealth(
@@ -113,73 +67,16 @@ export class ProjectInsightsService {
          */
         health: number;
     }> {
-        const [project, features] = await Promise.all([
-            this.projectStore.get(projectId),
-            this.featureStrategiesStore.getFeatureOverview({
-                projectId,
-                archived,
-                userId,
-            }),
-        ]);
-
-        return {
-            health: project?.health || 0,
-            technicalDebt: 100 - (project?.health || 0),
-            features: features,
-        };
+        throw new Error("STUB");
     }
 
     private async getProjectMembers(
         projectId: string,
     ): Promise<ProjectInsightsSchema['members']> {
-        const dateMinusThirtyDays = subDays(new Date(), 30).toISOString();
-        const [currentMembers, change] = await Promise.all([
-            this.projectStore.getMembersCountByProject(projectId),
-            this.projectStore.getMembersCountByProjectAfterDate(
-                projectId,
-                dateMinusThirtyDays,
-            ),
-        ]);
-
-        return {
-            currentMembers,
-            change,
-        };
+        throw new Error("STUB");
     }
 
     async getProjectInsights(projectId: string) {
-        const [stats, featureTypeCounts, health, leadTime, members] =
-            await Promise.all([
-                this.projectStatsStore.getProjectStats(projectId),
-                this.featureToggleStore.getFeatureTypeCounts({
-                    projectId,
-                    archived: false,
-                }),
-                this.getHealthInsights(projectId),
-                this.getDoraMetrics(projectId),
-                this.getProjectMembers(projectId),
-            ]);
-
-        return {
-            stats,
-            featureTypeCounts,
-            technicalDebt: {
-                rating: health.technicalDebt,
-                activeCount: health.activeCount,
-                potentiallyStaleCount: health.potentiallyStaleCount,
-                staleCount: health.staleCount,
-            },
-            leadTime,
-            members,
-            /**
-             * @deprecated
-             */
-            health: {
-                rating: health.rating,
-                activeCount: health.activeCount,
-                potentiallyStaleCount: health.potentiallyStaleCount,
-                staleCount: health.staleCount,
-            },
-        };
+        throw new Error("STUB");
     }
 }

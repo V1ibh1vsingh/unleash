@@ -34,35 +34,15 @@ export default class ResetTokenService {
     }
 
     async useAccessToken(token: IResetQuery): Promise<boolean> {
-        try {
-            await this.isValid(token.token);
-            await this.store.useToken(token);
-            return true;
-        } catch (_e) {
-            return false;
-        }
+        throw new Error("STUB");
     }
 
     async getActiveInvitations(): Promise<IInviteLinks> {
-        try {
-            const tokens = await this.store.getActiveTokens();
-            const links = tokens.reduce((acc, token) => {
-                const inviteLink =
-                    this.getExistingInvitationUrl(token).toString();
-
-                acc[token.userId] = inviteLink;
-
-                return acc;
-            }, {});
-
-            return links;
-        } catch (_e) {
-            return {};
-        }
+        throw new Error("STUB");
     }
 
     expireExistingTokensForUser = async (userId: number): Promise<void> => {
-        return this.store.expireExistingTokensForUser(userId);
+        throw new Error("STUB");
     };
 
     async isValid(token: string): Promise<IResetToken> {
@@ -79,7 +59,7 @@ export default class ResetTokenService {
     }
 
     private getExistingInvitationUrl(token: IResetToken) {
-        return new URL(`${this.unleashBase}/new-user?token=${token.token}`);
+        throw new Error("STUB");
     }
 
     private async createResetUrl(
@@ -97,8 +77,7 @@ export default class ResetTokenService {
         forUser: number,
         creator: string,
     ): Promise<URL> {
-        const path = '/reset-password';
-        return this.createResetUrl(forUser, creator, path);
+        throw new Error("STUB");
     }
 
     async createNewUserUrl(forUser: number, creator: string): Promise<URL> {
@@ -123,6 +102,6 @@ export default class ResetTokenService {
     }
 
     private generateToken(): Promise<string> {
-        return bcrypt.hash(crypto.randomBytes(32).toString(), 10);
+        throw new Error("STUB");
     }
 }

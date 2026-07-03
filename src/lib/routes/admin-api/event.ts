@@ -42,87 +42,7 @@ export default class EventController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'eventService' | 'openApiService'>,
     ) {
-        super(config);
-        this.eventService = eventService;
-        this.flagResolver = config.flagResolver;
-        this.openApiService = openApiService;
-
-        this.route({
-            method: 'get',
-            path: '/events',
-            handler: this.getEvents,
-            permission: ADMIN,
-            middleware: [
-                openApiService.validPath({
-                    deprecated: true,
-                    release: { stable: '4.14.0' },
-                    operationId: 'getEvents',
-                    tags: ['Events'],
-                    responses: {
-                        ...getStandardResponses(401),
-                        200: createResponseSchema('eventsSchema'),
-                    },
-
-                    parameters: [
-                        {
-                            name: 'project',
-                            description:
-                                'The name of the project whose events you want to retrieve',
-                            schema: { type: 'string' },
-                            in: 'query',
-                        },
-                    ],
-                    description:
-                        'Returns **the last 100** events from the Unleash instance when called without a query parameter. When called with a `project` parameter, returns **all events** for the specified project.\n\nIf the provided project does not exist, the list of events will be empty.',
-                    summary:
-                        'Get the most recent events from the Unleash instance or all events related to a project.',
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/events/:featureName',
-            handler: this.getEventsForToggle,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    deprecated: true,
-                    release: { stable: '4.14.0' },
-                    operationId: 'getEventsForToggle',
-                    tags: ['Events'],
-                    responses: {
-                        ...getStandardResponses(401),
-                        200: createResponseSchema('featureEventsSchema'),
-                    },
-                    description:
-                        'Returns all events related to the specified feature flag. If the feature flag does not exist, the list of events will be empty.',
-                    summary:
-                        'Get all events related to a specific feature flag.',
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/event-creators',
-            handler: this.getEventCreators,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Events'],
-                    release: { stable: '6.2.0' },
-                    operationId: 'getEventCreators',
-                    summary: 'Get a list of all users that have created events',
-                    description:
-                        'Returns a list of all users that have created events in the system.',
-                    responses: {
-                        200: createResponseSchema('eventCreatorsSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     maybeAnonymiseEvents(events: IEvent[]): IEvent[] {
@@ -170,43 +90,13 @@ export default class EventController extends Controller {
         req: IAuthRequest<{ featureName: string }>,
         res: Response<FeatureEventsSchema>,
     ): Promise<void> {
-        const { user, params } = req;
-        const { featureName } = params;
-        const eventList = await this.eventService.searchEvents(
-            {
-                feature: `IS:${featureName}`,
-                offset: 0,
-                limit: 50,
-            },
-            extractUserIdFromUser(user),
-        );
-
-        const response = {
-            version,
-            toggleName: featureName,
-            events: serializeDates(this.maybeAnonymiseEvents(eventList.events)),
-            totalEvents: eventList.totalEvents,
-        };
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            featureEventsSchema.$id,
-            response,
-        );
+        throw new Error("STUB");
     }
 
     async getEventCreators(
         _req: IAuthRequest,
         res: Response<ProjectFlagCreatorsSchema>,
     ): Promise<void> {
-        const flagCreators = await this.eventService.getEventCreators();
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            eventCreatorsSchema.$id,
-            serializeDates(flagCreators),
-        );
+        throw new Error("STUB");
     }
 }

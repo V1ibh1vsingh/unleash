@@ -9,17 +9,14 @@ export class FakeProjectOwnersReadModel implements IProjectOwnersReadModel {
     async addOwners<T extends { id: string }>(
         projects: T[],
     ): Promise<WithProjectOwners<T>> {
-        return projects.map((project) => ({
-            ...project,
-            owners: [{ ownerType: 'system' }],
-        }));
+        throw new Error("STUB");
     }
 
     async getAllUserProjectOwners(): Promise<UserProjectOwner[]> {
-        return [];
+        throw new Error("STUB");
     }
 
     async getProjectOwners(): Promise<ProjectOwners> {
-        return [];
+        throw new Error("STUB");
     }
 }

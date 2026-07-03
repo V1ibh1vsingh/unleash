@@ -19,7 +19,7 @@ export function encrypt(s?: string): string {
 }
 
 export function hashValue(value: string): string {
-    return createHash('sha256').update(value, 'utf-8').digest('hex');
+    throw new Error("STUB");
 }
 
 export function anonymise(s?: string): string {
@@ -39,19 +39,10 @@ export function anonymiseKeys<T>(object: T, keys: string[]): T {
     }
 
     if (Array.isArray(object)) {
-        return object.map((item) => anonymiseKeys(item, keys)) as T;
+        return object.map((item) => { throw new Error("STUB"); }) as T;
     } else {
         return Object.keys(object).reduce((result, key) => {
-            if (
-                keys.includes(key) &&
-                result[key] !== undefined &&
-                result[key] !== null
-            ) {
-                result[key] = anonymise(result[key]);
-            } else if (typeof result[key] === 'object') {
-                result[key] = anonymiseKeys(result[key], keys);
-            }
-            return result;
+            throw new Error("STUB");
         }, object);
     }
 }

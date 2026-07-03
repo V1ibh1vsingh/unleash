@@ -58,213 +58,21 @@ export default class ProjectController extends Controller {
     private flagResolver: IFlagResolver;
 
     constructor(config: IUnleashConfig, services: IUnleashServices, _db: Db) {
-        super(config);
-        this.projectService = services.projectService;
-        this.clientInstanceService = services.clientInstanceService;
-        this.openApiService = services.openApiService;
-        this.flagResolver = config.flagResolver;
-
-        this.route({
-            path: '',
-            method: 'get',
-            handler: this.getProjects,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '4.13.0' },
-                    operationId: 'getProjects',
-                    summary: 'Get a list of all projects.',
-                    description:
-                        'This endpoint returns an list of all the projects in the Unleash instance.',
-                    parameters: [
-                        {
-                            name: 'archived',
-                            in: 'query',
-                            required: false,
-                            schema: {
-                                type: 'boolean',
-                            },
-                        },
-                    ],
-                    responses: {
-                        200: createResponseSchema('projectsSchema'),
-                        ...getStandardResponses(401, 403),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:projectId/overview',
-            handler: this.getProjectOverview,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '4.20.0' },
-                    operationId: 'getProjectOverview',
-                    summary: 'Get an overview of a project.',
-                    description:
-                        'This endpoint returns an overview of the specified projects stats, project health, number of members, which environments are configured, and the features types in the project.',
-                    responses: {
-                        200: createResponseSchema('projectOverviewSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        /** @deprecated use project insights instead */
-        this.route({
-            method: 'get',
-            path: '/:projectId/dora',
-            handler: this.getProjectDora,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    deprecated: true,
-                    tags: ['Projects'],
-                    release: { stable: '5.5.0' },
-                    operationId: 'getProjectDora',
-                    summary: 'Get an overview project dora metrics.',
-                    description:
-                        'This endpoint returns an overview of the specified dora metrics',
-                    responses: {
-                        200: createResponseSchema('projectDoraMetricsSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:projectId/applications',
-            handler: this.getProjectApplications,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '5.10.0' },
-                    operationId: 'getProjectApplications',
-                    summary: 'Get a list of all applications for a project.',
-                    description:
-                        'This endpoint returns an list of all the applications for a project.',
-                    parameters: [...projectApplicationsQueryParameters],
-                    responses: {
-                        200: createResponseSchema('projectApplicationsSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:projectId/flag-creators',
-            handler: this.getProjectFlagCreators,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '6.1.0' },
-                    operationId: 'getProjectFlagCreators',
-                    summary: 'Get a list of all flag creators for a project.',
-                    description:
-                        'This endpoint returns every user who created a flag in the project.',
-                    responses: {
-                        200: createResponseSchema('projectFlagCreatorsSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:projectId/sdks/outdated',
-            handler: this.getOutdatedProjectSdks,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '6.0.0' },
-                    operationId: 'getOutdatedProjectSdks',
-                    summary: 'Get outdated project SDKs',
-                    description:
-                        'Returns a list of the outdated SDKS with the applications using them.',
-                    responses: {
-                        200: createResponseSchema('outdatedSdksSchema'),
-                        ...getStandardResponses(404),
-                    },
-                }),
-            ],
-        });
-
-        this.use('/', new ProjectFeaturesController(config, services).router);
-        this.use('/', new DependentFeaturesController(config, services).router);
-        this.use(
-            '/',
-            new ProjectEnvironmentsController(config, services).router,
-        );
-        this.use('/', new ProjectHealthReport(config, services).router);
-        this.use('/', new VariantsController(config, services).router);
-        this.use('/', new ProjectApiTokenController(config, services).router);
-        this.use('/', new ProjectArchiveController(config, services).router);
-        this.use('/', new ProjectInsightsController(config, services).router);
-        this.use('/', new ProjectStatusController(config, services).router);
-        this.use('/', new FeatureLifecycleController(config, services).router);
-        this.use('/', new FeatureLinkController(config, services).router);
-        this.use(
-            '/',
-            new ContextController(config, services, 'project').router,
-        );
+        throw new Error("STUB");
     }
 
     async getProjects(
         req: IAuthRequest,
         res: Response<ProjectsSchema>,
     ): Promise<void> {
-        const { user } = req;
-        const projects = await this.projectService.getProjects(
-            {
-                id: 'default',
-            },
-            user.id,
-        );
-
-        const projectsWithOwners =
-            await this.projectService.addOwnersToProjects(projects);
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            projectsSchema.$id,
-            { version: 1, projects: serializeDates(projectsWithOwners) },
-        );
+        throw new Error("STUB");
     }
 
     async getProjectOverview(
         req: IAuthRequest<IProjectParam, unknown, unknown, IArchivedQuery>,
         res: Response<ProjectOverviewSchema>,
     ): Promise<void> {
-        const { projectId } = req.params;
-        const { archived } = req.query;
-        const { user } = req;
-        const overview = await this.projectService.getProjectOverview(
-            projectId,
-            archived,
-            user.id,
-        );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            projectOverviewSchema.$id,
-            serializeDates(overview),
-        );
+        throw new Error("STUB");
     }
 
     /** @deprecated use projectInsights instead */
@@ -272,83 +80,27 @@ export default class ProjectController extends Controller {
         req: IAuthRequest,
         res: Response<ProjectDoraMetricsSchema>,
     ): Promise<void> {
-        const { projectId } = req.params;
-
-        const dora = await this.projectService.getDoraMetrics(projectId);
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            projectDoraMetricsSchema.$id,
-            dora,
-        );
+        throw new Error("STUB");
     }
 
     async getProjectApplications(
         req: IAuthRequest,
         res: Response<ProjectApplicationsSchema>,
     ): Promise<void> {
-        const { projectId } = req.params;
-
-        const {
-            normalizedQuery,
-            normalizedSortOrder,
-            normalizedOffset,
-            normalizedLimit,
-        } = normalizeQueryParams(req.query, {
-            limitDefault: 50,
-            maxLimit: 100,
-        });
-
-        const applications = await this.projectService.getApplications({
-            searchParams: normalizedQuery,
-            project: projectId,
-            offset: normalizedOffset,
-            limit: normalizedLimit,
-            sortBy: req.query.sortBy,
-            sortOrder: normalizedSortOrder,
-        });
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            projectApplicationsSchema.$id,
-            serializeDates(applications),
-        );
+        throw new Error("STUB");
     }
 
     async getProjectFlagCreators(
         req: IAuthRequest<IProjectParam>,
         res: Response<ProjectFlagCreatorsSchema>,
     ): Promise<void> {
-        const { projectId } = req.params;
-
-        const flagCreators =
-            await this.projectService.getProjectFlagCreators(projectId);
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            projectFlagCreatorsSchema.$id,
-            serializeDates(flagCreators),
-        );
+        throw new Error("STUB");
     }
 
     async getOutdatedProjectSdks(
         req: IAuthRequest<IProjectParam>,
         res: Response<OutdatedSdksSchema>,
     ) {
-        const { projectId } = req.params;
-        const outdatedSdks =
-            await this.clientInstanceService.getOutdatedSdksByProject(
-                projectId,
-            );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            outdatedSdksSchema.$id,
-            { sdks: outdatedSdks },
-        );
+        throw new Error("STUB");
     }
 }

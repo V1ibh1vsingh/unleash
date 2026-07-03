@@ -16,33 +16,7 @@ import { FakePrivateProjectChecker } from '../private-project/fakePrivateProject
 export const createContextService =
     (config: IUnleashConfig) =>
     (db: Db): ContextService => {
-        const { getLogger, flagResolver, eventBus, isEnterprise } = config;
-        const contextFieldStore = new ContextFieldStore(
-            db,
-            getLogger,
-            flagResolver,
-        );
-        const featureStrategiesStore = new FeatureStrategiesStore(
-            db,
-            eventBus,
-            getLogger,
-            flagResolver,
-        );
-        const eventService = createEventsService(db, config);
-        const privateProjectStore = new PrivateProjectStore(db, getLogger);
-        const privateProjectChecker = new PrivateProjectChecker(
-            { privateProjectStore },
-            { isEnterprise },
-        );
-        return new ContextService(
-            { contextFieldStore, featureStrategiesStore },
-            {
-                getLogger,
-                flagResolver,
-            },
-            eventService,
-            privateProjectChecker,
-        );
+        throw new Error("STUB");
     };
 
 export const createFakeContextService = (

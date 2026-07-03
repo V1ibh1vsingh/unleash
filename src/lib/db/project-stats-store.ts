@@ -44,42 +44,18 @@ class ProjectStatsStore implements IProjectStatsStore {
     constructor(db: Db, eventBus: EventEmitter, _getLogger: LogProvider) {
         this.db = db;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'project_stats',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async updateProjectStats(
         projectId: string,
         status: IProjectStats,
     ): Promise<void> {
-        await this.db(TABLE)
-            .insert({
-                avg_time_to_prod_current_window:
-                    status.avgTimeToProdCurrentWindow,
-                project: projectId,
-                features_created_current_window: status.createdCurrentWindow,
-                features_created_past_window: status.createdPastWindow,
-                features_archived_current_window: status.archivedCurrentWindow,
-                features_archived_past_window: status.archivedPastWindow,
-                project_changes_current_window:
-                    status.projectActivityCurrentWindow,
-                project_changes_past_window: status.projectActivityPastWindow,
-                project_members_added_current_window:
-                    status.projectMembersAddedCurrentWindow,
-            })
-            .onConflict('project')
-            .merge();
+        throw new Error("STUB");
     }
 
     async getProjectStats(projectId: string): Promise<IProjectStats> {
-        const row = await this.db(TABLE)
-            .select(PROJECT_STATS_COLUMNS)
-            .where({ project: projectId })
-            .first();
-
-        return this.mapRow(row);
+        throw new Error("STUB");
     }
 
     mapRow(row: IProjectStatsRow): IProjectStats {
@@ -114,80 +90,14 @@ class ProjectStatsStore implements IProjectStatsStore {
     async getTimeToProdDates(
         projectId: string,
     ): Promise<ICreateEnabledDates[]> {
-        const stopTimer = this.timer('getTimeToProdDates');
-        const result = await this.db
-            .select('events.feature_name')
-            // select only first enabled event, distinct works with orderBy
-            .distinctOn('events.feature_name')
-            .select(
-                this.db.raw(
-                    'events.created_at as enabled, features.created_at as created',
-                ),
-            )
-            .from('events')
-            .innerJoin(
-                'environments',
-                'environments.name',
-                '=',
-                'events.environment',
-            )
-            .innerJoin('features', 'features.name', '=', 'events.feature_name')
-            .where('events.type', '=', 'feature-environment-enabled')
-            .where('environments.type', '=', 'production')
-            .where('features.type', '=', 'release')
-            // exclude events for features that were previously deleted
-            .where(this.db.raw('events.created_at > features.created_at'))
-            .where('features.project', '=', projectId)
-            .orderBy('events.feature_name')
-            // first enabled event
-            .orderBy('events.created_at', 'asc');
-        stopTimer();
-        return result;
+        throw new Error("STUB");
     }
 
     async getTimeToProdDatesForFeatureToggles(
         projectId: string,
         featureToggleNames: string[],
     ): Promise<DoraFeaturesSchema[]> {
-        const result = await this.db
-            .select('events.feature_name')
-            .distinctOn('events.feature_name')
-            .select(
-                this.db.raw(
-                    'events.created_at as enabled, features.created_at as created',
-                ),
-            )
-            .from('events')
-            .innerJoin(
-                'environments',
-                'environments.name',
-                '=',
-                'events.environment',
-            )
-            .innerJoin('features', 'features.name', '=', 'events.feature_name')
-            .whereIn('events.feature_name', featureToggleNames)
-            .where('events.type', '=', 'feature-environment-enabled')
-            .where('environments.type', '=', 'production')
-            .where('features.type', '=', 'release')
-            .where(this.db.raw('events.created_at > features.created_at'))
-            .where('features.project', '=', projectId)
-            .orderBy('events.feature_name')
-            .orderBy('events.created_at', 'asc');
-
-        const timeDifferenceData: DoraFeaturesSchema[] = result.map((row) => {
-            const enabledDate = new Date(row.enabled).getTime();
-            const createdDate = new Date(row.created).getTime();
-            const timeDifferenceInDays = Math.floor(
-                (enabledDate - createdDate) / (1000 * 60 * 60 * 24),
-            );
-
-            return {
-                name: row.feature_name,
-                timeToProduction: timeDifferenceInDays,
-            };
-        });
-
-        return timeDifferenceData;
+        throw new Error("STUB");
     }
 }
 

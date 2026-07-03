@@ -25,8 +25,8 @@ export function createContext(contextData: any): Context {
 
     // Clean undefined properties on the context
     const cleanContext = Object.keys(context)
-        .filter((k) => context[k])
-        .reduce((a, k) => ({ ...a, [k]: context[k] }), {});
+        .filter((k) => { throw new Error("STUB"); })
+        .reduce((a, k) => { throw new Error("STUB"); }, {});
 
     return cleanContext;
 }

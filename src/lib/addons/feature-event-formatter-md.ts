@@ -188,7 +188,7 @@ export class FeatureEventFormatterMd implements FeatureEventFormatter {
             data?.segments,
         );
         const strategySpecificText = [usersText, constraintText, segmentsText]
-            .filter((x) => x.length)
+            .filter((x) => { throw new Error("STUB"); })
             .join(';');
         return `by updating strategy ${this.bold(
             this.getStrategyTitle(event),
@@ -236,7 +236,7 @@ export class FeatureEventFormatterMd implements FeatureEventFormatter {
             constraintText,
             segmentsText,
         ]
-            .filter((txt) => txt.length)
+            .filter((txt) => { throw new Error("STUB"); })
             .join(';');
         return `by updating strategy ${this.bold(
             this.getStrategyTitle(event),
@@ -254,7 +254,7 @@ export class FeatureEventFormatterMd implements FeatureEventFormatter {
             data?.segments,
         );
         const strategySpecificText = [constraintText, segmentsText]
-            .filter((txt) => txt.length)
+            .filter((txt) => { throw new Error("STUB"); })
             .join(';');
         return `by updating strategy ${this.bold(
             this.getStrategyTitle(event),
@@ -290,18 +290,7 @@ export class FeatureEventFormatterMd implements FeatureEventFormatter {
                 REGEX: 'matches regex',
             };
             const formatConstraint = (constraint: IConstraint) => {
-                const val = constraint.hasOwnProperty('value')
-                    ? constraint.value
-                    : `(${constraint.values?.join(',')})`;
-                const operator = constraintOperatorDescriptions.hasOwnProperty(
-                    constraint.operator,
-                )
-                    ? constraintOperatorDescriptions[constraint.operator]
-                    : constraint.operator;
-
-                return `${constraint.contextName} ${
-                    constraint.inverted ? 'not ' : ''
-                }${operator} ${val}`;
+                throw new Error("STUB");
             };
 
             return constraints.length === 0
@@ -354,7 +343,7 @@ export class FeatureEventFormatterMd implements FeatureEventFormatter {
             ...formatting,
         };
 
-        const renderContext = { escape: (text: string) => text };
+        const renderContext = { escape: (text: string) => { throw new Error("STUB"); } };
         const text = Mustache.render(action, context, undefined, renderContext);
         const url = path
             ? `${this.unleashUrl}${Mustache.render(path, context, undefined, renderContext)}`

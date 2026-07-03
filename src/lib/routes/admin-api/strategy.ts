@@ -46,160 +46,7 @@ class StrategyController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'strategyService' | 'openApiService'>,
     ) {
-        super(config);
-        this.strategyService = strategyService;
-        this.openApiService = openApiService;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getAllStrategies,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    summary: 'Get all strategies',
-                    description:
-                        'Retrieves all strategy types ([predefined](https://docs.getunleash.io/concepts/activation-strategies "predefined strategies") and [custom strategies](https://docs.getunleash.io/concepts/activation-strategies#custom-strategies)) that are defined on this Unleash instance.',
-                    tags: ['Strategies'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getAllStrategies',
-                    responses: {
-                        200: createResponseSchema('strategiesSchema'),
-                        ...getStandardResponses(401),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:name',
-            handler: this.getStrategy,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    summary: 'Get a strategy definition',
-                    description:
-                        'Retrieves the definition of the strategy specified in the URL',
-
-                    tags: ['Strategies'],
-                    release: { stable: '4.12.0' },
-                    operationId: 'getStrategy',
-                    responses: {
-                        200: createResponseSchema('strategySchema'),
-                        ...getStandardResponses(401, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'delete',
-            path: '/:name',
-            handler: this.removeStrategy,
-            permission: DELETE_STRATEGY,
-            acceptAnyContentType: true,
-            middleware: [
-                openApiService.validPath({
-                    summary: 'Delete a strategy',
-                    description: 'Deletes the specified strategy definition',
-                    tags: ['Strategies'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'removeStrategy',
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '',
-            handler: this.createStrategy,
-            permission: CREATE_STRATEGY,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Strategies'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'createStrategy',
-                    summary: 'Create a strategy',
-                    description:
-                        'Creates a custom strategy type based on the supplied data.',
-                    requestBody: createRequestSchema('createStrategySchema'),
-                    responses: {
-                        201: resourceCreatedResponseSchema('strategySchema'),
-                        ...getStandardResponses(401, 403, 409, 415),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'put',
-            path: '/:name',
-            handler: this.updateStrategy,
-            permission: UPDATE_STRATEGY,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Strategies'],
-                    summary: 'Update a strategy type',
-                    description:
-                        'Updates the specified strategy type. Any properties not specified in the request body are left untouched.',
-                    release: { stable: '4.12.0' },
-                    operationId: 'updateStrategy',
-                    requestBody: createRequestSchema('updateStrategySchema'),
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403, 404, 415),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/:strategyName/deprecate',
-            handler: this.deprecateStrategy,
-            permission: UPDATE_STRATEGY,
-            acceptAnyContentType: true,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Strategies'],
-                    summary: 'Deprecate a strategy',
-                    description: 'Marks the specified strategy as deprecated.',
-                    release: { stable: '4.14.0' },
-                    operationId: 'deprecateStrategy',
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/:strategyName/reactivate',
-            handler: this.reactivateStrategy,
-            permission: UPDATE_STRATEGY,
-            acceptAnyContentType: true,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Strategies'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'reactivateStrategy',
-                    summary: 'Reactivate a strategy',
-                    description:
-                        "Marks the specified strategy as not deprecated. If the strategy wasn't already deprecated, nothing changes.",
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getAllStrategies(
@@ -233,11 +80,7 @@ class StrategyController extends Controller {
     }
 
     async removeStrategy(req: IAuthRequest, res: Response): Promise<void> {
-        const strategyName = req.params.name;
-        const _userName = extractUsername(req);
-
-        await this.strategyService.removeStrategy(strategyName, req.audit);
-        res.status(200).end();
+        throw new Error("STUB");
     }
 
     async createStrategy(
@@ -276,22 +119,14 @@ class StrategyController extends Controller {
         req: IAuthRequest,
         res: Response<void>,
     ): Promise<void> {
-        const _userName = extractUsername(req);
-        const { strategyName } = req.params;
-
-        await this.strategyService.deprecateStrategy(strategyName, req.audit);
-        res.status(200).end();
+        throw new Error("STUB");
     }
 
     async reactivateStrategy(
         req: IAuthRequest,
         res: Response<void>,
     ): Promise<void> {
-        const _userName = extractUsername(req);
-        const { strategyName } = req.params;
-
-        await this.strategyService.reactivateStrategy(strategyName, req.audit);
-        res.status(200).end();
+        throw new Error("STUB");
     }
 }
 

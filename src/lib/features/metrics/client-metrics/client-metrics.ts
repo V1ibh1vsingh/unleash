@@ -46,101 +46,25 @@ class ClientMetricsController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'clientMetricsServiceV2' | 'openApiService'>,
     ) {
-        super(config);
-
-        this.metrics = clientMetricsServiceV2;
-        this.openApiService = openApiService;
-        this.flagResolver = config.flagResolver;
-
-        this.route({
-            method: 'get',
-            path: '/features/:name/raw',
-            handler: this.getRawToggleMetrics,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    release: { stable: '4.14.0' },
-                    operationId: 'getRawFeatureMetrics',
-                    tags: ['Metrics'],
-                    summary: 'Get feature metrics',
-                    description:
-                        'Get usage metrics for a specific feature for the last 48 hours, grouped by hour',
-                    responses: {
-                        200: createResponseSchema('featureMetricsSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/features/:name',
-            handler: this.getToggleMetricsSummary,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    release: { stable: '4.14.0' },
-                    operationId: 'getFeatureUsageSummary',
-                    tags: ['Metrics'],
-                    summary: `Last hour of usage and a list of applications that have reported seeing this feature flag`,
-                    description:
-                        'Separate counts for yes (enabled), no (disabled), as well as how many times each variant was selected during the last hour',
-                    responses: {
-                        200: createResponseSchema('featureUsageSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getRawToggleMetrics(
         req: Request<any, IName, IHoursBack, any>,
         res: Response<FeatureMetricsSchema>,
     ): Promise<void> {
-        const { name } = req.params;
-        const { hoursBack } = req.query;
-        const data = await this.metrics.getClientMetricsForToggle(
-            name,
-            this.parseHoursBackQueryParam(hoursBack),
-        );
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            featureMetricsSchema.$id,
-            { version: 1, maturity: 'stable', data: serializeDates(data) },
-        );
+        throw new Error("STUB");
     }
 
     async getToggleMetricsSummary(
         req: Request<IName>,
         res: Response<FeatureUsageSchema>,
     ): Promise<void> {
-        const { name } = req.params;
-        const data = await this.metrics.getFeatureToggleMetricsSummary(name);
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            featureUsageSchema.$id,
-            { version: 1, maturity: 'stable', ...serializeDates(data) },
-        );
+        throw new Error("STUB");
     }
 
     private parseHoursBackQueryParam(param: unknown): number | undefined {
-        if (typeof param !== 'string') {
-            return undefined;
-        }
-
-        const parsed = Number(param);
-        const max = this.flagResolver.isEnabled('extendedUsageMetrics')
-            ? ClientMetricsController.HOURS_BACK_MAX_V2
-            : ClientMetricsController.HOURS_BACK_MAX;
-
-        if (parsed >= ClientMetricsController.HOURS_BACK_MIN && parsed <= max) {
-            return parsed;
-        }
+        throw new Error("STUB");
     }
 }
 

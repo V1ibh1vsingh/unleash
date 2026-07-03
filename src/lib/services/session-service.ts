@@ -19,7 +19,7 @@ export default class SessionService {
         this.sessionStore = sessionStore;
 
         this.resolveMaxSessions = memoizee(
-            async () => await this.sessionStore.getMaxSessionsCount(),
+            async () => { throw new Error("STUB"); },
             {
                 promise: true,
                 maxAge: minutesToMilliseconds(1),
@@ -28,19 +28,19 @@ export default class SessionService {
     }
 
     async getActiveSessions(): Promise<ISession[]> {
-        return this.sessionStore.getActiveSessions();
+        throw new Error("STUB");
     }
 
     async getSessionsForUser(userId: number): Promise<ISession[]> {
-        return this.sessionStore.getSessionsForUser(userId);
+        throw new Error("STUB");
     }
 
     async getSession(sid: string): Promise<ISession | undefined> {
-        return this.sessionStore.get(sid);
+        throw new Error("STUB");
     }
 
     async deleteSessionsForUser(userId: number): Promise<void> {
-        return this.sessionStore.deleteSessionsForUser(userId);
+        throw new Error("STUB");
     }
 
     /**
@@ -52,47 +52,36 @@ export default class SessionService {
         userId: number,
         keepSid: string,
     ): Promise<void> {
-        return this.sessionStore.deleteSessionsForUserExcept(userId, keepSid);
+        throw new Error("STUB");
     }
 
     async deleteStaleSessionsForUser(
         userId: number,
         maxSessions: number,
     ): Promise<number> {
-        const userSessions: ISession[] =
-            await this.sessionStore.getSessionsForUser(userId);
-        const newestFirst = userSessions.sort((a, b) =>
-            compareDesc(a.createdAt, b.createdAt),
-        );
-        const sessionsToDelete = newestFirst.slice(maxSessions);
-        await Promise.all(
-            sessionsToDelete.map((session) =>
-                this.sessionStore.delete(session.sid),
-            ),
-        );
-        return sessionsToDelete.length;
+        throw new Error("STUB");
     }
 
     async deleteSession(sid: string): Promise<void> {
-        return this.sessionStore.delete(sid);
+        throw new Error("STUB");
     }
 
     async insertSession({
         sid,
         sess,
     }: Pick<ISession, 'sid' | 'sess'>): Promise<ISession> {
-        return this.sessionStore.insertSession({ sid, sess });
+        throw new Error("STUB");
     }
 
     async getSessionsCount() {
         return Object.fromEntries(
             (await this.sessionStore.getSessionsCount()).map(
-                ({ userId, count }) => [userId, count],
+                ({ userId, count }) => { throw new Error("STUB"); },
             ),
         );
     }
 
     async getMaxSessionsCount() {
-        return this.resolveMaxSessions();
+        throw new Error("STUB");
     }
 }

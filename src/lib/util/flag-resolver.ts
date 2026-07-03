@@ -24,29 +24,7 @@ export default class FlagResolver implements IFlagResolver {
         const flags: IFlags = { ...this.experiments };
 
         Object.keys(flags).forEach((flagName: IFlagKey) => {
-            const flag = flags[flagName];
-            if (typeof flag === 'boolean') {
-                if (!flag) {
-                    const variant = this.externalResolver.getVariant(
-                        flagName,
-                        context,
-                    );
-                    if (variant.enabled) {
-                        flags[flagName] = variant;
-                    } else {
-                        flags[flagName] =
-                            variant.feature_enabled ??
-                            this.externalResolver.isEnabled(flagName, context);
-                    }
-                }
-            } else {
-                if (!flag?.enabled) {
-                    flags[flagName] = this.externalResolver.getVariant(
-                        flagName,
-                        context,
-                    );
-                }
-            }
+            throw new Error("STUB");
         });
 
         return flags;
@@ -71,11 +49,11 @@ export default class FlagResolver implements IFlagResolver {
     }
 
     getStaticContext(): IFlagContext {
-        return this.externalResolver.getStaticContext();
+        throw new Error("STUB");
     }
 
     get impactMetrics(): IImpactMetricsResolver | undefined {
-        return this.externalResolver?.impactMetrics;
+        throw new Error("STUB");
     }
 }
 

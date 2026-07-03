@@ -5,14 +5,12 @@ export const isValidField = (
     existingFields: IContextFieldDto[],
 ): boolean => {
     const matchingExistingField = existingFields.find(
-        (field) => field.name === importedField.name,
+        (field) => { throw new Error("STUB"); },
     );
     if (!matchingExistingField) {
         return true;
     }
     return (importedField.legalValues || []).every((value) =>
-        (matchingExistingField.legalValues || []).find(
-            (v) => v.value === value.value,
-        ),
+        { throw new Error("STUB"); },
     );
 };

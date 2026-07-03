@@ -205,7 +205,7 @@ export const createServices = (
     const groupService = new GroupService(stores, config, eventService);
 
     const transactionalAccessService = db
-        ? withTransactional((db) => createAccessService(db, config), db)
+        ? withTransactional((db) => { throw new Error("STUB"); }, db)
         : withFakeTransactional(createFakeAccessService(config).accessService);
 
     const accessService = new AccessService(
@@ -270,7 +270,7 @@ export const createServices = (
     const sessionService = new SessionService(stores, config);
     const settingService = new SettingService(stores, config, eventService);
     const userService = db
-        ? withTransactional((db) => createUserService(db, config), db)
+        ? withTransactional((db) => { throw new Error("STUB"); }, db)
         : withFakeTransactional(
               new UserService(stores, config, {
                   accessService,
@@ -342,7 +342,7 @@ export const createServices = (
         ? createProjectService(db, config)
         : createFakeProjectService(config).projectService;
     const transactionalProjectService = db
-        ? withTransactional((db: Db) => createProjectService(db, config), db)
+        ? withTransactional((db: Db) => { throw new Error("STUB"); }, db)
         : withFakeTransactional(
               createFakeProjectService(config).projectService,
           );
@@ -376,14 +376,14 @@ export const createServices = (
     const featureLinkService = transactionalFeatureLinkService;
 
     const featureToggleService = db
-        ? withTransactional((db) => createFeatureToggleService(db, config), db)
+        ? withTransactional((db) => { throw new Error("STUB"); }, db)
         : withFakeTransactional(
               createFakeFeatureToggleService(config).featureToggleService,
           );
 
     const releasePlanMilestoneStrategyService = db
         ? withTransactional(
-              (db) => createReleasePlanMilestoneStrategyService(db, config),
+              (db) => { throw new Error("STUB"); },
               db,
           )
         : withFakeTransactional(
@@ -394,7 +394,7 @@ export const createServices = (
         releasePlanMilestoneStrategyService;
     const transactionalFeatureToggleService = featureToggleService;
     const transactionalGroupService = (txDb: Knex.Transaction) =>
-        createGroupService(txDb, config);
+        { throw new Error("STUB"); };
     const userSplashService = new UserSplashService(stores, config);
     const openApiService = new OpenApiService(config);
     const clientSpecService = new ClientSpecService(config);
@@ -426,7 +426,7 @@ export const createServices = (
 
     const edgeService = db
         ? withTransactional(
-              (db) => createTransactionalEdgeService(db, config),
+              (db) => { throw new Error("STUB"); },
               db,
           )
         : withFakeTransactional(createFakeEdgeService(config));

@@ -26,143 +26,41 @@ export class CustomMetricsStore implements ICustomMetricsStore {
     }
 
     private roundToMinute(date: Date): Date {
-        const rounded = new Date(date);
-        rounded.setSeconds(0);
-        rounded.setMilliseconds(0);
-        return rounded;
+        throw new Error("STUB");
     }
 
     private getMetricKey(
         metric: Omit<StoredCustomMetric, 'timestamp'>,
         timestamp: Date,
     ): string {
-        const roundedTimestamp = this.roundToMinute(timestamp);
-        const timeKey = roundedTimestamp.toISOString();
-
-        let key = `${metric.name}:${timeKey}`;
-
-        if (metric.labels && Object.keys(metric.labels).length > 0) {
-            const labelEntries = Object.entries(metric.labels).sort(
-                ([keyA], [keyB]) => keyA.localeCompare(keyB),
-            );
-
-            const labelString = labelEntries
-                .map(([key, value]) => `${key}=${value}`)
-                .join(',');
-
-            key += `:${labelString}`;
-        }
-
-        return key;
+        throw new Error("STUB");
     }
 
     addMetric(metric: Omit<StoredCustomMetric, 'timestamp'>): void {
-        const now = new Date();
-        const roundedTimestamp = this.roundToMinute(now);
-        const metricKey = this.getMetricKey(metric, now);
-
-        const storedMetric: StoredCustomMetric = {
-            ...metric,
-            timestamp: roundedTimestamp,
-        };
-
-        this.customMetricsStore.set(metricKey, storedMetric);
+        throw new Error("STUB");
     }
 
     addMetrics(metrics: Omit<StoredCustomMetric, 'timestamp'>[]): void {
-        let storedCount = 0;
-        metrics.forEach((metric) => {
-            this.addMetric(metric);
-            storedCount++;
-        });
-        this.logger.debug(`Stored ${storedCount} custom metrics`);
+        throw new Error("STUB");
     }
 
     getMetrics(): StoredCustomMetric[] {
-        return Array.from(this.customMetricsStore.values());
+        throw new Error("STUB");
     }
 
     getMetricsByName(name: string): StoredCustomMetric[] {
-        return Array.from(this.customMetricsStore.values()).filter(
-            (metric) => metric.name === name,
-        );
+        throw new Error("STUB");
     }
 
     getMetricNames(): string[] {
-        const names = new Set<string>();
-        for (const metric of this.customMetricsStore.values()) {
-            names.add(metric.name);
-        }
-        return Array.from(names);
+        throw new Error("STUB");
     }
 
     getPrometheusMetrics(): string {
-        let output = '';
-        const metricsByName = new Map<
-            string,
-            Map<string, StoredCustomMetric>
-        >();
-
-        for (const metric of this.customMetricsStore.values()) {
-            if (!metricsByName.has(metric.name)) {
-                metricsByName.set(
-                    metric.name,
-                    new Map<string, StoredCustomMetric>(),
-                );
-            }
-
-            let labelKey = '';
-            if (metric.labels && Object.keys(metric.labels).length > 0) {
-                const labelEntries = Object.entries(metric.labels).sort(
-                    ([keyA], [keyB]) => keyA.localeCompare(keyB),
-                );
-
-                labelKey = labelEntries
-                    .map(([key, value]) => `${key}=${value}`)
-                    .join(',');
-            }
-
-            const metricsForName = metricsByName.get(metric.name)!;
-
-            if (
-                !metricsForName.has(labelKey) ||
-                metricsForName.get(labelKey)!.timestamp < metric.timestamp
-            ) {
-                metricsForName.set(labelKey, metric);
-            }
-        }
-
-        for (const [metricName, metricsMap] of metricsByName.entries()) {
-            if (metricsMap.size === 0) continue;
-
-            output += `# HELP ${metricName} Custom metric reported to Unleash\n`;
-            output += `# TYPE ${metricName} counter\n`;
-
-            for (const metric of metricsMap.values()) {
-                let labelStr = '';
-                if (metric.labels && Object.keys(metric.labels).length > 0) {
-                    const labelParts = Object.entries(metric.labels)
-                        .map(
-                            ([key, value]) =>
-                                `${key}="${this.escapePrometheusString(value)}"`,
-                        )
-                        .join(',');
-                    labelStr = `{${labelParts}}`;
-                }
-
-                output += `${metricName}${labelStr} ${metric.value}\n`;
-            }
-
-            output += '\n';
-        }
-
-        return output;
+        throw new Error("STUB");
     }
 
     private escapePrometheusString(str: string): string {
-        return str
-            .replace(/\\/g, '\\\\')
-            .replace(/"/g, '\\"')
-            .replace(/\n/g, '\\n');
+        throw new Error("STUB");
     }
 }

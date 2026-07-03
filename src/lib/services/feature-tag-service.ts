@@ -56,11 +56,11 @@ class FeatureTagService {
     }
 
     async listTags(featureName: string): Promise<ITag[]> {
-        return this.featureTagStore.getAllTagsForFeature(featureName);
+        throw new Error("STUB");
     }
 
     async listFeatures(tagValue: string): Promise<string[]> {
-        return this.featureTagStore.getAllFeaturesForTag(tagValue);
+        throw new Error("STUB");
     }
 
     // TODO: add project Id
@@ -99,62 +99,7 @@ class FeatureTagService {
         removedTags: ITag[],
         auditUser: IAuditUser,
     ): Promise<void> {
-        const featureToggles =
-            await this.featureToggleStore.getAllByNames(featureNames);
-        await Promise.all(
-            addedTags.map((tag) => this.createTagIfNeeded(tag, auditUser)),
-        );
-        const createdFeatureTags: IFeatureTagInsert[] = featureNames.flatMap(
-            (featureName) =>
-                addedTags.map((addedTag) => ({
-                    featureName,
-                    tagType: addedTag.type,
-                    tagValue: addedTag.value,
-                    createdByUserId: auditUser.id,
-                })),
-        );
-
-        await this.featureTagStore.tagFeatures(createdFeatureTags);
-
-        const removedFeatureTags: Omit<IFeatureTag, 'createdByUserId'>[] =
-            featureNames.flatMap((featureName) =>
-                removedTags.map((addedTag) => ({
-                    featureName,
-                    tagType: addedTag.type,
-                    tagValue: addedTag.value,
-                })),
-            );
-
-        await this.featureTagStore.untagFeatures(removedFeatureTags);
-
-        const creationEvents = featureToggles.flatMap((featureToggle) =>
-            addedTags.map((addedTag) => ({
-                type: FEATURE_TAGGED,
-                createdBy: auditUser.username,
-                featureName: featureToggle.name,
-                project: featureToggle.project,
-                data: addedTag,
-                createdByUserId: auditUser.id,
-                ip: auditUser.ip,
-            })),
-        );
-
-        const removalEvents = featureToggles.flatMap((featureToggle) =>
-            removedTags.map((removedTag) => ({
-                type: FEATURE_UNTAGGED,
-                featureName: featureToggle.name,
-                project: featureToggle.project,
-                preData: removedTag,
-                createdBy: auditUser.username,
-                createdByUserId: auditUser.id,
-                ip: auditUser.ip,
-            })),
-        );
-
-        await this.eventService.storeEvents([
-            ...creationEvents,
-            ...removalEvents,
-        ]);
+        throw new Error("STUB");
     }
 
     async createTagIfNeeded(tag: ITag, auditUser: IAuditUser): Promise<void> {
@@ -188,24 +133,7 @@ class FeatureTagService {
         tag: ITag,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const featureToggle = await this.featureToggleStore.get(featureName);
-        if (featureToggle === undefined) {
-            /// No toggle, so no point in removing tags
-            return;
-        }
-        const tags =
-            await this.featureTagStore.getAllTagsForFeature(featureName);
-        await this.featureTagStore.untagFeature(featureName, tag);
-        await this.eventService.storeEvent({
-            type: FEATURE_UNTAGGED,
-            createdBy: auditUser.username,
-            createdByUserId: auditUser.id,
-            ip: auditUser.ip,
-            featureName,
-            project: featureToggle.project,
-            preData: tag,
-            tags,
-        });
+        throw new Error("STUB");
     }
 }
 

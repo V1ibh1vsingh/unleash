@@ -418,9 +418,9 @@ const flags: IFlags = {
 export const defaultExperimentalOptions: IExperimentalOptions = {
     flags,
     externalResolver: {
-        isEnabled: (): boolean => false,
-        getVariant: () => defaultVariant,
-        getStaticContext: () => ({}),
+        isEnabled: (): boolean => { throw new Error("STUB"); },
+        getVariant: () => { throw new Error("STUB"); },
+        getStaticContext: () => { throw new Error("STUB"); },
     },
 };
 

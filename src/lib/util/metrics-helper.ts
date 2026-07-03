@@ -24,12 +24,7 @@ const wrapTimer = (
     event: string,
     args: Record<string, unknown> = {},
 ) => {
-    const t = timer.new();
-    return (data: unknown) => {
-        args.time = t();
-        eventBus.emit(event, args);
-        return data;
-    };
+    throw new Error("STUB");
 };
 
 const metricsHelper = {

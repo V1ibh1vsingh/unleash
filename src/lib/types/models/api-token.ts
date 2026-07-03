@@ -9,11 +9,7 @@ export const isAllProjects = (projects: string[]): boolean => {
 };
 
 export const resolveValidProjects = (projects: string[]): string[] => {
-    if (projects.includes('*')) {
-        return ['*'];
-    }
-
-    return projects;
+    throw new Error("STUB");
 };
 
 export const validateApiToken = ({

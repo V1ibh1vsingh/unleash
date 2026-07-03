@@ -9,6 +9,6 @@ export const catchAllErrorHandler = (
     // should not remove next as express needs 4 parameters to distinguish error handler from regular handler
     /* eslint-disable @typescript-eslint/no-unused-vars */
     return (err, _req, res, _next) => {
-        handleErrors(res, logger, err);
+        throw new Error("STUB");
     };
 };

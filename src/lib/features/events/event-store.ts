@@ -127,23 +127,11 @@ export class EventStore implements IEventStore {
         this.db = db;
         this.logger = getLogger('event-store');
         this.metricTimer = (action) =>
-            metricsHelper.wrapTimer(this.eventEmitter, DB_TIME, {
-                store: 'event',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async store(event: IBaseEvent): Promise<void> {
-        const stopTimer = this.metricTimer('store');
-        try {
-            await this.db(TABLE)
-                .insert(this.eventToDbRow(event))
-                .returning(EVENT_COLUMNS);
-        } catch (error: unknown) {
-            this.logger.warn(`Failed to store "${event.type}" event: ${error}`);
-        } finally {
-            stopTimer();
-        }
+        throw new Error("STUB");
     }
 
     async count(): Promise<number> {
@@ -184,7 +172,7 @@ export class EventStore implements IEventStore {
         const stopTimer = this.metricTimer('batchStore');
         try {
             await this.db(TABLE).insert(
-                events.map((event) => this.eventToDbRow(event)),
+                events.map((event) => { throw new Error("STUB"); }),
             );
         } catch (error: unknown) {
             this.logger.warn(
@@ -198,35 +186,7 @@ export class EventStore implements IEventStore {
 
     private eventTypeIsInteresting =
         (opts?: { additionalTypes?: string[]; environment?: string }) =>
-        (builder: Knex.QueryBuilder) =>
-            builder
-                .andWhere((inner) => {
-                    inner
-                        .whereNotNull('feature_name')
-                        .whereNotIn('type', [
-                            FEATURE_FAVORITED,
-                            FEATURE_UNFAVORITED,
-                            FEATURE_LINK_ADDED,
-                            FEATURE_LINK_UPDATED,
-                            FEATURE_LINK_REMOVED,
-                        ])
-                        .whereNot('type', 'LIKE', 'change-%');
-                    if (opts?.environment && opts.environment !== ALL_ENVS) {
-                        inner.andWhere((envInner) => {
-                            envInner
-                                .where('environment', opts.environment)
-                                // Picks up events like archiving, which relate to a feature but have no specific environment set
-                                .orWhereNull('environment');
-                        });
-                    }
-                    return inner;
-                })
-                .orWhereIn('type', [
-                    SEGMENT_UPDATED,
-                    FEATURE_IMPORT,
-                    FEATURES_IMPORTED,
-                    ...(opts?.additionalTypes ?? []),
-                ]);
+        { throw new Error("STUB"); };
 
     /** This method is used for polling */
     async getMaxRevisionId(
@@ -246,134 +206,14 @@ export class EventStore implements IEventStore {
 
     /** This method is used for delta/streaming */
     async getRevisionRange(start: number, end: number): Promise<IEvent[]> {
-        const stopTimer = this.metricTimer('getRevisionRange');
-        const query = this.db
-            .select(EVENT_COLUMNS)
-            .from(TABLE)
-            .where('id', '>', start)
-            .andWhere('id', '<=', end)
-            .andWhere(
-                this.eventTypeIsInteresting({
-                    additionalTypes: [SEGMENT_CREATED, SEGMENT_DELETED],
-                }),
-            )
-            .orderBy('id', 'asc');
-
-        const rows = await query;
-        stopTimer();
-        return rows.map(this.rowToEvent);
+        throw new Error("STUB");
     }
 
     async getDeltaRevisionState(
         environment: string,
         referencedSegmentIds: Set<number> | undefined = undefined,
     ): Promise<EnvironmentVisibleRevisionState> {
-        const stopTimer = this.metricTimer('getDeltaRevisionState');
-        const shouldFilterEnvironment = environment !== ALL_ENVS;
-        const applyEnvironmentFilter = (query: Knex.QueryBuilder) => {
-            if (shouldFilterEnvironment) {
-                query.andWhere((envInner) => {
-                    envInner
-                        .where('environment', environment)
-                        .orWhereNull('environment');
-                });
-            }
-
-            return query;
-        };
-
-        const projectRows: Array<{
-            project?: string;
-            revisionId?: number | string;
-        }> = await this.db(TABLE)
-            .select('project')
-            .max({ revisionId: 'id' })
-            .where((builder) => {
-                builder
-                    .whereNotNull('feature_name')
-                    .whereNotIn('type', [
-                        FEATURE_FAVORITED,
-                        FEATURE_UNFAVORITED,
-                        FEATURE_LINK_ADDED,
-                        FEATURE_LINK_UPDATED,
-                        FEATURE_LINK_REMOVED,
-                    ])
-                    .whereNot('type', 'LIKE', 'change-%');
-
-                return applyEnvironmentFilter(builder);
-            })
-            .whereNotNull('project')
-            .groupBy('project');
-
-        const movedRows: Array<{
-            project?: string;
-            revisionId?: number | string;
-        }> = await this.db(TABLE)
-            .select(this.db.raw(`data->>'oldProject' as project`))
-            .max({ revisionId: 'id' })
-            .where({ type: FEATURE_PROJECT_CHANGE })
-            .modify(applyEnvironmentFilter)
-            .groupByRaw(`data->>'oldProject'`);
-
-        const segmentRows: Array<{
-            segmentId?: number | string;
-            revisionId?: number | string;
-        }> = await this.db(TABLE)
-            .select(this.db.raw(`(data->>'id')::int as "segmentId"`))
-            .max({ revisionId: 'id' })
-            .where({ type: SEGMENT_UPDATED })
-            .modify(applyEnvironmentFilter)
-            .groupByRaw(`(data->>'id')::int`);
-
-        stopTimer();
-
-        const projectRevisions = new Map<string, number>();
-        const segmentRevisions = new Map<number, number>();
-
-        for (const row of [...projectRows, ...movedRows]) {
-            if (!row.project) {
-                continue;
-            }
-
-            const revisionId = Number(row.revisionId ?? 0);
-            const currentRevision = projectRevisions.get(row.project) ?? 0;
-
-            if (revisionId > currentRevision) {
-                projectRevisions.set(row.project, revisionId);
-            }
-        }
-
-        for (const row of segmentRows) {
-            const segmentId = Number(row.segmentId);
-            if (!segmentId) {
-                continue;
-            }
-
-            segmentRevisions.set(segmentId, Number(row.revisionId ?? 0));
-        }
-
-        let maxReferencedSegmentRevision = 0;
-        if (referencedSegmentIds === undefined) {
-            for (const revisionId of segmentRevisions.values()) {
-                maxReferencedSegmentRevision = Math.max(
-                    maxReferencedSegmentRevision,
-                    revisionId,
-                );
-            }
-        } else {
-            for (const segmentId of referencedSegmentIds) {
-                maxReferencedSegmentRevision = Math.max(
-                    maxReferencedSegmentRevision,
-                    segmentRevisions.get(segmentId) ?? 0,
-                );
-            }
-        }
-
-        return {
-            projectRevisions,
-            maxReferencedSegmentRevision,
-            segmentRevisions,
-        };
+        throw new Error("STUB");
     }
 
     async delete(key: number): Promise<void> {
@@ -381,7 +221,7 @@ export class EventStore implements IEventStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -401,21 +241,7 @@ export class EventStore implements IEventStore {
             let query: Knex.QueryBuilder = this.select();
 
             operations.forEach((operation) => {
-                if (operation.op === 'where') {
-                    query = this.where(query, operation.parameters);
-                }
-
-                if (operation.op === 'forFeatures') {
-                    query = this.forFeatures(query, operation.parameters);
-                }
-
-                if (operation.op === 'beforeDate') {
-                    query = this.beforeDate(query, operation.parameters);
-                }
-
-                if (operation.op === 'betweenDate') {
-                    query = this.betweenDate(query, operation.parameters);
-                }
+                throw new Error("STUB");
             });
 
             const rows = await query;
@@ -428,35 +254,7 @@ export class EventStore implements IEventStore {
     }
 
     async queryCount(operations: IQueryOperations[]): Promise<number> {
-        const stopTimer = this.metricTimer('queryCount');
-        try {
-            let query: Knex.QueryBuilder = this.db.count().from(TABLE);
-
-            operations.forEach((operation) => {
-                if (operation.op === 'where') {
-                    query = this.where(query, operation.parameters);
-                }
-
-                if (operation.op === 'forFeatures') {
-                    query = this.forFeatures(query, operation.parameters);
-                }
-
-                if (operation.op === 'beforeDate') {
-                    query = this.beforeDate(query, operation.parameters);
-                }
-
-                if (operation.op === 'betweenDate') {
-                    query = this.betweenDate(query, operation.parameters);
-                }
-            });
-
-            const queryResult = await query.first();
-            return Number.parseInt(queryResult.count || 0, 10);
-        } catch (_e) {
-            return 0;
-        } finally {
-            stopTimer();
-        }
+        throw new Error("STUB");
     }
 
     where(
@@ -550,9 +348,7 @@ export class EventStore implements IEventStore {
 
         try {
             return (await query).map((row) =>
-                options?.withIp
-                    ? { ...this.rowToEvent(row), ip: row.ip }
-                    : this.rowToEvent(row),
+                { throw new Error("STUB"); },
             );
         } catch (_err) {
             return [];
@@ -571,10 +367,7 @@ export class EventStore implements IEventStore {
 
         if (query) {
             searchQuery = searchQuery.where((where) =>
-                where
-                    .orWhereRaw('data::text ILIKE ?', `%${query}%`)
-                    .orWhereRaw('tags::text ILIKE ?', `%${query}%`)
-                    .orWhereRaw('pre_data::text ILIKE ?', `%${query}%`),
+                { throw new Error("STUB"); },
             );
         }
 
@@ -582,56 +375,13 @@ export class EventStore implements IEventStore {
     }
 
     async getEventCreators(): Promise<Array<{ id: number; name: string }>> {
-        const stopTimer = this.metricTimer('getEventCreators');
-        const query = this.db('events')
-            .distinctOn('events.created_by_user_id')
-            .leftJoin('users', 'users.id', '=', 'events.created_by_user_id')
-            .select([
-                'events.created_by_user_id as id',
-                this.db.raw(`
-            CASE
-                WHEN events.created_by_user_id = -1337 THEN '${SYSTEM_USER.name}'
-                WHEN events.created_by_user_id = -42 THEN '${ADMIN_TOKEN_USER.name}'
-                ELSE COALESCE(users.name, events.created_by)
-            END as name
-        `),
-                'users.username',
-                'users.email',
-            ]);
-
-        const result = await query;
-        stopTimer();
-        return result
-            .filter((row: any) => row.name || row.username || row.email)
-            .map((row: any) => ({
-                id: Number(row.id),
-                name: String(row.name || row.username || row.email),
-            }));
+        throw new Error("STUB");
     }
 
     async getProjectRecentEventActivity(
         project: string,
     ): Promise<ProjectActivitySchema> {
-        const stopTimer = this.metricTimer('getProjectRecentEventActivity');
-        const result = await this.db('events')
-            .select(
-                this.db.raw("TO_CHAR(created_at::date, 'YYYY-MM-DD') AS date"),
-            )
-            .count('* AS count')
-            .where('project', project)
-            .andWhere(
-                'created_at',
-                '>=',
-                this.db.raw("NOW() - INTERVAL '1 year'"),
-            )
-            .groupBy(this.db.raw("TO_CHAR(created_at::date, 'YYYY-MM-DD')"))
-            .orderBy('date', 'asc');
-
-        stopTimer();
-        return result.map((row) => ({
-            date: row.date,
-            count: Number(row.count),
-        }));
+        throw new Error("STUB");
     }
 
     rowToEvent(row: IEventTable): IEvent {
@@ -697,74 +447,15 @@ export class EventStore implements IEventStore {
     }
 
     async setUnannouncedToAnnounced(): Promise<IEvent[]> {
-        const stopTimer = this.metricTimer('setUnannouncedToAnnounced');
-        const rows = await this.db(TABLE)
-            .update({ announced: true })
-            .where('announced', false)
-            .returning(EVENT_COLUMNS);
-        stopTimer();
-        return rows.map(this.rowToEvent);
+        throw new Error("STUB");
     }
 
     async publishUnannouncedEvents(): Promise<void> {
-        const events = await this.setUnannouncedToAnnounced();
-
-        events.forEach((e) => {
-            this.eventEmitter.emit(e.type, e);
-        });
+        throw new Error("STUB");
     }
 
     async setCreatedByUserId(batchSize: number): Promise<number | undefined> {
-        const stopTimer = this.metricTimer('setCreatedByUserId');
-        const API_TOKEN_TABLE = 'api_tokens';
-
-        const toUpdate = await this.db(`${TABLE} as e`)
-            .joinRaw(
-                'LEFT OUTER JOIN users AS u ON e.created_by = u.username OR e.created_by = u.email',
-            )
-            .joinRaw(
-                `LEFT OUTER JOIN ${API_TOKEN_TABLE} AS t on e.created_by = t.username`,
-            )
-            .whereRaw(
-                `e.created_by_user_id IS null AND
-                 e.created_by IS NOT null AND
-                (u.id IS NOT null OR
-                  t.username IS NOT null OR
-                  e.created_by in ('unknown', 'migration', 'init-api-tokens')
-                )`,
-            )
-            .orderBy('e.created_at', 'desc')
-            .limit(batchSize)
-            .select(['e.*', 'u.id AS userid', 't.username']);
-
-        const updatePromises = toUpdate.map(async (row) => {
-            if (
-                row.created_by === 'unknown' ||
-                row.created_by === 'migration' ||
-                (row.created_by === 'init-api-tokens' &&
-                    row.type === 'api-token-created')
-            ) {
-                return this.db(TABLE)
-                    .update({ created_by_user_id: SYSTEM_USER_ID })
-                    .where({ id: row.id });
-            }
-            if (row.userid) {
-                return this.db(TABLE)
-                    .update({ created_by_user_id: row.userid })
-                    .where({ id: row.id });
-            }
-            if (row.username) {
-                return this.db(TABLE)
-                    .update({ created_by_user_id: ADMIN_TOKEN_USER.id })
-                    .where({ id: row.id });
-            }
-            this.logger.warn(`Could not find user for event ${row.id}`);
-            return Promise.resolve();
-        });
-
-        await Promise.all(updatePromises);
-        stopTimer();
-        return toUpdate.length;
+        throw new Error("STUB");
     }
 }
 

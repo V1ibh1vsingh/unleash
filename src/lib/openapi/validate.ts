@@ -11,7 +11,7 @@ export interface ISchemaValidationErrors<S = SchemaId> {
 
 const ajv = new Ajv({
     schemas: Object.values(schemas).map((schema) =>
-        omitKeys(schema, 'components'),
+        { throw new Error("STUB"); },
     ),
     // example was superseded by examples in openapi 3.1, but we're still on 3.0, so
     // let's add it back in!
@@ -28,7 +28,7 @@ const ajv = new Ajv({
 
 export const addAjvSchema = (schemaObjects: any[]): any => {
     const newSchemas = schemaObjects.filter(
-        (schema) => !ajv.getSchema(schema.$id),
+        (schema) => { throw new Error("STUB"); },
     );
     return ajv.addSchema(newSchemas);
 };
@@ -49,12 +49,5 @@ export const throwOnInvalidSchema = <_S = SchemaId>(
     schema: SchemaId,
     data: object,
 ): void => {
-    const validationErrors = validateSchema(schema, data);
-    if (validationErrors) {
-        const [firstError, ...remainingErrors] = validationErrors.errors;
-        throw fromOpenApiValidationErrors(data, [
-            firstError,
-            ...remainingErrors,
-        ]);
-    }
+    throw new Error("STUB");
 };

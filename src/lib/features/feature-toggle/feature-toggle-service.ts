@@ -259,21 +259,7 @@ export class FeatureToggleService {
         featureNames: string[],
         projectId: string,
     ): Promise<void> {
-        const features =
-            await this.featureToggleStore.getAllByNames(featureNames);
-
-        const invalidProjects = unique(
-            features
-                .map((feature) => feature.project)
-                .filter((project) => project !== projectId),
-        );
-        if (invalidProjects.length > 0) {
-            throw new InvalidOperationError(
-                `The operation could not be completed. The features exist, but the provided project ids ("${invalidProjects.join(
-                    ',',
-                )}") does not match the project provided in request URL ("${projectId}").`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     async validateFeatureBelongsToProject(
@@ -307,29 +293,11 @@ export class FeatureToggleService {
     }
 
     async validateNoChildren(featureName: string): Promise<void> {
-        const children = await this.dependentFeaturesReadModel.getChildren([
-            featureName,
-        ]);
-        if (children.length > 0) {
-            throw new InvalidOperationError(
-                'You can not archive/delete this feature since other features depend on it.',
-            );
-        }
+        throw new Error("STUB");
     }
 
     async validateNoOrphanParents(featureNames: string[]): Promise<void> {
-        if (featureNames.length === 0) return;
-        const parents =
-            await this.dependentFeaturesReadModel.getOrphanParents(
-                featureNames,
-            );
-        if (parents.length > 0) {
-            throw new InvalidOperationError(
-                featureNames.length > 1
-                    ? `You can not archive/delete those features since other features depend on them.`
-                    : `You can not archive/delete this feature since other features depend on it.`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     validateUpdatedProperties(
@@ -356,18 +324,10 @@ export class FeatureToggleService {
         if (segmentIds && segmentIds.length > 0) {
             await Promise.all(
                 segmentIds.map((segmentId) =>
-                    this.segmentService.get(segmentId),
+                    { throw new Error("STUB"); },
                 ),
             ).then((segments) => {
-                const mismatchedSegments = segments.filter(
-                    (segment) =>
-                        segment?.project && segment.project !== projectId,
-                );
-                if (mismatchedSegments.length > 0) {
-                    throw new BadDataError(
-                        `The segments ${mismatchedSegments.map((s) => `${s.name} with id ${s.id}`).join(',')} does not belong to project "${projectId}"`,
-                    );
-                }
+                throw new Error("STUB");
             });
         }
     }
@@ -417,17 +377,7 @@ export class FeatureToggleService {
             constraints.existing.length === constraints.updated.length;
         const constraintOverLimit = constraints.updated.find(
             (constraint, i) => {
-                const updatedCount = constraint.values?.length ?? 0;
-                const existingCount =
-                    constraints.existing[i]?.values?.length ?? 0;
-
-                const isOverLimit =
-                    Array.isArray(constraint.values) &&
-                    updatedCount > constraintValuesLimit;
-                const allowAnyway =
-                    isSameLength && existingCount >= updatedCount;
-
-                return isOverLimit && !allowAnyway;
+                throw new Error("STUB");
             },
         );
 
@@ -459,37 +409,7 @@ export class FeatureToggleService {
         operations: Operation[],
         auditUser: IAuditUser,
     ): Promise<FeatureToggle> {
-        const featureToggle = await this.getFeatureMetadata(featureName);
-
-        if (operations.some((op) => op.path.indexOf('/variants') >= 0)) {
-            throw new OperationDeniedError(
-                `Changing variants is done via PATCH operation to /api/admin/projects/:project/features/:feature/variants`,
-            );
-        }
-        const { newDocument } = applyPatch(
-            deepClone(featureToggle),
-            operations,
-        );
-
-        const updated = await this.updateFeatureToggle(
-            project,
-            newDocument,
-            featureName,
-            auditUser,
-        );
-
-        if (featureToggle.stale !== newDocument.stale) {
-            await this.eventService.storeEvent(
-                new FeatureStaleEvent({
-                    stale: newDocument.stale,
-                    project,
-                    featureName,
-                    auditUser,
-                }),
-            );
-        }
-
-        return updated;
+        throw new Error("STUB");
     }
 
     featureStrategyToPublic(
@@ -505,7 +425,7 @@ export class FeatureToggleService {
             parameters: featureStrategy.parameters,
             variants: featureStrategy.variants || [],
             sortOrder: featureStrategy.sortOrder,
-            segments: segments.map((segment) => segment.id) ?? [],
+            segments: segments.map((segment) => { throw new Error("STUB"); }) ?? [],
         };
 
         return result;
@@ -517,17 +437,7 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         user?: IUser,
     ): Promise<Saved<any>> {
-        await this.stopWhenChangeRequestsEnabled(
-            context.projectId,
-            context.environment,
-            user,
-        );
-
-        return this.unprotectedUpdateStrategiesSortOrder(
-            context,
-            sortOrders,
-            auditUser,
-        );
+        throw new Error("STUB");
     }
 
     async unprotectedUpdateStrategiesSortOrder(
@@ -535,45 +445,7 @@ export class FeatureToggleService {
         sortOrders: SetStrategySortOrderSchema,
         auditUser: IAuditUser,
     ): Promise<Saved<any>> {
-        const { featureName, environment, projectId: project } = context;
-        const existingOrder = (
-            await this.getStrategiesForEnvironment(
-                project,
-                featureName,
-                environment,
-            )
-        )
-            .sort(sortStrategies)
-            .map((strategy) => strategy.id);
-
-        const eventPreData: StrategyIds = { strategyIds: existingOrder };
-
-        await Promise.all(
-            sortOrders.map(({ id, sortOrder }) =>
-                this.featureStrategiesStore.updateSortOrder(id, sortOrder),
-            ),
-        );
-        const newOrder = (
-            await this.getStrategiesForEnvironment(
-                project,
-                featureName,
-                environment,
-            )
-        )
-            .sort(sortStrategies)
-            .map((strategy) => strategy.id);
-
-        const eventData: StrategyIds = { strategyIds: newOrder };
-
-        const event = new StrategiesOrderChangedEvent({
-            featureName,
-            environment,
-            project,
-            preData: eventPreData,
-            data: eventData,
-            auditUser,
-        });
-        await this.eventService.storeEvent(event);
+        throw new Error("STUB");
     }
 
     async createStrategy(
@@ -793,7 +665,7 @@ export class FeatureToggleService {
                 environment,
             );
         const hasOnlyDisabledStrategies = strategies.every(
-            (strategy) => strategy.disabled,
+            (strategy) => { throw new Error("STUB"); },
         );
         if (hasOnlyDisabledStrategies) {
             await this.unprotectedUpdateEnabled(
@@ -885,43 +757,7 @@ export class FeatureToggleService {
         context: IFeatureStrategyContext,
         auditUser: IAuditUser,
     ): Promise<Saved<IStrategyConfig>> {
-        const { projectId, environment, featureName } = context;
-
-        const existingStrategy = await this.featureStrategiesStore.get(id);
-        if (existingStrategy === undefined) {
-            throw new NotFoundError(`Could not find strategy with id ${id}`);
-        }
-        this.validateUpdatedProperties(context, existingStrategy);
-
-        if (existingStrategy.id === id) {
-            existingStrategy.parameters[name] = String(value);
-            const existingSegments =
-                await this.segmentService.getByStrategy(id);
-            const strategy = await this.featureStrategiesStore.updateStrategy(
-                id,
-                existingStrategy,
-            );
-            const segments = await this.segmentService.getByStrategy(
-                strategy.id,
-            );
-            const data = this.featureStrategyToPublic(strategy, segments);
-            const preData = this.featureStrategyToPublic(
-                existingStrategy,
-                existingSegments,
-            );
-            await this.eventService.storeEvent(
-                new FeatureStrategyUpdateEvent({
-                    featureName,
-                    project: projectId,
-                    environment,
-                    data,
-                    preData,
-                    auditUser,
-                }),
-            );
-            return data;
-        }
-        throw new NotFoundError(`Could not find strategy with id ${id}`);
+        throw new Error("STUB");
     }
 
     /**
@@ -940,12 +776,7 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         user?: IUser,
     ): Promise<void> {
-        await this.stopWhenChangeRequestsEnabled(
-            context.projectId,
-            context.environment,
-            user,
-        );
-        return this.unprotectedDeleteStrategy(id, context, auditUser);
+        throw new Error("STUB");
     }
 
     async unprotectedDeleteStrategy(
@@ -953,41 +784,7 @@ export class FeatureToggleService {
         context: IFeatureStrategyContext,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const existingStrategy = await this.featureStrategiesStore.get(id);
-        if (!existingStrategy) {
-            // If the strategy doesn't exist, do nothing.
-            return;
-        }
-        const { featureName, projectId, environment } = context;
-        this.validateUpdatedProperties(context, existingStrategy);
-
-        await this.featureStrategiesStore.delete(id);
-
-        // Disable the feature in the environment if it only has disabled strategies
-        await this.optionallyDisableFeature(
-            featureName,
-            environment,
-            projectId,
-            auditUser,
-        );
-
-        const preData = this.featureStrategyToPublic(existingStrategy);
-
-        await this.eventService.storeEvent(
-            new FeatureStrategyRemoveEvent({
-                featureName,
-                project: projectId,
-                environment,
-                auditUser,
-                preData,
-            }),
-        );
-
-        // If there are no strategies left for environment disable it
-        await this.featureEnvironmentStore.disableEnvironmentIfNoStrategies(
-            featureName,
-            environment,
-        );
+        throw new Error("STUB");
     }
 
     async getStrategiesForEnvironment(
@@ -1011,7 +808,7 @@ export class FeatureToggleService {
             for (const strat of featureStrategies) {
                 const segments =
                     (await this.segmentService.getByStrategy(strat.id)).map(
-                        (segment) => segment.id,
+                        (segment) => { throw new Error("STUB"); },
                     ) ?? [];
                 result.push({
                     id: strat.id,
@@ -1047,87 +844,18 @@ export class FeatureToggleService {
         environmentVariants,
         userId,
     }: IGetFeatureParams): Promise<FeatureToggleView> {
-        if (projectId) {
-            await this.validateFeatureBelongsToProject({
-                featureName,
-                projectId,
-            });
-        }
-
-        let dependencies: IDependency[] = [];
-        let children: string[] = [];
-        let lifecycle: IFeatureLifecycleStage | undefined;
-        let collaborators: Collaborator[] = [];
-        let links: IFeatureLink[] = [];
-        [dependencies, children, lifecycle, collaborators, links] =
-            await Promise.all([
-                this.dependentFeaturesReadModel.getParents(featureName),
-                this.dependentFeaturesReadModel.getChildren([featureName]),
-                this.featureLifecycleReadModel.findCurrentStage(featureName),
-                this.featureCollaboratorsReadModel.getFeatureCollaborators(
-                    featureName,
-                ),
-                this.featureLinksReadModel.getLinks(featureName),
-            ]);
-
-        if (environmentVariants) {
-            const result =
-                await this.featureStrategiesStore.getFeatureToggleWithVariantEnvs(
-                    featureName,
-                    userId,
-                    archived,
-                );
-
-            return {
-                ...result,
-                dependencies,
-                children,
-                lifecycle,
-                links: links.map((link) => ({
-                    id: link.id,
-                    url: link.url,
-                    title: link.title ?? null,
-                })),
-                collaborators: { users: collaborators },
-            };
-        } else {
-            const result =
-                await this.featureStrategiesStore.getFeatureToggleWithEnvs(
-                    featureName,
-                    userId,
-                    archived,
-                );
-
-            return {
-                ...result,
-                dependencies,
-                children,
-                lifecycle,
-                links,
-                collaborators: { users: collaborators },
-            };
-        }
+        throw new Error("STUB");
     }
 
     async getVariantsForEnv(
         featureName: string,
         environment: string,
     ): Promise<IVariant[]> {
-        const featureEnvironment = await this.featureEnvironmentStore.get({
-            featureName,
-            environment,
-        });
-        return featureEnvironment?.variants || [];
+        throw new Error("STUB");
     }
 
     async getFeatureMetadata(featureName: string): Promise<FeatureToggle> {
-        const metaData = await this.featureToggleStore.get(featureName);
-        if (metaData === undefined) {
-            throw new NotFoundError(
-                `Could find metadata for feature with name ${featureName}`,
-            );
-        }
-        return metaData;
+        throw new Error("STUB");
     }
 
     async getClientFeatures(
@@ -1148,28 +876,14 @@ export class FeatureToggleService {
                 description,
                 impressionData,
                 dependencies,
-            }) => ({
-                name,
-                type,
-                enabled,
-                project,
-                stale: stale || false,
-                strategies,
-                variants,
-                description,
-                impressionData,
-                dependencies,
-            }),
+            }) => { throw new Error("STUB"); },
         );
     }
 
     async getPlaygroundFeatures(
         query?: IFeatureToggleQuery,
     ): Promise<FeatureConfigurationClient[]> {
-        const features =
-            await this.featureToggleStore.getPlaygroundFeatures(query);
-
-        return features as FeatureConfigurationClient[];
+        throw new Error("STUB");
     }
 
     async getFeatureOverview(
@@ -1181,15 +895,13 @@ export class FeatureToggleService {
     async getFeatureTypeCounts(
         params: IFeatureProjectUserParams,
     ): Promise<IFeatureTypeCount[]> {
-        return this.featureToggleStore.getFeatureTypeCounts(params);
+        throw new Error("STUB");
     }
 
     async getFeatureToggle(
         featureName: string,
     ): Promise<FeatureToggleWithEnvironment> {
-        return this.featureStrategiesStore.getFeatureToggleWithEnvs(
-            featureName,
-        );
+        throw new Error("STUB");
     }
 
     private async validateFeatureFlagLimit() {
@@ -1205,13 +917,7 @@ export class FeatureToggleService {
     }
 
     private async validateActiveProject(projectId: string) {
-        const hasActiveProject =
-            await this.projectStore.hasActiveProject(projectId);
-        if (!hasActiveProject) {
-            throw new NotFoundError(
-                `Active project with id ${projectId} does not exist`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     async createFeatureToggle(
@@ -1267,18 +973,13 @@ export class FeatureToggleService {
 
                 await this.featureEnvironmentStore.setVariantsToFeatureEnvironments(
                     featureName,
-                    environments.map((env) => env.environment),
+                    environments.map((env) => { throw new Error("STUB"); }),
                     value.variants,
                 );
             }
 
             if (value.tags && value.tags.length > 0) {
-                const mapTagsToFeatureTagInserts = value.tags.map((tag) => ({
-                    tagValue: tag.value,
-                    tagType: tag.type,
-                    createdByUserId: auditUser.id,
-                    featureName: featureName,
-                }));
+                const mapTagsToFeatureTagInserts = value.tags.map((tag) => { throw new Error("STUB"); });
                 await this.tagStore.tagFeatures(mapTagsToFeatureTagInserts);
             }
 
@@ -1379,118 +1080,14 @@ export class FeatureToggleService {
         user: IUser,
         replaceGroupId: boolean = true,
     ): Promise<FeatureToggle> {
-        const changeRequestEnabled =
-            await this.changeRequestAccessReadModel.isChangeRequestsEnabledForProject(
-                projectId,
-            );
-        if (changeRequestEnabled) {
-            throw new ForbiddenError(
-                `Cloning not allowed. Project ${projectId} has change requests enabled.`,
-            );
-        }
-        this.logger.info(
-            `${auditUser.username} clones feature flag ${featureName} to ${newFeatureName}`,
-        );
-        await this.validateName(newFeatureName);
-
-        const cToggle =
-            await this.featureStrategiesStore.getFeatureToggleWithVariantEnvs(
-                featureName,
-            );
-        await this.validateCloneFeaturePermissions(
-            projectId,
-            cToggle.environments,
-            user,
-        );
-
-        const newToggle = {
-            ...cToggle,
-            name: newFeatureName,
-            variants: undefined,
-            createdAt: undefined,
-        };
-        const created = await this.createFeatureToggle(
-            projectId,
-            newToggle,
-            auditUser,
-        );
-
-        const variantTasks = newToggle.environments.map((e) => {
-            return this.featureEnvironmentStore.addVariantsToFeatureEnvironment(
-                newToggle.name,
-                e.name,
-                e.variants,
-            );
-        });
-
-        const strategyTasks = newToggle.environments.flatMap((e) =>
-            e.strategies.map((s) => {
-                if (replaceGroupId && s.parameters?.hasOwnProperty('groupId')) {
-                    s.parameters.groupId = newFeatureName;
-                }
-                const context = {
-                    projectId,
-                    featureName: newFeatureName,
-                    environment: e.name,
-                };
-                return this.createStrategy(s, context, auditUser);
-            }),
-        );
-
-        const cloneDependencies =
-            this.dependentFeaturesService.cloneDependencies(
-                {
-                    featureName,
-                    newFeatureName,
-                    projectId,
-                },
-                auditUser,
-            );
-
-        await Promise.all([
-            ...strategyTasks,
-            ...variantTasks,
-            cloneDependencies,
-        ]);
-
-        return created;
+        throw new Error("STUB");
     }
     private async validateCloneFeaturePermissions(
         projectId: string,
         environments: FeatureToggleWithEnvironment['environments'],
         user: IUser,
     ): Promise<void> {
-        for (const environment of environments) {
-            if (
-                environment.strategies.length > 0 &&
-                !(await this.accessService.hasPermission(
-                    user,
-                    CREATE_FEATURE_STRATEGY,
-                    projectId,
-                    environment.name,
-                ))
-            ) {
-                throw new PermissionError(
-                    CREATE_FEATURE_STRATEGY,
-                    environment.name,
-                );
-            }
-
-            if (
-                environment.variants.length > 0 &&
-                !(await this.accessService.hasPermission(
-                    user,
-                    UPDATE_FEATURE_ENVIRONMENT_VARIANTS,
-                    projectId,
-                    environment.name,
-                ))
-            ) {
-                throw new PermissionError(
-                    UPDATE_FEATURE_ENVIRONMENT_VARIANTS,
-                    environment.name,
-                );
-            }
-        }
+        throw new Error("STUB");
     }
 
     async updateFeatureToggle(
@@ -1535,20 +1132,14 @@ export class FeatureToggleService {
     }
 
     async getFeatureCountForProject(projectId: string): Promise<number> {
-        return this.featureToggleStore.count({
-            archived: false,
-            project: projectId,
-        });
+        throw new Error("STUB");
     }
 
     async removeAllStrategiesForEnv(
         toggleName: string,
         environment: string = DEFAULT_ENV,
     ): Promise<void> {
-        await this.featureStrategiesStore.removeAllStrategiesForFeatureEnv(
-            toggleName,
-            environment,
-        );
+        throw new Error("STUB");
     }
 
     async getStrategy(strategyId: string): Promise<Saved<IStrategyConfig>> {
@@ -1571,7 +1162,7 @@ export class FeatureToggleService {
         if (segments && segments.length > 0) {
             result = {
                 ...result,
-                segments: segments.map((segment) => segment.id),
+                segments: segments.map((segment) => { throw new Error("STUB"); }),
             };
         }
         return result;
@@ -1582,32 +1173,7 @@ export class FeatureToggleService {
         environment: string,
         featureName: string,
     ): Promise<IFeatureEnvironmentInfo> {
-        await this.validateFeatureBelongsToProject({
-            featureName,
-            projectId: project,
-        });
-        const envMetadata =
-            await this.featureEnvironmentStore.getEnvironmentMetaData(
-                environment,
-                featureName,
-            );
-        const strategies =
-            await this.featureStrategiesStore.getStrategiesForFeatureEnv(
-                project,
-                featureName,
-                environment,
-            );
-        const defaultStrategy = await this.projectStore.getDefaultStrategy(
-            project,
-            environment,
-        );
-        return {
-            name: featureName,
-            environment,
-            enabled: envMetadata.enabled,
-            strategies,
-            defaultStrategy,
-        };
+        throw new Error("STUB");
     }
 
     // todo: store events for this change.
@@ -1615,14 +1181,7 @@ export class FeatureToggleService {
         projectId: string,
         environment: string,
     ): Promise<void> {
-        await this.featureStrategiesStore.deleteConfigurationsForProjectAndEnvironment(
-            projectId,
-            environment,
-        );
-        await this.projectStore.deleteEnvironmentForProject(
-            projectId,
-            environment,
-        );
+        throw new Error("STUB");
     }
 
     /** Validations  */
@@ -1649,7 +1208,7 @@ export class FeatureToggleService {
     }
 
     async hasFeature(name: string): Promise<boolean> {
-        return this.featureToggleStore.exists(name);
+        throw new Error("STUB");
     }
 
     async updateStale(
@@ -1657,26 +1216,7 @@ export class FeatureToggleService {
         isStale: boolean,
         auditUser: IAuditUser,
     ): Promise<any> {
-        const feature = await this.featureToggleStore.get(featureName);
-        if (feature === undefined) {
-            throw new NotFoundError(
-                `Could not find feature with name: ${featureName}`,
-            );
-        }
-        const { project } = feature;
-        feature.stale = isStale;
-        await this.featureToggleStore.update(project, feature);
-
-        await this.eventService.storeEvent(
-            new FeatureStaleEvent({
-                stale: isStale,
-                project,
-                featureName,
-                auditUser,
-            }),
-        );
-
-        return feature;
+        throw new Error("STUB");
     }
 
     async archiveToggle(
@@ -1685,14 +1225,7 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         projectId?: string,
     ): Promise<void> {
-        if (projectId) {
-            await this.stopWhenChangeRequestsEnabled(
-                projectId,
-                undefined,
-                user,
-            );
-        }
-        await this.unprotectedArchiveToggle(featureName, auditUser, projectId);
+        throw new Error("STUB");
     }
 
     async unprotectedArchiveToggle(
@@ -1700,38 +1233,7 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         projectId?: string,
     ): Promise<void> {
-        const feature = await this.featureToggleStore.get(featureName);
-        if (feature === undefined) {
-            throw new NotFoundError(
-                `Could not find feature with name ${featureName}`,
-            );
-        }
-        if (projectId) {
-            await this.validateFeatureBelongsToProject({
-                featureName,
-                projectId,
-            });
-            await this.validateNoOrphanParents([featureName]);
-        }
-
-        await this.validateNoChildren(featureName);
-
-        await this.featureToggleStore.archive(featureName);
-        if (projectId) {
-            await this.dependentFeaturesService.unprotectedDeleteFeaturesDependencies(
-                [featureName],
-                projectId,
-                auditUser,
-            );
-        }
-
-        await this.eventService.storeEvent(
-            new FeatureArchivedEvent({
-                featureName,
-                auditUser,
-                project: feature.project,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async archiveToggles(
@@ -1740,30 +1242,14 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         projectId: string,
     ): Promise<void> {
-        await this.stopWhenChangeRequestsEnabled(projectId, undefined, user);
-        await this.unprotectedArchiveToggles(
-            featureNames,
-            projectId,
-            auditUser,
-        );
+        throw new Error("STUB");
     }
 
     async validateArchiveToggles(featureNames: string[]): Promise<{
         hasDeletedDependencies: boolean;
         parentsWithChildFeatures: string[];
     }> {
-        const hasDeletedDependencies =
-            await this.dependentFeaturesReadModel.haveDependencies(
-                featureNames,
-            );
-        const parentsWithChildFeatures =
-            await this.dependentFeaturesReadModel.getOrphanParents(
-                featureNames,
-            );
-        return {
-            hasDeletedDependencies,
-            parentsWithChildFeatures,
-        };
+        throw new Error("STUB");
     }
 
     async unprotectedArchiveToggles(
@@ -1771,30 +1257,7 @@ export class FeatureToggleService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await Promise.all([
-            this.validateFeaturesContext(featureNames, projectId),
-            this.validateNoOrphanParents(featureNames),
-        ]);
-
-        const features =
-            await this.featureToggleStore.getAllByNames(featureNames);
-        await this.featureToggleStore.batchArchive(featureNames);
-        await this.dependentFeaturesService.unprotectedDeleteFeaturesDependencies(
-            featureNames,
-            projectId,
-            auditUser,
-        );
-
-        await this.eventService.storeEvents(
-            features.map(
-                (feature) =>
-                    new FeatureArchivedEvent({
-                        featureName: feature.name,
-                        project: feature.project,
-                        auditUser,
-                    }),
-            ),
-        );
+        throw new Error("STUB");
     }
 
     async setToggleStaleness(
@@ -1803,29 +1266,7 @@ export class FeatureToggleService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.validateFeaturesContext(featureNames, projectId);
-
-        const features =
-            await this.featureToggleStore.getAllByNames(featureNames);
-        const relevantFeatures = features.filter(
-            (feature) => feature.stale !== stale,
-        );
-        const relevantFeatureNames = relevantFeatures.map(
-            (feature) => feature.name,
-        );
-        await this.featureToggleStore.batchStale(relevantFeatureNames, stale);
-
-        await this.eventService.storeEvents(
-            relevantFeatures.map(
-                (feature) =>
-                    new FeatureStaleEvent({
-                        stale: stale,
-                        project: projectId,
-                        featureName: feature.name,
-                        auditUser,
-                    }),
-            ),
-        );
+        throw new Error("STUB");
     }
 
     async bulkUpdateEnabled(
@@ -1837,19 +1278,7 @@ export class FeatureToggleService {
         user?: IUser,
         shouldActivateDisabledStrategies = false,
     ): Promise<void> {
-        await allSettledWithRejection(
-            featureNames.map((featureName) =>
-                this.updateEnabled(
-                    project,
-                    featureName,
-                    environment,
-                    enabled,
-                    auditUser,
-                    user,
-                    shouldActivateDisabledStrategies,
-                ),
-            ),
-        );
+        throw new Error("STUB");
     }
 
     async updateEnabled(
@@ -1916,29 +1345,19 @@ export class FeatureToggleService {
                 environment,
             );
             const hasDisabledStrategies = strategies.some(
-                (strategy) => strategy.disabled,
+                (strategy) => { throw new Error("STUB"); },
             );
 
             if (hasDisabledStrategies && shouldActivateDisabledStrategies) {
                 await Promise.all(
                     strategies.map((strategy) =>
-                        this.updateStrategy(
-                            strategy.id,
-                            { ...strategy, disabled: false },
-                            {
-                                environment,
-                                projectId: project,
-                                featureName,
-                            },
-                            auditUser,
-                            user,
-                        ),
+                        { throw new Error("STUB"); },
                     ),
                 );
             }
 
             const hasOnlyDisabledStrategies = strategies.every(
-                (strategy) => strategy.disabled,
+                (strategy) => { throw new Error("STUB"); },
             );
 
             const shouldCreate =
@@ -1996,42 +1415,7 @@ export class FeatureToggleService {
         newProject: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const changeRequestEnabled =
-            await this.changeRequestAccessReadModel.isChangeRequestsEnabledForProject(
-                newProject,
-            );
-        if (changeRequestEnabled) {
-            throw new ForbiddenError(
-                `Changing project not allowed. Project ${newProject} has change requests enabled.`,
-            );
-        }
-        if (
-            await this.dependentFeaturesReadModel.haveDependencies([
-                featureName,
-            ])
-        ) {
-            throw new ForbiddenError(
-                'Changing project not allowed. Feature has dependencies.',
-            );
-        }
-        const feature = await this.featureToggleStore.get(featureName);
-        if (feature === undefined) {
-            throw new NotFoundError(
-                `Could not find feature with name ${featureName}`,
-            );
-        }
-        const oldProject = feature.project;
-        feature.project = newProject;
-        await this.featureToggleStore.update(newProject, feature);
-
-        await this.eventService.storeEvent(
-            new FeatureChangeProjectEvent({
-                auditUser,
-                oldProject,
-                newProject,
-                featureName,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     // TODO: add project id.
@@ -2039,23 +1423,7 @@ export class FeatureToggleService {
         featureName: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.validateNoChildren(featureName);
-        const toggle = await this.featureToggleStore.get(featureName);
-        if (toggle === undefined) {
-            return; /// Do nothing, toggle is already deleted
-        }
-        const tags = await this.tagStore.getAllTagsForFeature(featureName);
-        await this.featureToggleStore.delete(featureName);
-
-        await this.eventService.storeEvent(
-            new FeatureDeletedEvent({
-                featureName,
-                project: toggle.project,
-                auditUser,
-                preData: toggle,
-                tags,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async deleteFeatures(
@@ -2063,42 +1431,7 @@ export class FeatureToggleService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.validateFeaturesContext(featureNames, projectId);
-        await this.validateNoOrphanParents(featureNames);
-
-        const features =
-            await this.featureToggleStore.getAllByNames(featureNames);
-        const eligibleFeatures = features.filter(
-            (toggle) => toggle.archivedAt !== null,
-        );
-        const eligibleFeatureNames = eligibleFeatures.map(
-            (toggle) => toggle.name,
-        );
-
-        if (eligibleFeatures.length === 0) {
-            return;
-        }
-
-        const tags = await this.tagStore.getAllByFeatures(eligibleFeatureNames);
-        await this.featureToggleStore.batchDelete(eligibleFeatureNames);
-
-        await this.eventService.storeEvents(
-            eligibleFeatures.map(
-                (feature) =>
-                    new FeatureDeletedEvent({
-                        featureName: feature.name,
-                        auditUser,
-                        project: feature.project,
-                        preData: feature,
-                        tags: tags
-                            .filter((tag) => tag.featureName === feature.name)
-                            .map((tag) => ({
-                                value: tag.tagValue,
-                                type: tag.tagType,
-                            })),
-                    }),
-            ),
-        );
+        throw new Error("STUB");
     }
 
     async reviveFeatures(
@@ -2106,33 +1439,7 @@ export class FeatureToggleService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.validateActiveProject(projectId);
-        await this.validateFeaturesContext(featureNames, projectId);
-
-        const features =
-            await this.featureToggleStore.getAllByNames(featureNames);
-        const eligibleFeatures = features.filter(
-            (toggle) => toggle.archivedAt !== null,
-        );
-        const eligibleFeatureNames = eligibleFeatures.map(
-            (toggle) => toggle.name,
-        );
-        await this.featureToggleStore.batchRevive(eligibleFeatureNames);
-
-        await this.featureToggleStore.disableAllEnvironmentsForFeatures(
-            eligibleFeatureNames,
-        );
-
-        await this.eventService.storeEvents(
-            eligibleFeatures.map(
-                (feature) =>
-                    new FeatureRevivedEvent({
-                        featureName: feature.name,
-                        auditUser,
-                        project: feature.project,
-                    }),
-            ),
-        );
+        throw new Error("STUB");
     }
 
     // TODO: add project id.
@@ -2140,22 +1447,7 @@ export class FeatureToggleService {
         featureName: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const feature = await this.featureToggleStore.get(featureName);
-        if (!feature) {
-            throw new NotFoundError(`Feature ${featureName} does not exist`);
-        }
-        await this.validateActiveProject(feature.project);
-        const toggle = await this.featureToggleStore.revive(featureName);
-        await this.featureToggleStore.disableAllEnvironmentsForFeatures([
-            featureName,
-        ]);
-        await this.eventService.storeEvent(
-            new FeatureRevivedEvent({
-                auditUser,
-                featureName,
-                project: toggle.project,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async getProjectId(name: string): Promise<string | undefined> {
@@ -2166,10 +1458,7 @@ export class FeatureToggleService {
         featureName: string,
         newProjectId: string,
     ): Promise<void> {
-        await this.featureStrategiesStore.setProjectForStrategiesBelongingToFeature(
-            featureName,
-            newProjectId,
-        );
+        throw new Error("STUB");
     }
 
     async updateVariants(
@@ -2179,25 +1468,7 @@ export class FeatureToggleService {
         user: IUser,
         auditUser: IAuditUser,
     ): Promise<FeatureToggle> {
-        const ft =
-            await this.featureStrategiesStore.getFeatureToggleWithVariantEnvs(
-                featureName,
-            );
-        const promises = ft.environments.map((env) =>
-            this.updateVariantsOnEnv(
-                featureName,
-                project,
-                env.name,
-                newVariants,
-                user,
-                auditUser,
-            ).then((resultingVariants) => {
-                env.variants = resultingVariants;
-            }),
-        );
-        await Promise.all(promises);
-        ft.variants = ft.environments[0].variants;
-        return ft;
+        throw new Error("STUB");
     }
 
     async updateVariantsOnEnv(
@@ -2208,31 +1479,7 @@ export class FeatureToggleService {
         user: IUser,
         auditUser: IAuditUser,
     ): Promise<IVariant[]> {
-        const oldVariants = await this.getVariantsForEnv(
-            featureName,
-            environment,
-        );
-
-        try {
-            const { newDocument } = await applyPatch(
-                deepClone(oldVariants),
-                newVariants,
-            );
-
-            return this.crProtectedSaveVariantsOnEnv(
-                project,
-                featureName,
-                environment,
-                newDocument,
-                user,
-                auditUser,
-                oldVariants,
-            );
-        } catch (e) {
-            throw new BadDataError(
-                `Could not apply provided patch: ${e.message}`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     async saveVariants(
@@ -2241,48 +1488,11 @@ export class FeatureToggleService {
         newVariants: IVariant[],
         auditUser: IAuditUser,
     ): Promise<FeatureToggle> {
-        await variantsArraySchema.validateAsync(newVariants);
-        const fixedVariants = this.fixVariantWeights(newVariants);
-        const environments =
-            await this.featureEnvironmentStore.getEnvironmentsForFeature(
-                featureName,
-            );
-        for (const env of environments) {
-            const oldVariants = env.variants || [];
-            await this.featureEnvironmentStore.setVariantsToFeatureEnvironments(
-                featureName,
-                [env.environment],
-                fixedVariants,
-            );
-            await this.eventService.storeEvent(
-                new EnvironmentVariantEvent({
-                    project,
-                    environment: env.environment,
-                    featureName,
-                    auditUser,
-                    oldVariants,
-                    newVariants: fixedVariants,
-                }),
-            );
-        }
-
-        const toggle = await this.featureToggleStore.get(featureName);
-        return toggle!;
+        throw new Error("STUB");
     }
 
     private async verifyLegacyVariants(featureName: string) {
-        const existingLegacyVariantsExist =
-            await this.featureEnvironmentStore.variantExists(featureName);
-        const enableLegacyVariants = this.flagResolver.isEnabled(
-            'enableLegacyVariants',
-        );
-        const useLegacyVariants =
-            existingLegacyVariantsExist || enableLegacyVariants;
-        if (!useLegacyVariants) {
-            throw new InvalidOperationError(
-                `Environment variants deprecated for feature: ${featureName}. Use strategy variants instead.`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     async saveVariantsOnEnv(
@@ -2293,15 +1503,7 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         oldVariants?: IVariant[],
     ): Promise<IVariant[]> {
-        await this.verifyLegacyVariants(featureName);
-        return this.legacySaveVariantsOnEnv(
-            projectId,
-            featureName,
-            environment,
-            newVariants,
-            auditUser,
-            oldVariants,
-        );
+        throw new Error("STUB");
     }
 
     async legacySaveVariantsOnEnv(
@@ -2351,15 +1553,7 @@ export class FeatureToggleService {
         auditUser: IAuditUser,
         oldVariants?: IVariant[],
     ): Promise<IVariant[]> {
-        await this.stopWhenChangeRequestsEnabled(projectId, environment, user);
-        return this.saveVariantsOnEnv(
-            projectId,
-            featureName,
-            environment,
-            newVariants,
-            auditUser,
-            oldVariants,
-        );
+        throw new Error("STUB");
     }
 
     async crProtectedSetVariantsOnEnvs(
@@ -2370,16 +1564,7 @@ export class FeatureToggleService {
         _user: IUser,
         auditUser: IAuditUser,
     ): Promise<IVariant[]> {
-        for (const env of environments) {
-            await this.stopWhenChangeRequestsEnabled(projectId, env);
-        }
-        return this.setVariantsOnEnvs(
-            projectId,
-            featureName,
-            environments,
-            newVariants,
-            auditUser,
-        );
+        throw new Error("STUB");
     }
 
     async setVariantsOnEnvs(
@@ -2389,43 +1574,12 @@ export class FeatureToggleService {
         newVariants: IVariant[],
         auditUser: IAuditUser,
     ): Promise<IVariant[]> {
-        await variantsArraySchema.validateAsync(newVariants);
-        const fixedVariants = this.fixVariantWeights(newVariants);
-        const oldVariants: {
-            [env: string]: IVariant[];
-        } = {};
-        for (const env of environments) {
-            const featureEnv = await this.featureEnvironmentStore.get({
-                featureName,
-                environment: env,
-            });
-            oldVariants[env] = featureEnv?.variants || [];
-        }
-
-        await this.eventService.storeEvents(
-            environments.map(
-                (environment) =>
-                    new EnvironmentVariantEvent({
-                        featureName,
-                        environment,
-                        project: projectId,
-                        oldVariants: oldVariants[environment],
-                        newVariants: fixedVariants,
-                        auditUser,
-                    }),
-            ),
-        );
-        await this.featureEnvironmentStore.setVariantsToFeatureEnvironments(
-            featureName,
-            environments,
-            fixedVariants,
-        );
-        return fixedVariants;
+        throw new Error("STUB");
     }
 
     fixVariantWeights(variants: IVariant[]): IVariant[] {
         let variableVariants = variants.filter((x) => {
-            return x.weightType === WeightType.VARIABLE;
+            throw new Error("STUB");
         });
 
         if (variants.length > 0 && variableVariants.length === 0) {
@@ -2435,10 +1589,10 @@ export class FeatureToggleService {
         }
 
         const fixedVariants = variants.filter((x) => {
-            return x.weightType === WeightType.FIX;
+            throw new Error("STUB");
         });
 
-        const fixedWeights = fixedVariants.reduce((a, v) => a + v.weight, 0);
+        const fixedWeights = fixedVariants.reduce((a, v) => { throw new Error("STUB"); }, 0);
 
         if (fixedWeights > 1000) {
             throw new BadDataError(
@@ -2452,16 +1606,11 @@ export class FeatureToggleService {
         let remainder = (1000 - fixedWeights) % variableVariants.length;
 
         variableVariants = variableVariants.map((x) => {
-            x.weight = averageWeight;
-            if (remainder > 0) {
-                x.weight += 1;
-                remainder--;
-            }
-            return x;
+            throw new Error("STUB");
         });
         return variableVariants
             .concat(fixedVariants)
-            .sort((a, b) => a.name.localeCompare(b.name));
+            .sort((a, b) => { throw new Error("STUB"); });
     }
 
     private async stopWhenChangeRequestsEnabled(
@@ -2522,32 +1671,11 @@ export class FeatureToggleService {
     }
 
     async updatePotentiallyStaleFeatures(): Promise<void> {
-        const potentiallyStaleFeatures =
-            await this.featureToggleStore.updatePotentiallyStaleFeatures();
-
-        if (potentiallyStaleFeatures.length > 0) {
-            return this.eventService.storeEvents(
-                potentiallyStaleFeatures
-                    .filter((feature) => feature.potentiallyStale)
-                    .map(
-                        ({ name, project }) =>
-                            new PotentiallyStaleOnEvent({
-                                featureName: name,
-                                auditUser: SYSTEM_USER_AUDIT,
-                                project,
-                            }),
-                    ),
-            );
-        }
+        throw new Error("STUB");
     }
 
     async setFeatureCreatedByUserIdFromEvents(): Promise<void> {
-        const updated = await this.featureToggleStore.setCreatedByUserId(100);
-        if (updated !== undefined) {
-            this.eventBus.emit(FEATURES_CREATED_BY_PROCESSED, {
-                updated,
-            });
-        }
+        throw new Error("STUB");
     }
 
     async addLinksFromTemplates(
@@ -2557,17 +1685,11 @@ export class FeatureToggleService {
     ) {
         const featureLinksFromTemplates = (
             await this.projectStore.getProjectLinkTemplates(projectId)
-        ).map((template) => ({
-            title: template.title,
-            url: template.urlTemplate
-                .replace(/{{project}}/g, projectId)
-                .replace(/{{feature}}/g, featureName),
-            featureName,
-        }));
+        ).map((template) => { throw new Error("STUB"); });
 
         return Promise.all(
             featureLinksFromTemplates.map((link) =>
-                this.featureLinkService.createLink(projectId, link, auditUser),
+                { throw new Error("STUB"); },
             ),
         );
     }

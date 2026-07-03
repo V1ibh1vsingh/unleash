@@ -11,9 +11,7 @@ import {
 export const createSettingService =
     (config: IUnleashConfig) =>
     (db: Db): SettingService => {
-        const settingStore = new SettingStore(db, config.getLogger);
-        const eventService = createEventsService(db, config);
-        return new SettingService({ settingStore }, config, eventService);
+        throw new Error("STUB");
     };
 
 export const createFakeSettingService = (

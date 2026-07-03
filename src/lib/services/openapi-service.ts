@@ -63,67 +63,13 @@ export class OpenApiService {
     }
 
     validPath(op: ApiOperation): RequestHandler {
-        // extract enterpriseOnly and release to avoid leaking into the OpenAPI spec
-        const { enterpriseOnly, release, ...openapiSpec } = op;
-        const { baseUriPath = '' } = this.config.server ?? {};
-        const openapiStaticAssets = `${baseUriPath}/openapi-static`;
-
-        const currentVersion = this.api.document.info.version;
-        const stability = calculateStability(release, currentVersion);
-        const summaryWithStability =
-            stability !== 'stable' && openapiSpec.summary
-                ? `[${stability.toUpperCase()}] ${openapiSpec.summary}`
-                : openapiSpec.summary;
-        const stabilityBadge =
-            stability !== 'stable'
-                ? `**[${stability.toUpperCase()}]** This API is in ${stability} state, which means it may change or be removed in the future.
-            `
-                : '';
-        const enterpriseBadge = enterpriseOnly
-            ? `![Unleash Enterprise](${openapiStaticAssets}/Enterprise.svg) **Enterprise feature**
-
-            `
-            : '';
-
-        const failDeprecated = (op.deprecated ?? false) && this.isDevelopment;
-
-        if (failDeprecated) {
-            return (req, res, _next) => {
-                this.logger.warn(
-                    `Deprecated endpoint: ${op.operationId} at ${req.path}`,
-                );
-                return res.status(410).json({
-                    message: `The endpoint ${op.operationId} at ${req.path} is deprecated and should not be used.`,
-                });
-            };
-        }
-        return this.api.validPath({
-            ...openapiSpec,
-            summary: summaryWithStability,
-            'x-stability-level': stability,
-            description:
-                `${enterpriseBadge}${stabilityBadge}${op.description}`.replaceAll(
-                    /\n\s*/g,
-                    '\n\n',
-                ),
-        });
+        throw new Error("STUB");
     }
 
     useDocs(app: Express): void {
         // Serve a filtered OpenAPI document that hides alpha endpoints from Swagger UI.
         app.get(`${this.docsPath()}.json`, (req, res, next) => {
-            try {
-                const doc = this.api.generateDocument(
-                    this.api.document,
-                    req.app._router || req.app.router,
-                    this.config.server.baseUriPath,
-                );
-                res.json(
-                    this.isDevelopment ? doc : this.removeAlphaOperations(doc),
-                );
-            } catch (error) {
-                next(error);
-            }
+            throw new Error("STUB");
         });
 
         app.use(this.api);
@@ -143,7 +89,7 @@ export class OpenApiService {
             }
 
             const entries = Object.entries(methods).filter(
-                ([, operation]) => getStabilityLevel(operation) !== 'alpha',
+                ([, operation]) => { throw new Error("STUB"); },
             );
 
             if (entries.length > 0) {
@@ -164,9 +110,7 @@ export class OpenApiService {
     registerCustomSchemas<T extends JsonSchemaProps>(
         schemas: Record<string, T>,
     ): void {
-        Object.entries(schemas).forEach(([name, schema]) => {
-            this.api.schema(name, removeJsonSchemaProps(schema));
-        });
+        throw new Error("STUB");
     }
 
     respondWithValidation<T, S = SchemaId>(
@@ -189,7 +133,7 @@ export class OpenApiService {
         }
 
         Object.entries(headers).forEach(([header, value]) => {
-            res.header(header, value);
+            throw new Error("STUB");
         });
 
         res.status(status).json(data);

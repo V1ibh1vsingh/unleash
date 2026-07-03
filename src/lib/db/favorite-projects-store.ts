@@ -35,26 +35,14 @@ export class FavoriteProjectsStore implements IFavoriteProjectsStore {
     constructor(db: Db, eventBus: EventEmitter, _getLogger: LogProvider) {
         this.db = db;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'favorite_projects',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async addFavoriteProject({
         userId,
         project,
     }: IFavoriteProjectKey): Promise<IFavoriteProject> {
-        const stop = this.timer('insertFavoriteProject');
-        const insertedProject = await this.db<IFavoriteProjectRow>(
-            T.FAVORITE_PROJECTS,
-        )
-            .insert({ project, user_id: userId })
-            .onConflict(['user_id', 'project'])
-            .merge()
-            .returning('*');
-        stop();
-        return rowToFavorite(insertedProject[0]);
+        throw new Error("STUB");
     }
 
     async delete({ userId, project }: IFavoriteProjectKey): Promise<void> {
@@ -66,9 +54,7 @@ export class FavoriteProjectsStore implements IFavoriteProjectsStore {
     }
 
     async deleteAll(): Promise<void> {
-        const stop = this.timer('deleteAll');
-        await this.db(T.FAVORITE_PROJECTS).del();
-        stop();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

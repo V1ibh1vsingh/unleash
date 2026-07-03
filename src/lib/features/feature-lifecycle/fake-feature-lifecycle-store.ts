@@ -13,17 +13,10 @@ export class FakeFeatureLifecycleStore implements IFeatureLifecycleStore {
     ): Promise<NewStage[]> {
         const results = await Promise.all(
             featureLifecycleStages.map(async (stage) => {
-                const success = await this.insertOne(stage);
-                if (success) {
-                    return {
-                        feature: stage.feature,
-                        stage: stage.stage,
-                    };
-                }
-                return null;
+                throw new Error("STUB");
             }),
         );
-        return results.filter((result) => result !== null) as NewStage[];
+        return results.filter((result) => { throw new Error("STUB"); }) as NewStage[];
     }
 
     private async insertOne(
@@ -56,21 +49,15 @@ export class FakeFeatureLifecycleStore implements IFeatureLifecycleStore {
     }
 
     async deleteAll(): Promise<void> {
-        this.lifecycles = {};
+        throw new Error("STUB");
     }
 
     async stageExists(stage: FeatureLifecycleStage): Promise<boolean> {
         const lifecycle = await this.get(stage.feature);
-        return Boolean(lifecycle.find((s) => s.stage === stage.stage));
+        return Boolean(lifecycle.find((s) => { throw new Error("STUB"); }));
     }
 
     async deleteStage(stage: FeatureLifecycleStage): Promise<void> {
-        if (!this.lifecycles[stage.feature]) {
-            return;
-        }
-        const updatedStages = this.lifecycles[stage.feature].filter(
-            (s) => s.stage !== stage.stage,
-        );
-        this.lifecycles[stage.feature] = updatedStages;
+        throw new Error("STUB");
     }
 }

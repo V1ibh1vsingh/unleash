@@ -9,15 +9,15 @@ export class FakeProjectReadModel implements IProjectReadModel {
         return Promise.resolve(null);
     }
     getProjectsForAdminUi(): Promise<ProjectForUi[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
     getProjectsForInsights(): Promise<ProjectForInsights[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
     getProjectsByUser(): Promise<string[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
     getProjectsFavoritedByUser(): Promise<string[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
 }

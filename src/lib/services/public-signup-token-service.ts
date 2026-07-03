@@ -52,9 +52,7 @@ export class PublicSignupTokenService {
     }
 
     private getUrl(secret: string): string {
-        return new URL(
-            `${this.unleashBase}/new-user?invite=${secret}`,
-        ).toString();
+        throw new Error("STUB");
     }
 
     public async get(secret: string): Promise<PublicSignupTokenSchema> {
@@ -66,7 +64,7 @@ export class PublicSignupTokenService {
     }
 
     public async getAllTokens(): Promise<PublicSignupTokenSchema[]> {
-        return this.store.getAll();
+        throw new Error("STUB");
     }
 
     public async validate(secret: string): Promise<boolean> {
@@ -93,62 +91,21 @@ export class PublicSignupTokenService {
         createUser: CreateInvitedUserSchema,
         auditUser: IAuditUser,
     ): Promise<IUser> {
-        const token = await this.get(secret);
-        if (token === undefined) {
-            throw new NotFoundError('Could not find token with that secret');
-        }
-        const user = await this.userService.createUser(
-            {
-                ...createUser,
-                rootRole: token.role.id,
-            },
-            auditUser,
-        );
-        await this.store.addTokenUser(secret, user.id);
-        await this.eventService.storeEvent(
-            new PublicSignupTokenUserAddedEvent({
-                auditUser: SYSTEM_USER_AUDIT,
-                data: { secret, userId: user.id },
-            }),
-        );
-        return user;
+        throw new Error("STUB");
     }
 
     public async createNewPublicSignupToken(
         tokenCreate: PublicSignupTokenCreateSchema,
         auditUser: IAuditUser,
     ): Promise<PublicSignupTokenSchema> {
-        const viewerRole = await this.roleStore.getRoleByName(RoleName.VIEWER);
-        const secret = this.generateSecretKey();
-        const url = this.getUrl(secret);
-        const cappedDate = this.getMinimumDate(
-            new Date(tokenCreate.expiresAt),
-            add(new Date(), { months: 1 }),
-        );
-        const newToken: IPublicSignupTokenCreate = {
-            name: tokenCreate.name,
-            expiresAt: cappedDate,
-            secret: secret,
-            roleId: viewerRole ? viewerRole.id : -1,
-            createdBy: auditUser.username,
-            url: url,
-        };
-        const token = await this.store.insert(newToken);
-
-        await this.eventService.storeEvent(
-            new PublicSignupTokenCreatedEvent({
-                auditUser,
-                data: token,
-            }),
-        );
-        return token;
+        throw new Error("STUB");
     }
 
     private generateSecretKey(): string {
-        return crypto.randomBytes(16).toString('hex');
+        throw new Error("STUB");
     }
 
     private getMinimumDate(date1: Date, date2: Date): Date {
-        return date1 < date2 ? date1 : date2;
+        throw new Error("STUB");
     }
 }

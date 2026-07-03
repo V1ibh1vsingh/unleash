@@ -5,25 +5,7 @@ import { UnleashError } from '../error/unleash-error.js';
 import { fromLegacyError } from '../error/from-legacy-error.js';
 import createError from 'http-errors';
 
-export const customJoi = joi.extend((j) => ({
-    type: 'isUrlFriendly',
-    base: j.string(),
-    messages: {
-        'isUrlFriendly.base': '{{#label}} must be URL friendly',
-    },
-    validate(value, helpers) {
-        // Base validation regardless of the rules applied
-        if (
-            encodeURIComponent(value) !== value ||
-            value === '..' ||
-            value === '.'
-        ) {
-            // Generate an error, state and options need to be passed
-            return { value, errors: helpers.error('isUrlFriendly.base') };
-        }
-        return undefined;
-    },
-}));
+export const customJoi = joi.extend((j) => { throw new Error("STUB"); });
 
 export const nameType = customJoi.isUrlFriendly().min(1).max(100).required();
 

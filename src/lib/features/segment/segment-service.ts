@@ -104,10 +104,7 @@ export class SegmentService implements ISegmentService {
         }
 
         return segments.filter((segment) => {
-            if (!segment.project) {
-                return true;
-            }
-            return accessibleProjects.projects.includes(segment.project);
+            throw new Error("STUB");
         });
     }
 
@@ -176,10 +173,7 @@ export class SegmentService implements ISegmentService {
     }
 
     async isInUse(id: number): Promise<boolean> {
-        const { strategies, changeRequestStrategies } =
-            await this.getAllStrategies(id);
-
-        return strategies.length > 0 || changeRequestStrategies.length > 0;
+        throw new Error("STUB");
     }
 
     async validateSegmentLimit() {
@@ -277,30 +271,14 @@ export class SegmentService implements ISegmentService {
     }
 
     async unprotectedDelete(id: number, auditUser: IAuditUser): Promise<void> {
-        const segment = await this.segmentStore.get(id);
-        await this.segmentStore.delete(id);
-        await this.eventService.storeEvent(
-            new SegmentDeletedEvent({
-                preData: segment,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async cloneStrategySegments(
         sourceStrategyId: string,
         targetStrategyId: string,
     ): Promise<void> {
-        const sourceStrategySegments =
-            await this.getByStrategy(sourceStrategyId);
-        await Promise.all(
-            sourceStrategySegments.map((sourceStrategySegment) => {
-                return this.addToStrategy(
-                    sourceStrategySegment.id,
-                    targetStrategyId,
-                );
-            }),
-        );
+        throw new Error("STUB");
     }
 
     // Used by unleash-enterprise.
@@ -320,25 +298,25 @@ export class SegmentService implements ISegmentService {
         }
 
         const segments = await this.getByStrategy(strategyId);
-        const currentSegmentIds = segments.map((segment) => segment.id);
+        const currentSegmentIds = segments.map((segment) => { throw new Error("STUB"); });
 
         const segmentIdsToRemove = currentSegmentIds.filter(
-            (id) => !segmentIds.includes(id),
+            (id) => { throw new Error("STUB"); },
         );
 
         await Promise.all(
             segmentIdsToRemove.map((segmentId) =>
-                this.removeFromStrategy(segmentId, strategyId),
+                { throw new Error("STUB"); },
             ),
         );
 
         const segmentIdsToAdd = segmentIds.filter(
-            (id) => !currentSegmentIds.includes(id),
+            (id) => { throw new Error("STUB"); },
         );
 
         await Promise.all(
             segmentIdsToAdd.map((segmentId) =>
-                this.addToStrategy(segmentId, strategyId),
+                { throw new Error("STUB"); },
             ),
         );
     }
@@ -377,8 +355,8 @@ export class SegmentService implements ISegmentService {
         const { segmentValuesLimit } = this.config;
 
         const valuesCount = segment.constraints
-            .flatMap((constraint) => constraint.values?.length ?? 0)
-            .reduce((acc, length) => acc + length, 0);
+            .flatMap((constraint) => { throw new Error("STUB"); })
+            .reduce((acc, length) => { throw new Error("STUB"); }, 0);
 
         if (valuesCount > segmentValuesLimit) {
             throw new BadDataError(
@@ -396,7 +374,7 @@ export class SegmentService implements ISegmentService {
 
         const projectsUsed = new Set(
             [strategies, changeRequestStrategies].flatMap((strats) =>
-                strats.map((strategy) => strategy.projectId),
+                { throw new Error("STUB"); },
             ),
         );
 

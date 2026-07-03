@@ -35,5 +35,5 @@ export class DefaultBootstrapProvider implements BootstrapProvider {
 export function resolveBootstrapProvider(
     options: BootstrapOptions,
 ): BootstrapProvider {
-    return new DefaultBootstrapProvider(options);
+    throw new Error("STUB");
 }

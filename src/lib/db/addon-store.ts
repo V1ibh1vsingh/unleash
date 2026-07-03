@@ -35,10 +35,7 @@ export default class AddonStore implements IAddonStore {
         this.db = db;
         this.logger = getLogger('addons-store.ts');
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'addons',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     destroy(): void {}
@@ -57,12 +54,7 @@ export default class AddonStore implements IAddonStore {
             .from(TABLE)
             .where({ id })
             .then((row) => {
-                stopTimer();
-                if (!row) {
-                    throw new NotFoundError('Could not find addon');
-                } else {
-                    return this.rowToAddon(row);
-                }
+                throw new Error("STUB");
             });
     }
 
@@ -100,7 +92,7 @@ export default class AddonStore implements IAddonStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     async exists(id: number): Promise<boolean> {

@@ -44,21 +44,7 @@ export class FeatureEvaluator {
         bootstrap = { data: [] },
         storageProvider = new InMemStorageProvider(),
     }: FeatureEvaluatorConfig) {
-        this.staticContext = { appName, environment };
-
-        const bootstrapProvider = resolveBootstrapProvider(bootstrap);
-
-        this.repository =
-            repository ||
-            new Repository({
-                appName,
-                bootstrapProvider,
-                storageProvider,
-            });
-
-        // setup client
-        const supportedStrategies = strategies.concat(defaultStrategies);
-        this.client = new Client(this.repository, supportedStrategies);
+        throw new Error("STUB");
     }
 
     async start(): Promise<void> {
@@ -122,7 +108,7 @@ export class FeatureEvaluator {
     }
 
     getFeatureToggleDefinition(toggleName: string): FeatureInterface {
-        return this.repository.getToggle(toggleName);
+        throw new Error("STUB");
     }
 
     getFeatureToggleDefinitions(): FeatureInterface[] {

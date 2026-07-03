@@ -35,32 +35,6 @@ export default class FeatureTypeService {
         newLifetimeDays: number | null,
         auditUser: IAuditUser,
     ): Promise<IFeatureType> {
-        // because our OpenAPI library does type coercion, any `null` values you
-        // pass in get converted to `0`.
-        const translatedLifetime =
-            newLifetimeDays === 0 ? null : newLifetimeDays;
-
-        const featureType = await this.featureTypeStore.get(id);
-
-        const result = await this.featureTypeStore.updateLifetime(
-            id,
-            translatedLifetime,
-        );
-
-        if (!featureType || !result) {
-            throw new NotFoundError(
-                `The feature type you tried to update ("${id}") does not exist.`,
-            );
-        }
-
-        await this.eventService.storeEvent(
-            new FeatureTypeUpdatedEvent({
-                auditUser,
-                data: { ...featureType, lifetimeDays: translatedLifetime },
-                preData: featureType,
-            }),
-        );
-
-        return result;
+        throw new Error("STUB");
     }
 }

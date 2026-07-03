@@ -33,42 +33,18 @@ export const schemaTyped = (
 export const createResponseSchema = (
     schemaName: string,
 ): OpenAPIV3.ResponseObject => {
-    return createResponseSchemas(schemaName, {
-        'application/json': schemaNamed(schemaName),
-    });
+    throw new Error("STUB");
 };
 
 export const createCsvResponseSchema = (
     schemaName: string,
     example: string,
 ): OpenAPIV3.ResponseObject => {
-    return createResponseSchemas(schemaName, {
-        'text/csv': { example, ...schemaTyped('string') },
-    });
+    throw new Error("STUB");
 };
 
 export const resourceCreatedResponseSchema = (
     schemaName: string,
 ): OpenAPIV3.ResponseObject => {
-    return {
-        headers: {
-            location: {
-                description: 'The location of the newly created resource.',
-                schema: {
-                    type: 'string',
-                    format: 'uri',
-                },
-            },
-        },
-        description: 'The resource was successfully created.',
-        content: {
-            'application/json': {
-                schema: {
-                    $ref: schemaName.startsWith('#')
-                        ? schemaName
-                        : `#/components/schemas/${schemaName}`,
-                },
-            },
-        },
-    };
+    throw new Error("STUB");
 };

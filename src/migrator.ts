@@ -24,20 +24,7 @@ export async function migrateDb(
     stopAt?: string,
 ): Promise<void> {
     return noDatabaseUrl(async () => {
-        const custom = {
-            ...cloneDbConfig(db),
-            connectionTimeoutMillis: secondsToMilliseconds(10),
-        };
-
-        // disable Intellij/WebStorm from setting verbose CLI argument to db-migrator
-        process.argv = process.argv.filter((it) => !it.includes('--verbose'));
-        const dbm = getInstance(true, {
-            cwd: __dirname,
-            config: { custom },
-            env: 'custom',
-        });
-
-        return dbm.up(stopAt);
+        throw new Error("STUB");
     });
 }
 
@@ -45,38 +32,13 @@ export async function requiresMigration({
     db,
 }: Pick<IUnleashConfig, 'db'>): Promise<boolean> {
     return noDatabaseUrl(async () => {
-        const custom = {
-            ...cloneDbConfig(db),
-            connectionTimeoutMillis: secondsToMilliseconds(10),
-        };
-
-        // disable Intellij/WebStorm from setting verbose CLI argument to db-migrator
-        process.argv = process.argv.filter((it) => !it.includes('--verbose'));
-        const dbm = getInstance(true, {
-            cwd: __dirname,
-            config: { custom },
-            env: 'custom',
-        });
-
-        const pendingMigrations = await dbm.check();
-        return pendingMigrations.length > 0;
+        throw new Error("STUB");
     });
 }
 
 // This exists to ease testing
 export async function resetDb({ db }: IUnleashConfig): Promise<void> {
     return noDatabaseUrl(async () => {
-        const custom = {
-            ...cloneDbConfig(db),
-            connectionTimeoutMillis: secondsToMilliseconds(10),
-        };
-
-        const dbm = getInstance(true, {
-            cwd: __dirname,
-            config: { custom },
-            env: 'custom',
-        });
-
-        return dbm.reset();
+        throw new Error("STUB");
     });
 }

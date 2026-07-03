@@ -15,7 +15,7 @@ export class FakeFeatureLifecycleReadModel
         return Promise.resolve([]);
     }
     getStageCount(): Promise<StageCount[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
     getStageCountByProject(): Promise<StageCountByProject[]> {
         return Promise.resolve([]);
@@ -23,6 +23,6 @@ export class FakeFeatureLifecycleReadModel
     findCurrentStage(
         _feature: string,
     ): Promise<IFeatureLifecycleStage | undefined> {
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 }

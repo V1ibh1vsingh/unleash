@@ -11,8 +11,7 @@ class HealthService {
     }
 
     async dbIsUp(): Promise<boolean> {
-        const row = await this.featureTypeStore.getAll();
-        return row.length > 0;
+        throw new Error("STUB");
     }
 }
 

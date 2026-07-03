@@ -47,55 +47,21 @@ class StrategyService {
         strategyName: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const strategy = await this.strategyStore.get(strategyName);
-        await this._validateEditable(strategy);
-        await this.strategyStore.delete(strategyName);
-        await this.eventService.storeEvent(
-            new StrategyDeletedEvent({
-                data: {
-                    name: strategyName,
-                },
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async deprecateStrategy(
         strategyName: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        if (await this.strategyStore.exists(strategyName)) {
-            // Check existence
-            await this.strategyStore.deprecateStrategy({ name: strategyName });
-            await this.eventService.storeEvent(
-                new StrategyDeprecatedEvent({
-                    data: {
-                        name: strategyName,
-                    },
-                    auditUser,
-                }),
-            );
-        } else {
-            throw new NotFoundError(
-                `Could not find strategy with name ${strategyName}`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     async reactivateStrategy(
         strategyName: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.strategyStore.get(strategyName); // Check existence
-        await this.strategyStore.reactivateStrategy({ name: strategyName });
-        await this.eventService.storeEvent(
-            new StrategyReactivatedEvent({
-                data: {
-                    name: strategyName,
-                },
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async createStrategy(
@@ -137,16 +103,7 @@ class StrategyService {
         data: Pick<IStrategy, 'name'>,
     ): Promise<Pick<IStrategy, 'name'>> {
         return new Promise((resolve, reject) => {
-            this.strategyStore
-                .get(data.name)
-                .then(() =>
-                    reject(
-                        new NameExistsError(
-                            `Strategy with name ${data.name} already exist!`,
-                        ),
-                    ),
-                )
-                .catch(() => resolve(data));
+            throw new Error("STUB");
         });
     }
 

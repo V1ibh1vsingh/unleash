@@ -83,45 +83,24 @@ export class FeatureLifecycleService {
 
     listen() {
         this.eventStore.on(FEATURE_CREATED, async (event) => {
-            await this.featureInitialized(event.featureName);
+            throw new Error("STUB");
         });
         this.eventBus.on(
             CLIENT_METRICS_ADDED,
             async (events: IClientMetricsEnv[]) => {
-                if (events.length > 0) {
-                    if (this.flagResolver.isEnabled('optimizeLifecycle')) {
-                        await this.handleBulkMetrics(events);
-                    } else {
-                        const groupedByEnvironment = groupBy(
-                            events,
-                            'environment',
-                        );
-
-                        for (const [environment, metrics] of Object.entries(
-                            groupedByEnvironment,
-                        )) {
-                            const features = metrics.map(
-                                (metric) => metric.featureName,
-                            );
-                            await this.featuresReceivedMetrics(
-                                features,
-                                environment,
-                            );
-                        }
-                    }
-                }
+                throw new Error("STUB");
             },
         );
         this.eventStore.on(FEATURE_ARCHIVED, async (event) => {
-            await this.featureArchived(event.featureName);
+            throw new Error("STUB");
         });
         this.eventStore.on(FEATURE_REVIVED, async (event) => {
-            await this.featureRevived(event.featureName);
+            throw new Error("STUB");
         });
     }
 
     async getFeatureLifecycle(feature: string): Promise<FeatureLifecycleView> {
-        return this.featureLifecycleStore.get(feature);
+        throw new Error("STUB");
     }
 
     private async featureInitialized(feature: string) {
@@ -136,14 +115,14 @@ export class FeatureLifecycleService {
         stage: 'live' | 'pre-live',
     ) {
         const newlyEnteredStages = await this.featureLifecycleStore.insert(
-            features.map((feature) => ({ feature, stage })),
+            features.map((feature) => { throw new Error("STUB"); }),
         );
         this.recordStagesEntered(newlyEnteredStages);
     }
 
     private recordStagesEntered(newlyEnteredStages: NewStage[]) {
         newlyEnteredStages.forEach(({ stage, feature }) => {
-            this.eventBus.emit(STAGE_ENTERED, { stage, feature });
+            throw new Error("STUB");
         });
     }
 
@@ -165,8 +144,8 @@ export class FeatureLifecycleService {
                         env.name,
                     );
                 const enabledFeatures = featureEnv
-                    .filter((feature) => feature.enabled)
-                    .map((feature) => feature.featureName);
+                    .filter((feature) => { throw new Error("STUB"); })
+                    .map((feature) => { throw new Error("STUB"); });
                 await this.stageReceivedMetrics(enabledFeatures, 'live');
             }
         } catch (e) {
@@ -208,14 +187,14 @@ export class FeatureLifecycleService {
     }
 
     private extractUniqueEnvironmentsAndFeatures(events: IClientMetricsEnv[]) {
-        const environments = [...new Set(events.map((e) => e.environment))];
-        const allFeatures = [...new Set(events.map((e) => e.featureName))];
+        const environments = [...new Set(events.map((e) => { throw new Error("STUB"); }))];
+        const allFeatures = [...new Set(events.map((e) => { throw new Error("STUB"); }))];
         return { environments, allFeatures };
     }
 
     private async buildEnvironmentMap(): Promise<Map<string, IEnvironment>> {
         const allEnvs = await this.environmentStore.getAll();
-        return new Map(allEnvs.map((env) => [env.name, env]));
+        return new Map(allEnvs.map((env) => { throw new Error("STUB"); }));
     }
 
     private async buildFeatureEnvironmentMap(allFeatures: string[]) {
@@ -227,13 +206,7 @@ export class FeatureLifecycleService {
         >();
 
         allFeatureEnvs.forEach((fe) => {
-            if (!featureEnvMap.has(fe.environment)) {
-                featureEnvMap.set(fe.environment, new Map());
-            }
-            const envMap = featureEnvMap.get(fe.environment);
-            if (envMap) {
-                envMap.set(fe.featureName, fe);
-            }
+            throw new Error("STUB");
         });
 
         return featureEnvMap;
@@ -280,23 +253,20 @@ export class FeatureLifecycleService {
         environment: string,
     ): string[] {
         return events
-            .filter((e) => e.environment === environment)
-            .map((e) => e.featureName);
+            .filter((e) => { throw new Error("STUB"); })
+            .map((e) => { throw new Error("STUB"); });
     }
 
     private createPreLiveStages(
         features: string[],
     ): Array<{ feature: string; stage: 'pre-live' }> {
-        return features.map((feature) => ({
-            feature,
-            stage: 'pre-live' as const,
-        }));
+        return features.map((feature) => { throw new Error("STUB"); });
     }
 
     private createLiveStages(
         features: string[],
     ): Array<{ feature: string; stage: 'live' }> {
-        return features.map((feature) => ({ feature, stage: 'live' as const }));
+        return features.map((feature) => { throw new Error("STUB"); });
     }
 
     private getEnabledFeaturesForEnvironment(
@@ -306,8 +276,7 @@ export class FeatureLifecycleService {
     ): string[] {
         const envFeatureEnvs = featureEnvMap.get(environment) ?? new Map();
         return features.filter((feature) => {
-            const fe = envFeatureEnvs.get(feature);
-            return fe?.enabled;
+            throw new Error("STUB");
         });
     }
 
@@ -317,23 +286,7 @@ export class FeatureLifecycleService {
         status: FeatureLifecycleCompletedSchema,
         auditUser: IAuditUser,
     ) {
-        const result = await this.featureLifecycleStore.insert([
-            {
-                feature,
-                stage: 'completed',
-                status: status.status,
-                statusValue: status.statusValue,
-            },
-        ]);
-        this.recordStagesEntered(result);
-        await this.eventService.storeEvent(
-            new FeatureCompletedEvent({
-                project: projectId,
-                featureName: feature,
-                data: { ...status, kept: status.status === 'kept' },
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     public async featureUncompleted(
@@ -341,17 +294,7 @@ export class FeatureLifecycleService {
         projectId: string,
         auditUser: IAuditUser,
     ) {
-        await this.featureLifecycleStore.deleteStage({
-            feature,
-            stage: 'completed',
-        });
-        await this.eventService.storeEvent(
-            new FeatureUncompletedEvent({
-                project: projectId,
-                featureName: feature,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     private async featureArchived(feature: string) {

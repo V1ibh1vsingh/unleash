@@ -52,49 +52,20 @@ export default class ProjectHealthService {
             this.featureToggleStore,
         );
         this.timer = (functionName: string) =>
-            metricsHelper.wrapTimer(eventBus, FUNCTION_TIME, {
-                className: 'ProjectHealthService',
-                functionName,
-            });
+            { throw new Error("STUB"); };
     }
 
     async getProjectHealthReport(
         projectId: string,
     ): Promise<IProjectHealthReport> {
-        const featureTypes = await this.featureTypeStore.getAll();
-
-        const overview = await this.projectService.getProjectHealth(
-            projectId,
-            false,
-            undefined,
-        );
-
-        const healthRating = calculateProjectHealth(
-            overview.features,
-            featureTypes,
-        );
-
-        return {
-            ...overview,
-            ...healthRating,
-        };
+        throw new Error("STUB");
     }
 
     async setHealthRating(batchSize = 1): Promise<void> {
-        const projects = await this.projectStore.getAll();
-
-        void batchExecute(projects, batchSize, 5000, (project) =>
-            this.setProjectHealthRating(project.id),
-        );
+        throw new Error("STUB");
     }
 
     async setProjectHealthRating(projectId: string): Promise<void> {
-        const stopTimer = this.timer('setProjectHealthRating');
-        const newHealth = await this.calculateHealthRating({ id: projectId });
-        await this.projectStore.updateHealth({
-            id: projectId,
-            health: newHealth,
-        });
-        stopTimer();
+        throw new Error("STUB");
     }
 }

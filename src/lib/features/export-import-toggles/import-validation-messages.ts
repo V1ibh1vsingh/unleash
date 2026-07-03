@@ -57,7 +57,7 @@ export class ImportValidationMessages {
             errors.push({
                 message:
                     'We detected the following custom strategy that needs to be created first:',
-                affectedItems: strategies.map((strategy) => strategy.name),
+                affectedItems: strategies.map((strategy) => { throw new Error("STUB"); }),
             });
         }
         if (contextFields.length > 0) {
@@ -65,7 +65,7 @@ export class ImportValidationMessages {
                 message:
                     'We detected the following context fields that do not have matching legal values with the imported ones:',
                 affectedItems: contextFields.map(
-                    (contextField) => contextField.name,
+                    (contextField) => { throw new Error("STUB"); },
                 ),
             });
         }

@@ -28,22 +28,11 @@ export default class SessionStore implements ISessionStore {
     }
 
     async getActiveSessions(): Promise<ISession[]> {
-        const rows = await this.db<ISessionRow>(TABLE)
-            .whereNull('expired')
-            .orWhere('expired', '>', new Date())
-            .orderBy('created_at', 'desc');
-        return rows.map(this.rowToSession);
+        throw new Error("STUB");
     }
 
     async getSessionsForUser(userId: number): Promise<ISession[]> {
-        const rows = await this.db<ISessionRow>(TABLE).whereRaw(
-            "(sess -> 'user' ->> 'id')::int = ?",
-            [userId],
-        );
-        if (rows && rows.length > 0) {
-            return rows.map(this.rowToSession);
-        }
-        return [];
+        throw new Error("STUB");
     }
 
     async get(sid: string): Promise<ISession> {
@@ -57,19 +46,14 @@ export default class SessionStore implements ISessionStore {
     }
 
     async deleteSessionsForUser(userId: number): Promise<void> {
-        await this.db<ISessionRow>(TABLE)
-            .whereRaw("(sess -> 'user' ->> 'id')::int = ?", [userId])
-            .del();
+        throw new Error("STUB");
     }
 
     async deleteSessionsForUserExcept(
         userId: number,
         keepSid: string,
     ): Promise<void> {
-        await this.db<ISessionRow>(TABLE)
-            .whereRaw("(sess -> 'user' ->> 'id')::int = ?", [userId])
-            .andWhereNot('sid', keepSid)
-            .del();
+        throw new Error("STUB");
     }
 
     async delete(sid: string): Promise<void> {
@@ -77,21 +61,11 @@ export default class SessionStore implements ISessionStore {
     }
 
     async insertSession(data: Omit<ISession, 'createdAt'>): Promise<ISession> {
-        const row = await this.db<ISessionRow>(TABLE)
-            .insert({
-                sid: data.sid,
-                sess: JSON.stringify(data.sess),
-                expired: data.expired || addDays(Date.now(), 1),
-            })
-            .returning<ISessionRow>(['sid', 'sess', 'created_at', 'expired']);
-        if (row) {
-            return this.rowToSession(row);
-        }
-        throw new Error('Could not insert session');
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -125,20 +99,10 @@ export default class SessionStore implements ISessionStore {
             .count('* as count')
             .groupBy('user_id');
 
-        return rows.map((row) => ({
-            userId: Number(row.user_id),
-            count: Number(row.count),
-        }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getMaxSessionsCount(): Promise<number> {
-        const result = await this.db(TABLE)
-            .select(this.db.raw("sess->'user'->>'id' AS user_id"))
-            .count('* as count')
-            .groupBy('user_id')
-            .orderBy('count', 'desc')
-            .first();
-
-        return result ? Number(result.count) : 0;
+        throw new Error("STUB");
     }
 }

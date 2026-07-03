@@ -77,79 +77,13 @@ export class UiConfigService {
     }
 
     async getMaxSessionsCount(): Promise<number> {
-        if (this.flagResolver.isEnabled('showUserDeviceCount')) {
-            return this.sessionService.getMaxSessionsCount();
-        }
-        return 0;
+        throw new Error("STUB");
     }
 
     async getUiConfig(
         user: Pick<IUser, 'id' | 'email'>,
         sessionId?: string,
     ): Promise<UiConfigSchema> {
-        const [
-            frontendSettings,
-            simpleAuthSettings,
-            maintenanceMode,
-            maxSessionsCount,
-            impactMetrics,
-        ] = await Promise.all([
-            this.frontendApiService.getFrontendSettings(false),
-            this.settingService.get<SimpleAuthSettings>(simpleAuthSettingsKey),
-            this.maintenanceService.isMaintenanceMode(),
-            this.getMaxSessionsCount(),
-            this.impactMetricsAvailabilityResolver.resolve(),
-        ]);
-
-        const disablePasswordAuth =
-            simpleAuthSettings?.disabled ||
-            this.config.authentication.type === IAuthType.NONE;
-
-        const hashedEmail = user.email ? hashValue(user.email) : undefined;
-
-        // Hash the raw sessionID (a credential) before exposing it; safe
-        // unsalted because the sessionID is high-entropy.
-        const analyticsSessionId = sessionId ? hashValue(sessionId) : undefined;
-
-        const expFlags = this.config.flagResolver.getAll({
-            email: hashedEmail,
-            ...(analyticsSessionId ? { sessionId: analyticsSessionId } : {}),
-        });
-
-        const flags = {
-            ...this.config.ui.flags,
-            ...expFlags,
-        };
-
-        const unleashContext = {
-            ...this.flagResolver.getStaticContext(),
-            ...(hashedEmail ? { email: hashedEmail } : {}),
-            userId: user.id,
-            ...(analyticsSessionId ? { sessionId: analyticsSessionId } : {}),
-        };
-        const uiConfig: UiConfigSchema = {
-            ...this.config.ui,
-            flags,
-            version,
-            emailEnabled: this.emailService.isEnabled(),
-            edgeUrl: this.config.server.edgeUrl,
-            unleashUrl: this.config.server.unleashUrl,
-            logRocketAppId: this.config.server.logRocketAppId,
-            baseUriPath: this.config.server.baseUriPath,
-            authenticationType: this.config.authentication?.type,
-            frontendApiOrigins: frontendSettings.frontendApiOrigins,
-            versionInfo: await this.versionService.getVersionInfo(),
-            prometheusAPIAvailable: this.config.prometheusApi !== undefined,
-            impactMetrics,
-            resourceLimits:
-                await this.resourceLimitsService.getResourceLimits(),
-            disablePasswordAuth,
-            maintenanceMode,
-            feedbackUriPath: this.config.feedbackUriPath,
-            maxSessionsCount,
-            unleashContext: unleashContext,
-        };
-
-        return uiConfig;
+        throw new Error("STUB");
     }
 }

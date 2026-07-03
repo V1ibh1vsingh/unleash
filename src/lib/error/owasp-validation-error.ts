@@ -12,13 +12,7 @@ class OwaspValidationError extends UnleashError {
     private details: [ValidationError];
 
     constructor(testResult: TestResult) {
-        const details = {
-            validationErrors: testResult.errors,
-            message: testResult.errors[0],
-        };
-        super(testResult.errors[0]);
-
-        this.details = [details];
+        throw new Error("STUB");
     }
 
     toJSON(): ApiErrorSchema {

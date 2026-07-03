@@ -24,10 +24,7 @@ export const extractUserIdFromUser = (user: IUser | IApiUser) =>
 export const extractUserId = (req: IAuthRequest | IApiRequest) =>
     extractUserIdFromUser(req.user);
 
-export const extractUserInfo = (req: IAuthRequest | IApiRequest) => ({
-    id: extractUserId(req),
-    username: extractUsername(req),
-});
+export const extractUserInfo = (req: IAuthRequest | IApiRequest) => { throw new Error("STUB"); };
 
 export const extractAuditInfoFromUser = (
     user: IUser | IApiUser,

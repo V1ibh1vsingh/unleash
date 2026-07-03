@@ -63,12 +63,7 @@ export class UnknownFlagsStore implements IUnknownFlagsStore {
         if (!flags.length) return;
 
         const rows = flags.map(
-            ({ name, appName, lastSeenAt, environment }) => ({
-                name,
-                app_name: appName,
-                seen_at: lastSeenAt,
-                environment,
-            }),
+            ({ name, appName, lastSeenAt, environment }) => { throw new Error("STUB"); },
         );
 
         for (let i = 0; i < rows.length; i += MAX_INSERT_BATCH_SIZE) {
@@ -90,13 +85,7 @@ export class UnknownFlagsStore implements IUnknownFlagsStore {
     async getAll({ limit, orderBy }: QueryParams = {}): Promise<UnknownFlag[]> {
         const base = this.db
             .with('base', (qb) =>
-                qb
-                    .from(`${TABLE} as uf`)
-                    .leftJoin('features as f', 'f.name', 'uf.name')
-                    .whereNull('f.name')
-                    .select('uf.name', 'uf.app_name', 'uf.environment')
-                    .max({ seen_at: 'uf.seen_at' })
-                    .groupBy('uf.name', 'uf.app_name', 'uf.environment'),
+                { throw new Error("STUB"); },
             )
             .select(
                 'b.name',
@@ -129,25 +118,7 @@ export class UnknownFlagsStore implements IUnknownFlagsStore {
         const rows = await q;
 
         return rows.map((r) => {
-            const reportsObj = r.reports ?? {};
-            const reports = Object.entries(reportsObj).map(
-                ([appName, envs]) => ({
-                    appName,
-                    environments: Object.entries(
-                        envs as Record<string, Date>,
-                    ).map(([environment, seenAt]) => ({
-                        environment,
-                        seenAt: new Date(seenAt),
-                    })),
-                }),
-            );
-
-            return {
-                name: r.name,
-                lastSeenAt: r.last_seen_at,
-                lastEventAt: r.last_event_at,
-                reports,
-            };
+            throw new Error("STUB");
         });
     }
 
@@ -158,7 +129,7 @@ export class UnknownFlagsStore implements IUnknownFlagsStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).delete();
+        throw new Error("STUB");
     }
 
     async count({ unique }: CountParams = {}): Promise<number> {

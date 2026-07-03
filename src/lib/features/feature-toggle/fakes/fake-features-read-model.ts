@@ -27,7 +27,7 @@ export class FakeFeaturesReadModel implements IFeaturesReadModel {
         _featureName: string,
         _projectId: string,
     ): Promise<boolean> {
-        return Promise.resolve(this.existsInProjectValue);
+        throw new Error("STUB");
     }
 
     featuresInTheSameProject(

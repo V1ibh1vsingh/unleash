@@ -27,10 +27,7 @@ export default class TagTypeStore implements ITagTypeStore {
         this.db = db;
         this.logger = getLogger('tag-type-store.ts');
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'tag-type',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async getAll(): Promise<ITagType[]> {
@@ -47,12 +44,7 @@ export default class TagTypeStore implements ITagTypeStore {
             .from(TABLE)
             .where({ name })
             .then((row) => {
-                stopTimer();
-                if (!row) {
-                    throw new NotFoundError('Could not find tag-type');
-                } else {
-                    return this.rowToTagType(row);
-                }
+                throw new Error("STUB");
             });
     }
 
@@ -80,21 +72,11 @@ export default class TagTypeStore implements ITagTypeStore {
     }
 
     async deleteAll(): Promise<void> {
-        const stopTimer = this.timer('deleteAll');
-        await this.db(TABLE).del();
-        stopTimer();
+        throw new Error("STUB");
     }
 
     async bulkImport(tagTypes: ITagType[]): Promise<ITagType[]> {
-        const rows = await this.db(TABLE)
-            .insert(tagTypes)
-            .returning(COLUMNS)
-            .onConflict('name')
-            .ignore();
-        if (rows.length > 0) {
-            return rows;
-        }
-        return [];
+        throw new Error("STUB");
     }
 
     async updateTagType({
@@ -103,11 +85,7 @@ export default class TagTypeStore implements ITagTypeStore {
         icon,
         color,
     }: ITagType): Promise<void> {
-        const stopTimer = this.timer('updateTagType');
-        await this.db(TABLE)
-            .where({ name })
-            .update({ description, icon, color });
-        stopTimer();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

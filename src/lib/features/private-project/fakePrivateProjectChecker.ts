@@ -9,7 +9,7 @@ export class FakePrivateProjectChecker implements IPrivateProjectChecker {
         _userId: number,
         projects: string[],
     ): Promise<string[]> {
-        return projects;
+        throw new Error("STUB");
     }
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getUserAccessibleProjects(_userId: number): Promise<ProjectAccess> {

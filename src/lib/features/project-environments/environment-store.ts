@@ -60,35 +60,13 @@ function mapRow(row: IEnvironmentsTable): IEnvironment {
 function mapRowWithCounts(
     row: IEnvironmentsWithCountsTable,
 ): IProjectEnvironment {
-    return {
-        ...mapRow(row),
-        projectCount: row.project_count
-            ? Number.parseInt(row.project_count, 10)
-            : 0,
-        apiTokenCount: row.api_token_count
-            ? Number.parseInt(row.api_token_count, 10)
-            : 0,
-        enabledToggleCount: row.enabled_toggle_count
-            ? Number.parseInt(row.enabled_toggle_count, 10)
-            : 0,
-    };
+    throw new Error("STUB");
 }
 
 function mapRowWithProjectCounts(
     row: IEnvironmentsWithProjectCountsTable,
 ): IProjectEnvironment {
-    return {
-        ...mapRow(row),
-        projectApiTokenCount: row.project_api_token_count
-            ? Number.parseInt(row.project_api_token_count, 10)
-            : 0,
-        projectEnabledToggleCount: row.project_enabled_toggle_count
-            ? Number.parseInt(row.project_enabled_toggle_count, 10)
-            : 0,
-        defaultStrategy: row.project_default_strategy
-            ? (row.project_default_strategy as any)
-            : undefined,
-    };
+    throw new Error("STUB");
 }
 
 function fieldToRow(env: IEnvironment): IEnvironmentsTable {
@@ -129,40 +107,28 @@ export default class EnvironmentStore implements IEnvironmentStore {
         this.isOss = isOss;
         this.flagResolver = flagResolver;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'environment',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async importEnvironments(
         environments: IEnvironment[],
     ): Promise<IEnvironment[]> {
-        const rows = await this.db(TABLE)
-            .insert(environments.map(fieldToRow))
-            .returning(COLUMNS)
-            .onConflict('name')
-            .ignore();
-
-        return rows.map(mapRow);
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     count(): Promise<number> {
         return this.db
             .from(TABLE)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     getMaxSortOrder(): Promise<number> {
-        return this.db
-            .from(TABLE)
-            .max('sort_order')
-            .then((res) => Number(res[0].max));
+        throw new Error("STUB");
     }
 
     async get(key: string): Promise<IEnvironment> {
@@ -235,59 +201,14 @@ export default class EnvironmentStore implements IEnvironmentStore {
     async getChangeRequestEnvironments(
         environments: string[],
     ): Promise<{ name: string; requiredApprovals: number }[]> {
-        const stopTimer = this.timer('getChangeRequestEnvironments');
-        const rows = await this.db<IEnvironmentsTable>(TABLE)
-            .select('name', 'required_approvals')
-            .whereIn('name', environments)
-            .andWhere('required_approvals', '>', 0);
-        stopTimer();
-        return rows.map((row) => ({
-            name: row.name,
-            requiredApprovals: row.required_approvals || 1,
-        }));
+        throw new Error("STUB");
     }
 
     async getProjectEnvironments(
         projectId: string,
         query?: Object,
     ): Promise<IProjectEnvironment[]> {
-        const stopTimer = this.timer('getProjectEnvironments');
-        let qB = this.db<IEnvironmentsWithProjectCountsTable>(TABLE)
-            .select(
-                '*',
-                this.db.raw(
-                    '(SELECT COUNT(*) FROM api_tokens LEFT JOIN api_token_project ON api_tokens.secret = api_token_project.secret WHERE api_tokens.environment = environments.name AND (project = :projectId OR project IS null)) as project_api_token_count',
-                    { projectId },
-                ),
-                this.db.raw(
-                    '(SELECT COUNT(*) FROM feature_environments INNER JOIN features on feature_environments.feature_name = features.name WHERE enabled=true AND feature_environments.environment = environments.name AND project = :projectId) as project_enabled_toggle_count',
-                    { projectId },
-                ),
-                this.db.raw(
-                    '(SELECT default_strategy FROM project_environments pe WHERE pe.environment_name = environments.name AND pe.project_id = :projectId) as project_default_strategy',
-                    { projectId },
-                ),
-            )
-            .orderBy([
-                { column: 'sort_order', order: 'asc' },
-                { column: 'created_at', order: 'asc' },
-            ]);
-
-        if (query) {
-            qB = qB.where(query);
-        }
-        if (this.isOss) {
-            qB = qB.whereIn('environments.name', [
-                'default',
-                'production',
-                'development',
-            ]);
-        }
-
-        const rows = await qB;
-        stopTimer();
-
-        return rows.map(mapRowWithProjectCounts);
+        throw new Error("STUB");
     }
 
     async exists(name: string): Promise<boolean> {
@@ -306,27 +227,15 @@ export default class EnvironmentStore implements IEnvironmentStore {
         field: string,
         value: string | number,
     ): Promise<void> {
-        await this.db<IEnvironmentsTable>(TABLE)
-            .update({
-                [field]: value,
-            })
-            .where({ name: id, protected: false });
+        throw new Error("STUB");
     }
 
     async updateSortOrder(id: string, value: number): Promise<void> {
-        await this.db<IEnvironmentsTable>(TABLE)
-            .update({
-                sort_order: value,
-            })
-            .where({ name: id });
+        throw new Error("STUB");
     }
 
     async toggle(name: string, enabled: boolean): Promise<void> {
-        await this.db(TABLE)
-            .update({
-                enabled,
-            })
-            .where({ name });
+        throw new Error("STUB");
     }
 
     async update(
@@ -356,7 +265,7 @@ export default class EnvironmentStore implements IEnvironmentStore {
             })
             .whereIn(
                 'name',
-                environments.map((env) => env.name),
+                environments.map((env) => { throw new Error("STUB"); }),
             );
     }
 
@@ -367,7 +276,7 @@ export default class EnvironmentStore implements IEnvironmentStore {
             })
             .whereIn(
                 'name',
-                environments.map((env) => env.name),
+                environments.map((env) => { throw new Error("STUB"); }),
             );
     }
 

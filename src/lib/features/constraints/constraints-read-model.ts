@@ -18,7 +18,7 @@ import {
 import type { IConstraintsReadModel } from './constraints-read-model-type.js';
 
 const oneOf = (values: string[], match: string) => {
-    return values.some((value) => value === match);
+    return values.some((value) => { throw new Error("STUB"); });
 };
 
 type IContextFieldStoreReadModel = Pick<IContextFieldStore, 'get' | 'exists'>;
@@ -33,7 +33,7 @@ export class ConstraintsReadModel implements IConstraintsReadModel {
         constraints: IConstraint[],
     ): Promise<IConstraint[]> {
         const validations = constraints.map((constraint) => {
-            return this.validateConstraint(constraint);
+            throw new Error("STUB");
         });
 
         return Promise.all(validations);

@@ -29,46 +29,13 @@ export default class ProjectHealthReport extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'projectHealthService' | 'openApiService'>,
     ) {
-        super(config);
-        this.logger = config.getLogger('/admin-api/project/health-report');
-        this.projectHealthService = projectHealthService;
-        this.openApiService = openApiService;
-
-        this.route({
-            method: 'get',
-            path: '/:projectId/health-report',
-            handler: this.getProjectHealthReport,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Projects'],
-                    deprecated: true,
-                    release: { stable: '4.13.0' },
-                    operationId: 'getProjectHealthReport',
-                    summary: 'Get a health report for a project.',
-                    description:
-                        'This endpoint returns a health report for the specified project. This data is used for [the technical debt insights](https://docs.getunleash.io/concepts/technical-debt)',
-                    responses: {
-                        200: createResponseSchema('healthReportSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getProjectHealthReport(
         req: Request<IProjectParam>,
         res: Response<HealthReportSchema>,
     ): Promise<void> {
-        const { projectId } = req.params;
-        const overview =
-            await this.projectHealthService.getProjectHealthReport(projectId);
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            healthReportSchema.$id,
-            serializeDates(overview),
-        );
+        throw new Error("STUB");
     }
 }

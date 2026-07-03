@@ -6,8 +6,7 @@ const seconds: (diff: [number, number]) => number = (diff) =>
     diff[0] + diff[1] / NS_TO_S;
 
 const newTimer: () => () => number = () => {
-    const now = process.hrtime();
-    return () => seconds(process.hrtime(now));
+    throw new Error("STUB");
 };
 
 const timer = {

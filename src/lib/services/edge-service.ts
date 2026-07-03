@@ -82,22 +82,7 @@ export default class EdgeService {
     }
 
     async getValidTokens(tokens: string[]): Promise<ValidatedEdgeTokensSchema> {
-        // new behavior: use cached tokens when possible
-        // use the db to fetch the missing ones
-        // cache stores both missing and active so we don't hammer the db
-        const validatedTokens: EdgeTokenSchema[] = [];
-        for (const token of tokens) {
-            const found = await this.apiTokenService.getTokenWithCache(token);
-            if (found) {
-                validatedTokens.push({
-                    token: token,
-                    type: found.type,
-                    projects: found.projects,
-                    environment: found.environment,
-                });
-            }
-        }
-        return { tokens: validatedTokens };
+        throw new Error("STUB");
     }
 
     async notSeenBefore({
@@ -146,58 +131,17 @@ export default class EdgeService {
         clientId: string,
         tokenRequest: EdgeEnvironmentsProjectsListSchema,
     ): Promise<ValidatedEdgeTokensSchema> {
-        if (!this.edgeMasterKey) {
-            throw new InvalidOperationError(
-                'You must define a secret in the EDGE_MASTER_SECRET environment variable',
-            );
-        }
-        const tokens: EdgeTokenSchema[] = [];
-        for (const tokenReq of tokenRequest.tokens) {
-            const existing = await this.edgeTokenStore.getToken(
-                clientId,
-                tokenReq.environment,
-                tokenReq.projects,
-            );
-            if (existing !== undefined) {
-                tokens.push({
-                    projects: existing.projects,
-                    type: existing.type,
-                    token: existing.secret,
-                    environment: existing.environment,
-                });
-            } else if (tokenReq.environment && tokenReq.projects) {
-                const newToken =
-                    await this.apiTokenService.createApiTokenWithProjects(
-                        {
-                            tokenName: `enterprise_edge_${tokenReq.environment}_${truncate(tokenReq.projects, 3)}`,
-                            alias: `ee_${tokenReq.environment}`,
-                            type: ApiTokenType.BACKEND,
-                            environment: tokenReq.environment,
-                            projects: tokenReq.projects,
-                        },
-                        SYSTEM_USER_AUDIT,
-                    );
-                await this.edgeTokenStore.saveToken(clientId, newToken);
-                tokens.push({
-                    projects: newToken.projects,
-                    type: newToken.type,
-                    token: newToken.secret,
-                    environment: newToken.environment,
-                });
-            }
-        }
-
-        return { tokens };
+        throw new Error("STUB");
     }
 
     async deleteExpiredNonces() {
-        await this.edgeTokenStore.cleanExpiredNonces();
+        throw new Error("STUB");
     }
 
     async deleteAllTokens() {
-        await this.edgeTokenStore.deleteAll();
+        throw new Error("STUB");
     }
 }
 
 const truncate = (projects: string[], max_length: number) =>
-    projects.length > max_length ? `[]` : projects.join('_');
+    { throw new Error("STUB"); };

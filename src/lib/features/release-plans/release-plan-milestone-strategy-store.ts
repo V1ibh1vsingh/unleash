@@ -115,7 +115,7 @@ export class ReleasePlanMilestoneStrategyStore
 
         return {
             ...strategy,
-            segments: segmentRows.map((row: any) => row.segment_id),
+            segments: segmentRows.map((row: any) => { throw new Error("STUB"); }),
         };
     }
 
@@ -126,11 +126,7 @@ export class ReleasePlanMilestoneStrategyStore
         const row = toRow(strategy);
         await this.db(TABLE).insert(row);
         segments?.forEach(async (segmentId) => {
-            const segmentRow = {
-                milestone_strategy_id: row.id,
-                segment_id: segmentId,
-            };
-            await this.db('milestone_strategy_segments').insert(segmentRow);
+            throw new Error("STUB");
         });
         return fromRow(row);
     }
@@ -169,8 +165,6 @@ export class ReleasePlanMilestoneStrategyStore
     }
 
     async deleteStrategiesForMilestone(milestoneId: string): Promise<void> {
-        await this.db('milestone_strategies')
-            .where('milestone_id', milestoneId)
-            .delete();
+        throw new Error("STUB");
     }
 }

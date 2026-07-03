@@ -7,13 +7,6 @@ function ossAuthHook(
     getLogger: LogProvider,
     baseUriPath: string,
 ): void {
-    app.use(
-        `${baseUriPath}/api`,
-        authorizationMiddleware(getLogger, baseUriPath),
-    );
-    app.use(
-        `${baseUriPath}/logout`,
-        authorizationMiddleware(getLogger, baseUriPath),
-    );
+    throw new Error("STUB");
 }
 export default ossAuthHook;

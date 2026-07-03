@@ -17,31 +17,7 @@ import {
 export const createEnvironmentService =
     (config: IUnleashConfig) =>
     (db: Db): EnvironmentService => {
-        const { getLogger, eventBus, flagResolver } = config;
-        const featureEnvironmentStore = new FeatureEnvironmentStore(
-            db,
-            eventBus,
-            config,
-        );
-        const projectStore = new ProjectStore(db, eventBus, config);
-        const featureStrategiesStore = new FeatureStrategiesStore(
-            db,
-            eventBus,
-            getLogger,
-            flagResolver,
-        );
-        const environmentStore = new EnvironmentStore(db, eventBus, config);
-        const eventService = createEventsService(db, config);
-        return new EnvironmentService(
-            {
-                environmentStore,
-                featureStrategiesStore,
-                featureEnvironmentStore,
-                projectStore,
-            },
-            config,
-            eventService,
-        );
+        throw new Error("STUB");
     };
 
 export const createFakeEnvironmentService = (

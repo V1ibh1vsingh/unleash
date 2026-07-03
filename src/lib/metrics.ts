@@ -81,10 +81,7 @@ export function registerPrometheusPostgresMetrics(
         });
 
         eventBus.on(DB_POOL_UPDATE, (data) => {
-            dbPoolFree.set(data.free);
-            dbPoolUsed.set(data.used);
-            dbPoolPendingCreates.set(data.pendingCreates);
-            dbPoolPendingAcquires.set(data.pendingAcquires);
+            throw new Error("STUB");
         });
 
         const database_version = createGauge({
@@ -108,7 +105,7 @@ export function registerPrometheusMetrics(
         cachedEnvironments: () => Promise<IEnvironment[]>,
     ): Promise<string> => {
         const environments = await cachedEnvironments();
-        const env = environments.find((e) => e.name === environment);
+        const env = environments.find((e) => { throw new Error("STUB"); });
 
         if (env) {
             return env.type;
@@ -122,7 +119,7 @@ export function registerPrometheusMetrics(
     const dbMetrics = new DbMetricsMonitor(config);
 
     const cachedEnvironments: () => Promise<IEnvironment[]> = memoizee(
-        async () => environmentStore.getAll(),
+        async () => { throw new Error("STUB"); },
         {
             promise: true,
             maxAge: hoursToMilliseconds(1),
@@ -187,8 +184,8 @@ export function registerPrometheusMetrics(
         name: 'feature_toggles_total',
         help: 'Number of feature flags',
         labelNames: ['version'],
-        query: () => instanceStatsService.getToggleCount(),
-        map: (value) => ({ value, labels: { version } }),
+        query: () => { throw new Error("STUB"); },
+        map: (value) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
@@ -196,14 +193,8 @@ export function registerPrometheusMetrics(
         help: 'Maximum number of environment strategies in one feature',
         labelNames: ['feature', 'environment'],
         query: () =>
-            stores.featureStrategiesReadModel.getMaxFeatureEnvironmentStrategies(),
-        map: (result) => ({
-            value: result.count,
-            labels: {
-                environment: result.environment,
-                feature: result.feature,
-            },
-        }),
+            { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
@@ -211,25 +202,16 @@ export function registerPrometheusMetrics(
         help: 'Maximum number of strategies in one feature',
         labelNames: ['feature'],
         query: () =>
-            stores.featureStrategiesReadModel.getMaxFeatureStrategies(),
-        map: (result) => ({
-            value: result.count,
-            labels: { feature: result.feature },
-        }),
+            { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'max_constraint_values',
         help: 'Maximum number of constraint values used in a single constraint',
         labelNames: ['feature', 'environment'],
-        query: () => stores.featureStrategiesReadModel.getMaxConstraintValues(),
-        map: (result) => ({
-            value: result.count,
-            labels: {
-                environment: result.environment,
-                feature: result.feature,
-            },
-        }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
@@ -237,14 +219,8 @@ export function registerPrometheusMetrics(
         help: 'Maximum number of constraints used on a single strategy',
         labelNames: ['feature', 'environment'],
         query: () =>
-            stores.featureStrategiesReadModel.getMaxConstraintsPerStrategy(),
-        map: (result) => ({
-            value: result.count,
-            labels: {
-                environment: result.environment,
-                feature: result.feature,
-            },
-        }),
+            { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
@@ -252,16 +228,9 @@ export function registerPrometheusMetrics(
         help: 'The largest project environment size (bytes) based on strategies, constraints, variants and parameters',
         labelNames: ['project', 'environment'],
         query: () =>
-            stores.largestResourcesReadModel.getLargestProjectEnvironments(1),
+            { throw new Error("STUB"); },
         map: (results) => {
-            const result = results[0];
-            return {
-                value: result.size,
-                labels: {
-                    project: result.project,
-                    environment: result.environment,
-                },
-            };
+            throw new Error("STUB");
         },
     });
     dbMetrics.registerGaugeDbMetric({
@@ -269,16 +238,9 @@ export function registerPrometheusMetrics(
         help: 'The largest feature environment size (bytes) base on strategies, constraints, variants and parameters',
         labelNames: ['feature', 'environment'],
         query: () =>
-            stores.largestResourcesReadModel.getLargestFeatureEnvironments(1),
+            { throw new Error("STUB"); },
         map: (results) => {
-            const result = results[0];
-            return {
-                value: result.size,
-                labels: {
-                    feature: result.feature,
-                    environment: result.environment,
-                },
-            };
+            throw new Error("STUB");
         },
     });
 
@@ -286,36 +248,27 @@ export function registerPrometheusMetrics(
         name: 'unique_sdk_connections_total',
         help: 'The number of unique SDK connections for the full previous hour across all instances. Available only for SDKs reporting `unleash-connection-id`',
         query: () => {
-            if (flagResolver.isEnabled('uniqueSdkTracking')) {
-                return stores.uniqueConnectionReadModel.getStats();
-            }
-            return Promise.resolve({ previous: 0 });
+            throw new Error("STUB");
         },
-        map: (result) => ({ value: result.previous }),
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'unique_backend_sdk_connections_total',
         help: 'The number of unique backend SDK connections for the full previous hour across all instances. Available only for SDKs reporting `unleash-connection-id`',
         query: () => {
-            if (flagResolver.isEnabled('uniqueSdkTracking')) {
-                return stores.uniqueConnectionReadModel.getStats();
-            }
-            return Promise.resolve({ previousBackend: 0 });
+            throw new Error("STUB");
         },
-        map: (result) => ({ value: result.previousBackend }),
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'unique_frontend_sdk_connections_total',
         help: 'The number of unique frontend SDK connections for the full previous hour across all instances. Available only for SDKs reporting `unleash-connection-id`',
         query: () => {
-            if (flagResolver.isEnabled('uniqueSdkTracking')) {
-                return stores.uniqueConnectionReadModel.getStats();
-            }
-            return Promise.resolve({ previousFrontend: 0 });
+            throw new Error("STUB");
         },
-        map: (result) => ({ value: result.previousFrontend }),
+        map: (result) => { throw new Error("STUB"); },
     });
 
     const featureTogglesArchivedTotal = createGauge({
@@ -325,7 +278,7 @@ export function registerPrometheusMetrics(
     createGauge({
         name: 'users_total',
         help: 'Number of users',
-        fetchValue: () => stores.userStore.count(),
+        fetchValue: () => { throw new Error("STUB"); },
         ttlMs: minutesToMilliseconds(15),
     });
     const trafficTotal = createGauge({
@@ -369,128 +322,122 @@ export function registerPrometheusMetrics(
         name: 'projects_total',
         help: 'Number of projects',
         labelNames: ['mode'],
-        query: () => instanceStatsService.getProjectModeCount(),
+        query: () => { throw new Error("STUB"); },
         map: (projects) =>
-            projects.map((projectStat) => ({
-                value: projectStat.count,
-                labels: { mode: projectStat.mode },
-            })),
+            { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'environments_total',
         help: 'Number of environments',
-        query: () => instanceStatsService.environmentCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
     dbMetrics.registerGaugeDbMetric({
         name: 'groups_total',
         help: 'Number of groups',
-        query: () => instanceStatsService.groupCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'roles_total',
         help: 'Number of roles',
-        query: () => instanceStatsService.roleCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'custom_root_roles_total',
         help: 'Number of custom root roles',
-        query: () => instanceStatsService.customRolesCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'custom_root_roles_in_use_total',
         help: 'Number of custom root roles in use',
-        query: () => instanceStatsService.customRolesCountInUse(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'segments_total',
         help: 'Number of segments',
-        query: () => instanceStatsService.segmentCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'context_total',
         help: 'Number of context',
-        query: () => instanceStatsService.contextFieldCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'project_context_total',
         help: 'Number of project context fields',
-        query: () => instanceStatsService.projectContextFieldCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'strategies_total',
         help: 'Number of strategies',
-        query: () => instanceStatsService.strategiesCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'custom_strategies_total',
         help: 'Number of custom strategies',
-        query: () => instanceStatsService.customStrategiesCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'custom_strategies_in_use_total',
         help: 'Number of custom strategies in use',
-        query: () => instanceStatsService.customStrategiesInUseCount(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'client_apps_total',
         help: 'Number of registered client apps aggregated by range by last seen',
         labelNames: ['range'],
-        query: () => instanceStatsService.getLabeledAppCounts(),
+        query: () => { throw new Error("STUB"); },
         map: (result) =>
-            Object.entries(result).map(([range, count]) => ({
-                value: count,
-                labels: { range },
-            })),
+            { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'saml_enabled',
         help: 'Whether SAML is enabled',
-        query: () => instanceStatsService.hasSAML(),
-        map: (result) => ({ value: result ? 1 : 0 }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'oidc_enabled',
         help: 'Whether OIDC is enabled',
-        query: () => instanceStatsService.hasOIDC(),
-        map: (result) => ({ value: result ? 1 : 0 }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'password_auth_enabled',
         help: 'Whether password auth is enabled',
-        query: () => instanceStatsService.hasPasswordAuth(),
-        map: (result) => ({ value: result ? 1 : 0 }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'scim_enabled',
         help: 'Whether SCIM is enabled',
-        query: () => instanceStatsService.hasSCIM(),
-        map: (result) => ({ value: result ? 1 : 0 }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     const clientSdkVersionUsage = createCounter({
@@ -630,66 +577,36 @@ export function registerPrometheusMetrics(
         name: 'feature_lifecycle_stage_duration',
         labelNames: ['stage', 'project_id'],
         help: 'Duration of feature lifecycle stages',
-        query: () => stores.featureLifecycleReadModel.getAllWithStageDuration(),
+        query: () => { throw new Error("STUB"); },
         map: (result) =>
-            result.map((stageResult) => ({
-                value: stageResult.duration,
-                labels: {
-                    project_id: stageResult.project,
-                    stage: stageResult.stage,
-                },
-            })),
+            { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'onboarding_duration',
         labelNames: ['event'],
         help: 'firstLogin, secondLogin, firstFeatureFlag, firstPreLive, firstLive from first user creation',
-        query: () => stores.onboardingReadModel.getInstanceOnboardingMetrics(),
+        query: () => { throw new Error("STUB"); },
         map: (result) =>
-            Object.keys(result)
-                .filter((key) => Number.isInteger(result[key]))
-                .map((key) => ({
-                    value: result[key],
-                    labels: {
-                        event: key,
-                    },
-                })),
+            { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'project_onboarding_duration',
         labelNames: ['event', 'project'],
         help: 'firstFeatureFlag, firstPreLive, firstLive from project creation',
-        query: () => stores.onboardingReadModel.getProjectsOnboardingMetrics(),
+        query: () => { throw new Error("STUB"); },
         map: (projectsOnboardingMetrics) =>
-            projectsOnboardingMetrics.flatMap(
-                ({ project, ...projectMetrics }) =>
-                    Object.keys(projectMetrics)
-                        .filter((key) => Number.isInteger(projectMetrics[key]))
-                        .map((key) => ({
-                            value: projectMetrics[key],
-                            labels: {
-                                event: key,
-                                project,
-                            },
-                        })),
-            ),
+            { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
         name: 'feature_lifecycle_stage_count_by_project',
         help: 'Count features in a given stage by project id',
         labelNames: ['stage', 'project_id'],
-        query: () => stores.featureLifecycleReadModel.getStageCountByProject(),
+        query: () => { throw new Error("STUB"); },
         map: (result) =>
-            result.map((stageResult) => ({
-                value: stageResult.count,
-                labels: {
-                    project_id: stageResult.project,
-                    stage: stageResult.stage,
-                },
-            })),
+            { throw new Error("STUB"); },
     });
 
     dbMetrics.registerGaugeDbMetric({
@@ -697,15 +614,10 @@ export function registerPrometheusMetrics(
         help: 'Count most popular domains used in feature links',
         labelNames: ['domain'],
         query: () => {
-            return stores.featureLinkReadModel.getTopDomains();
+            throw new Error("STUB");
         },
         map: (result) =>
-            result.map(({ domain, count }) => ({
-                value: count,
-                labels: {
-                    domain,
-                },
-            })),
+            { throw new Error("STUB"); },
     });
 
     const featureLifecycleStageEnteredCounter = createCounter({
@@ -791,141 +703,86 @@ export function registerPrometheusMetrics(
     dbMetrics.registerGaugeDbMetric({
         name: 'read_only_users',
         help: 'Number of read-only users (viewers with no permissions or write events).',
-        query: () => instanceStatsService.getReadOnlyUsers(),
-        map: (result) => ({ value: result }),
+        query: () => { throw new Error("STUB"); },
+        map: (result) => { throw new Error("STUB"); },
     });
 
     // register event listeners
     eventBus.on(
         events.EXCEEDS_LIMIT,
         ({ resource, limit }: { resource: string; limit: number }) => {
-            exceedsLimitErrorCounter.increment({ resource, limit });
+            throw new Error("STUB");
         },
     );
 
     eventBus.on(
         events.STAGE_ENTERED,
         (entered: { stage: string; feature: string }) => {
-            featureLifecycleStageEnteredCounter.increment({
-                stage: entered.stage,
-            });
+            throw new Error("STUB");
         },
     );
 
     eventBus.on(
         events.REQUEST_TIME,
         ({ path, method, time, statusCode, appName }) => {
-            requestDuration
-                .labels({
-                    path,
-                    method,
-                    status: statusCode,
-                    appName,
-                })
-                .observe(time);
-            config.flagResolver.impactMetrics?.incrementCounter(
-                impactMetrics.REQUEST_COUNT,
-                1,
-                { flagNames: ['consumptionModel'], context: {} },
-            );
-            config.flagResolver.impactMetrics?.observeHistogram(
-                impactMetrics.REQUEST_TIME_MS,
-                time,
-            );
+            throw new Error("STUB");
         },
     );
 
     eventBus.on(events.SCHEDULER_JOB_TIME, ({ jobId, time }) => {
-        schedulerDuration.labels(jobId).observe(time);
-        config.flagResolver.impactMetrics?.observeHistogram(
-            impactMetrics.SCHEDULER_JOB_TIME_SECONDS,
-            time,
-        );
+        throw new Error("STUB");
     });
 
     eventBus.on(events.FUNCTION_TIME, ({ functionName, className, time }) => {
-        functionDuration
-            .labels({
-                functionName,
-                className,
-            })
-            .observe(time);
+        throw new Error("STUB");
     });
 
     eventBus.on(events.EVENTS_CREATED_BY_PROCESSED, ({ updated }) => {
-        eventCreatedByMigration.inc(updated);
+        throw new Error("STUB");
     });
 
     eventBus.on(events.FEATURES_CREATED_BY_PROCESSED, ({ updated }) => {
-        featureCreatedByMigration.inc(updated);
+        throw new Error("STUB");
     });
 
     eventBus.on(events.DB_TIME, ({ store, action, time }) => {
-        dbDuration
-            .labels({
-                store,
-                action,
-            })
-            .observe(time);
+        throw new Error("STUB");
     });
 
     eventBus.on(events.PROXY_REPOSITORY_CREATED, () => {
-        proxyRepositoriesCreated.inc();
+        throw new Error("STUB");
     });
 
     eventBus.on(events.FRONTEND_API_REPOSITORY_CREATED, () => {
-        frontendApiRepositoriesCreated.inc();
+        throw new Error("STUB");
     });
 
     eventBus.on(events.PROXY_FEATURES_FOR_TOKEN_TIME, ({ duration }) => {
-        mapFeaturesForClientDuration.observe(duration);
+        throw new Error("STUB");
     });
 
     eventBus.on(
         events.CLIENT_METRICS_NAMEPREFIX,
         (payload?: { namePrefix?: string }) => {
-            namePrefixUsed.inc();
-            if (!payload?.namePrefix) {
-                return;
-            }
-            const value = HyperLogLog.hash(payload.namePrefix);
-            namePrefixHll.add(value);
-            namePrefixDistinct.set(namePrefixHll.count());
+            throw new Error("STUB");
         },
     );
 
     eventBus.on(events.CLIENT_METRICS_TAGS, (payload?: { tags?: string[] }) => {
-        tagsUsed.inc();
-        if (!payload?.tags?.length) {
-            return;
-        }
-        for (const tag of payload.tags) {
-            const value = HyperLogLog.hash(tag);
-            tagsHll.add(value);
-        }
-        tagsDistinct.set(tagsHll.count());
+        throw new Error("STUB");
     });
 
     eventBus.on(
         events.CLIENT_METRICS_PROJECT,
         (payload?: { projects?: string[] }) => {
-            if (!payload?.projects?.length) {
-                return;
-            }
-            for (const project of payload.projects) {
-                const value = HyperLogLog.hash(project);
-                projectHll.add(value);
-            }
-            projectDistinct.set(projectHll.count());
+            throw new Error("STUB");
         },
     );
 
     eventBus.on(
         events.CLIENT_REGISTERED,
         ({ appName, environment, interval }) => {
-            clientRegistrationTotal
-                .labels({ appName, environment, interval })
-                .inc();
+            throw new Error("STUB");
         },
     );
 
@@ -933,274 +790,108 @@ export function registerPrometheusMetrics(
         eventBus,
         events.REQUEST_ORIGIN,
         ({ type, method, source }) => {
-            requestOriginCounter.increment({
-                type,
-                method,
-                source: source || 'unknown',
-            });
+            throw new Error("STUB");
         },
     );
 
     eventStore.on(FEATURE_CREATED, ({ featureName, project }) => {
-        featureFlagUpdateTotal.increment({
-            toggle: featureName,
-            project,
-            environment: 'n/a',
-            environmentType: 'n/a',
-            action: 'created',
-        });
+        throw new Error("STUB");
     });
     eventStore.on(FEATURE_VARIANTS_UPDATED, ({ featureName, project }) => {
-        featureFlagUpdateTotal.increment({
-            toggle: featureName,
-            project,
-            environment: 'n/a',
-            environmentType: 'n/a',
-            action: 'updated',
-        });
+        throw new Error("STUB");
     });
     eventStore.on(FEATURE_METADATA_UPDATED, ({ featureName, project }) => {
-        featureFlagUpdateTotal.increment({
-            toggle: featureName,
-            project,
-            environment: 'n/a',
-            environmentType: 'n/a',
-            action: 'updated',
-        });
+        throw new Error("STUB");
     });
     eventStore.on(FEATURE_UPDATED, ({ featureName, project }) => {
-        featureFlagUpdateTotal.increment({
-            toggle: featureName,
-            project,
-            environment: 'n/a',
-            environmentType: 'n/a',
-            action: 'updated',
-        });
+        throw new Error("STUB");
     });
     eventStore.on(
         FEATURE_STRATEGY_ADD,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
     eventStore.on(
         FEATURE_STRATEGY_REMOVE,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
     eventStore.on(
         FEATURE_STRATEGY_UPDATE,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
     eventStore.on(
         FEATURE_ENVIRONMENT_DISABLED,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
     eventStore.on(
         FEATURE_ENVIRONMENT_ENABLED,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
     eventStore.on(FEATURE_ARCHIVED, ({ featureName, project }) => {
-        featureFlagUpdateTotal.increment({
-            toggle: featureName,
-            project,
-            environment: 'n/a',
-            environmentType: 'n/a',
-            action: 'archived',
-        });
+        throw new Error("STUB");
     });
     eventStore.on(FEATURE_REVIVED, ({ featureName, project }) => {
-        featureFlagUpdateTotal.increment({
-            toggle: featureName,
-            project,
-            environment: 'n/a',
-            environmentType: 'n/a',
-            action: 'revived',
-        });
+        throw new Error("STUB");
     });
 
     eventStore.on(
         RELEASE_PLAN_ADDED,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
 
     eventStore.on(
         RELEASE_PLAN_REMOVED,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
 
     eventStore.on(
         RELEASE_PLAN_MILESTONE_STARTED,
         async ({ featureName, project, environment }) => {
-            const environmentType = await resolveEnvironmentType(
-                environment,
-                cachedEnvironments,
-            );
-            featureFlagUpdateTotal.increment({
-                toggle: featureName,
-                project,
-                environment,
-                environmentType,
-                action: 'updated',
-            });
+            throw new Error("STUB");
         },
     );
 
     eventStore.on(PROJECT_CREATED, () => {
-        projectActionsCounter.increment({ action: PROJECT_CREATED });
+        throw new Error("STUB");
     });
     eventStore.on(PROJECT_ARCHIVED, () => {
-        projectActionsCounter.increment({ action: PROJECT_ARCHIVED });
+        throw new Error("STUB");
     });
     eventStore.on(PROJECT_REVIVED, () => {
-        projectActionsCounter.increment({ action: PROJECT_REVIVED });
+        throw new Error("STUB");
     });
     eventStore.on(PROJECT_DELETED, () => {
-        projectActionsCounter.increment({ action: PROJECT_DELETED });
+        throw new Error("STUB");
     });
 
     const logger = config.getLogger('metrics.ts');
     eventBus.on(CLIENT_METRICS, (metrics: IClientMetricsEnv[]) => {
-        try {
-            for (const metric of metrics) {
-                featureFlagUsageTotal.increment(
-                    {
-                        toggle: metric.featureName,
-                        active: 'true',
-                        appName: metric.appName,
-                    },
-                    metric.yes,
-                );
-                featureFlagUsageTotal.increment(
-                    {
-                        toggle: metric.featureName,
-                        active: 'false',
-                        appName: metric.appName,
-                    },
-                    metric.no,
-                );
-            }
-        } catch (e) {
-            logger.warn('Metrics registration failed', e);
-        }
+        throw new Error("STUB");
     });
 
     eventStore.on(CLIENT_REGISTER, (heartbeatEvent: ISdkHeartbeat) => {
-        if (!heartbeatEvent.sdkName || !heartbeatEvent.sdkVersion) {
-            return;
-        }
-
-        if (flagResolver.isEnabled('extendedMetrics')) {
-            clientSdkVersionUsage.increment({
-                sdk_name: heartbeatEvent.sdkName,
-                sdk_version: heartbeatEvent.sdkVersion,
-                platform_name:
-                    heartbeatEvent.metadata?.platformName ?? 'not-set',
-                platform_version:
-                    heartbeatEvent.metadata?.platformVersion ?? 'not-set',
-                yggdrasil_version:
-                    heartbeatEvent.metadata?.yggdrasilVersion ?? 'not-set',
-                spec_version: heartbeatEvent.metadata?.specVersion ?? 'not-set',
-            });
-        } else {
-            clientSdkVersionUsage.increment({
-                sdk_name: heartbeatEvent.sdkName,
-                sdk_version: heartbeatEvent.sdkVersion,
-                platform_name: 'not-set',
-                platform_version: 'not-set',
-                yggdrasil_version: 'not-set',
-                spec_version: 'not-set',
-            });
-        }
+        throw new Error("STUB");
     });
 
     eventStore.on(PROJECT_ENVIRONMENT_REMOVED, ({ project }) => {
-        projectEnvironmentsDisabled.increment({ project_id: project });
+        throw new Error("STUB");
     });
 
     eventBus.on(events.ADDON_EVENTS_HANDLED, ({ result, destination }) => {
-        addonEventsHandledCounter.increment({ result, destination });
+        throw new Error("STUB");
     });
 
     setupIntegrationMetrics({ config, stores, eventBus, dbMetrics });
@@ -1208,94 +899,7 @@ export function registerPrometheusMetrics(
     return {
         collectAggDbMetrics: dbMetrics.refreshMetrics,
         collectStaticCounters: async () => {
-            try {
-                config.flagResolver.impactMetrics?.updateGauge(
-                    impactMetrics.HEAP_MEMORY_TOTAL,
-                    process.memoryUsage().heapUsed,
-                    { flagNames: ['consumptionModel'], context: {} },
-                );
-                featureTogglesArchivedTotal.reset();
-                featureTogglesArchivedTotal.set(
-                    await instanceStatsService.getArchivedToggleCount(),
-                );
-
-                serviceAccounts.reset();
-                serviceAccounts.set(
-                    await instanceStatsService.countServiceAccounts(),
-                );
-
-                trafficTotal.reset();
-                trafficTotal.set(
-                    await instanceStatsService.getCurrentTrafficData(),
-                );
-
-                apiTokens.reset();
-
-                for (const [
-                    type,
-                    value,
-                ] of await instanceStatsService.countApiTokensByType()) {
-                    apiTokens.labels({ type }).set(value);
-                }
-
-                const deprecatedTokens =
-                    await stores.apiTokenStore.countDeprecatedTokens();
-                orphanedTokensTotal.reset();
-                orphanedTokensTotal.set(deprecatedTokens.orphanedTokens);
-
-                orphanedTokensActive.reset();
-                orphanedTokensActive.set(deprecatedTokens.activeOrphanedTokens);
-
-                legacyTokensTotal.reset();
-                legacyTokensTotal.set(deprecatedTokens.legacyTokens);
-
-                legacyTokensActive.reset();
-                legacyTokensActive.set(deprecatedTokens.activeLegacyTokens);
-
-                const previousDayMetricsBucketsCount =
-                    await instanceStatsService.countPreviousDayHourlyMetricsBuckets();
-                enabledMetricsBucketsPreviousDay.reset();
-                enabledMetricsBucketsPreviousDay.set(
-                    previousDayMetricsBucketsCount.enabledCount,
-                );
-                variantMetricsBucketsPreviousDay.reset();
-                variantMetricsBucketsPreviousDay.set(
-                    previousDayMetricsBucketsCount.variantCount,
-                );
-
-                const activeUsers = await instanceStatsService.getActiveUsers();
-                usersActive7days.reset();
-                usersActive7days.set(activeUsers.last7);
-                usersActive30days.reset();
-                usersActive30days.set(activeUsers.last30);
-                usersActive60days.reset();
-                usersActive60days.set(activeUsers.last60);
-                usersActive90days.reset();
-                usersActive90days.set(activeUsers.last90);
-
-                const licensedUsersStat =
-                    await instanceStatsService.getLicencedUsers();
-                licensedUsers.reset();
-                licensedUsers.set(licensedUsersStat);
-
-                const productionChanges =
-                    await instanceStatsService.getProductionChanges();
-                productionChanges30.reset();
-                productionChanges30.set(productionChanges.last30);
-                productionChanges60.reset();
-                productionChanges60.set(productionChanges.last60);
-                productionChanges90.reset();
-                productionChanges90.set(productionChanges.last90);
-
-                const unknownFlags = await stores.unknownFlagsStore.count();
-                unknownFlagsGauge.reset();
-                unknownFlagsGauge.set(unknownFlags);
-
-                const unknownFlagsUniqueNames =
-                    await stores.unknownFlagsStore.count({ unique: true });
-                unknownFlagsUniqueNamesGauge.reset();
-                unknownFlagsUniqueNamesGauge.set(unknownFlagsUniqueNames);
-            } catch (_e) {}
+            throw new Error("STUB");
         },
     };
 }
@@ -1331,13 +935,13 @@ export default class MetricsMonitor {
 
         await schedulerService.schedule(
             async () =>
-                Promise.all([collectStaticCounters(), collectAggDbMetrics()]),
+                { throw new Error("STUB"); },
             hoursToMilliseconds(1),
             'collectStaticCounters',
         );
         await schedulerService.schedule(
             async () =>
-                this.registerPoolMetrics.bind(this, db.client.pool, eventBus),
+                { throw new Error("STUB"); },
             minutesToMilliseconds(1),
             'registerPoolMetrics',
         );
@@ -1347,15 +951,7 @@ export default class MetricsMonitor {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     registerPoolMetrics(pool: any, eventBus: EventEmitter) {
-        try {
-            eventBus.emit(DB_POOL_UPDATE, {
-                used: pool.numUsed(),
-                free: pool.numFree(),
-                pendingCreates: pool.numPendingCreates(),
-                pendingAcquires: pool.numPendingAcquires(),
-            });
-            // eslint-disable-next-line no-empty
-        } catch (_e) {}
+        throw new Error("STUB");
     }
 }
 

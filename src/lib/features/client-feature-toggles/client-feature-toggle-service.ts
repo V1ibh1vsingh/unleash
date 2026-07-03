@@ -31,20 +31,14 @@ export class ClientFeatureToggleService {
     }
 
     async getActiveSegmentsForClient() {
-        return this.segmentReadModel.getActiveForClient();
+        throw new Error("STUB");
     }
 
     async getClientDelta(
         revisionId: number | undefined,
         query: IFeatureToggleQuery,
     ): Promise<ClientFeaturesDeltaSchema | undefined> {
-        if (this.clientFeatureToggleDelta !== null) {
-            return this.clientFeatureToggleDelta.getDelta(revisionId, query);
-        } else {
-            throw new Error(
-                'Calling the partial updates but the cache is not initialized',
-            );
-        }
+        throw new Error("STUB");
     }
 
     async getClientFeatures(
@@ -66,18 +60,7 @@ export class ClientFeatureToggleService {
                 description,
                 impressionData,
                 dependencies,
-            }) => ({
-                name,
-                type,
-                enabled,
-                project,
-                stale,
-                strategies,
-                variants,
-                description,
-                impressionData,
-                dependencies,
-            }),
+            }) => { throw new Error("STUB"); },
         );
     }
 }

@@ -12,7 +12,7 @@ export class FakeSegmentReadModel implements ISegmentReadModel {
     }
 
     async getAllFeatureStrategySegments(): Promise<IFeatureStrategySegment[]> {
-        return [];
+        throw new Error("STUB");
     }
 
     async getActive(): Promise<ISegment[]> {
@@ -20,10 +20,10 @@ export class FakeSegmentReadModel implements ISegmentReadModel {
     }
 
     async getActiveForClient(): Promise<IClientSegment[]> {
-        return [];
+        throw new Error("STUB");
     }
 
     async getAllForClientIds(_ids?: number[]): Promise<IClientSegment[]> {
-        return [];
+        throw new Error("STUB");
     }
 }

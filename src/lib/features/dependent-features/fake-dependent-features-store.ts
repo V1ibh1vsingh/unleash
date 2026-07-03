@@ -10,6 +10,6 @@ export class FakeDependentFeaturesStore implements IDependentFeaturesStore {
     }
 
     deleteAll(): Promise<void> {
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 }

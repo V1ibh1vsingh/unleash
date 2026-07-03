@@ -97,94 +97,14 @@ export class EmailService {
     private flagResolver: IFlagResolver;
 
     constructor(config: IUnleashConfig, transportProvider?: TransportProvider) {
-        this.config = config;
-        this.logger = config.getLogger('services/email-service.ts');
-        this.flagResolver = config.flagResolver;
-        const { email } = config;
-        if (email?.host) {
-            this.sender = email.sender;
-            const provider = transportProvider
-                ? transportProvider
-                : createTransport;
-            if (email.host === 'test') {
-                this.mailer = provider({ jsonTransport: true });
-            } else {
-                this.mailer = provider({
-                    host: email.host,
-                    port: email.port,
-                    secure: email.secure,
-                    auth: {
-                        user: email.smtpuser ?? '',
-                        pass: email.smtppass ?? '',
-                    },
-                    ...email.transportOptions,
-                });
-            }
-            this.logger.info(
-                `Initialized transport to ${email.host} on port ${email.port} with user: ${email.smtpuser}`,
-            );
-        } else {
-            this.sender = 'not-configured';
-            this.mailer = undefined;
-        }
+        throw new Error("STUB");
     }
 
     async sendRequestedCRApprovalEmail(
         recipient: string,
         crApprovalParams: ICrApprovalParameters,
     ): Promise<IEmailEnvelope> {
-        if (this.configured()) {
-            const year = new Date().getFullYear();
-            const bodyHtml = await this.compileTemplate(
-                'requested-cr-approval',
-                TemplateFormat.HTML,
-                {
-                    ...crApprovalParams,
-                    year,
-                },
-            );
-            const bodyText = await this.compileTemplate(
-                'requested-cr-approval',
-                TemplateFormat.PLAIN,
-                {
-                    ...crApprovalParams,
-                    year,
-                },
-            );
-            const email = {
-                from: this.sender,
-                to: recipient,
-                subject: REQUESTED_CR_APPROVAL_SUBJECT,
-                html: bodyHtml,
-                text: bodyText,
-            };
-            process.nextTick(() => {
-                this.mailer!.sendMail(email).then(
-                    () =>
-                        this.logger.info(
-                            'Successfully sent requested-cr-approval email',
-                        ),
-                    (e) =>
-                        this.logger.warn(
-                            'Failed to send requested-cr-approval email',
-                            e,
-                        ),
-                );
-            });
-            return Promise.resolve(email);
-        }
-        return new Promise((res) => {
-            this.logger.warn(
-                'No mailer is configured. Please read the docs on how to configure an email service',
-            );
-            res({
-                from: this.sender,
-                to: recipient,
-                subject: REQUESTED_CR_APPROVAL_SUBJECT,
-                html: '',
-                text: '',
-            });
-        });
+        throw new Error("STUB");
     }
     async sendScheduledExecutionFailedEmail(
         recipient: string,
@@ -193,65 +113,7 @@ export class EmailService {
         scheduledAt: string,
         errorMessage: string,
     ): Promise<IEmailEnvelope> {
-        if (this.configured()) {
-            const year = new Date().getFullYear();
-            const bodyHtml = await this.compileTemplate(
-                'scheduled-execution-failed',
-                TemplateFormat.HTML,
-                {
-                    changeRequestLink,
-                    changeRequestTitle,
-                    scheduledAt,
-                    errorMessage,
-                    year,
-                },
-            );
-            const bodyText = await this.compileTemplate(
-                'scheduled-execution-failed',
-                TemplateFormat.PLAIN,
-                {
-                    changeRequestLink,
-                    changeRequestTitle,
-                    scheduledAt,
-                    errorMessage,
-                    year,
-                },
-            );
-            const email = {
-                from: this.sender,
-                to: recipient,
-                subject: SCHEDULED_EXECUTION_FAILED_SUBJECT,
-                html: bodyHtml,
-                text: bodyText,
-            };
-            process.nextTick(() => {
-                this.mailer!.sendMail(email).then(
-                    () =>
-                        this.logger.info(
-                            'Successfully sent scheduled-execution-failed email',
-                        ),
-                    (e) =>
-                        this.logger.warn(
-                            'Failed to send scheduled-execution-failed email',
-                            e,
-                        ),
-                );
-            });
-            return Promise.resolve(email);
-        }
-        return new Promise((res) => {
-            this.logger.warn(
-                'No mailer is configured. Please read the docs on how to configure an email service',
-            );
-            this.logger.debug('Change request link: ', changeRequestLink);
-            res({
-                from: this.sender,
-                to: recipient,
-                subject: SCHEDULED_EXECUTION_FAILED_SUBJECT,
-                html: '',
-                text: '',
-            });
-        });
+        throw new Error("STUB");
     }
 
     async sendScheduledChangeConflictEmail(
@@ -268,22 +130,7 @@ export class EmailService {
         project: string,
         strategyId?: string,
     ) {
-        const conflictData =
-            conflictScope === 'flag'
-                ? { reason: 'flag archived' as const, flagName }
-                : {
-                      reason: 'strategy deleted' as const,
-                      flagName,
-                      strategyId: strategyId ?? '',
-                  };
-
-        return this.sendScheduledChangeSuspendedEmail(
-            recipient,
-            conflictData,
-            conflictingChangeRequestId,
-            changeRequests,
-            project,
-        );
+        throw new Error("STUB");
     }
 
     async sendScheduledChangeSuspendedEmail(
@@ -299,119 +146,7 @@ export class EmailService {
         }[],
         project: string,
     ) {
-        if (this.configured()) {
-            const year = new Date().getFullYear();
-            const getConflictDetails = () => {
-                switch (conflictData.reason) {
-                    case 'flag archived':
-                        return {
-                            conflictScope: 'flag',
-                            conflict: `The feature flag ${conflictData.flagName} in ${project} has been archived`,
-                            flagArchived: true,
-                            flagLink: `${this.config.server.unleashUrl}/projects/${project}/archive?sort=archivedAt&search=${conflictData.flagName}`,
-                            canBeRescheduled: false,
-                        };
-                    case 'strategy deleted':
-                        return {
-                            conflictScope: 'strategy',
-                            conflict: `The strategy with id ${conflictData.strategyId} for flag ${conflictData.flagName} in ${project} has been deleted`,
-                            canBeRescheduled: false,
-                        };
-                    case 'strategy updated':
-                        return {
-                            conflictScope: 'strategy',
-                            conflict: `A strategy belonging to ${conflictData.flagName} (ID: ${conflictData.strategyId}) in the project ${project} has been updated, and your changes would overwrite some of the recent changes`,
-                            canBeRescheduled: true,
-                        };
-                    case 'environment variants updated':
-                        return {
-                            conflictScope: 'environment variant configuration',
-                            conflict: `The ${conflictData.environment} environment variant configuration for ${conflictData.flagName} in the project ${project} has been updated, and your changes would overwrite some of the recent changes`,
-                            canBeRescheduled: true,
-                        };
-                    case 'segment updated':
-                        return {
-                            conflictScope: 'segment',
-                            conflict: `Segment ${conflictData.segment.id} ("${conflictData.segment.name}") in ${project} has been updated, and your changes would overwrite some of the recent changes`,
-                            canBeRescheduled: true,
-                        };
-                }
-            };
-
-            const {
-                canBeRescheduled,
-                conflict,
-                conflictScope,
-                flagArchived = false,
-                flagLink = false,
-            } = getConflictDetails();
-
-            const conflictingChangeRequestLink = conflictingChangeRequestId
-                ? `${this.config.server.unleashUrl}/projects/${project}/change-requests/${conflictingChangeRequestId}`
-                : false;
-
-            const bodyHtml = await this.compileTemplate(
-                'scheduled-change-conflict',
-                TemplateFormat.HTML,
-                {
-                    conflict,
-                    conflictScope,
-                    canBeRescheduled,
-                    flagArchived,
-                    flagLink,
-                    conflictingChangeRequestLink,
-                    changeRequests,
-                    year,
-                },
-            );
-            const bodyText = await this.compileTemplate(
-                'scheduled-change-conflict',
-                TemplateFormat.PLAIN,
-                {
-                    conflict,
-                    conflictScope,
-                    canBeRescheduled,
-                    flagArchived,
-                    flagLink,
-                    conflictingChangeRequestLink,
-                    changeRequests,
-                    year,
-                },
-            );
-            const email = {
-                from: this.sender,
-                to: recipient,
-                subject: SCHEDULED_CHANGE_CONFLICT_SUBJECT,
-                html: bodyHtml,
-                text: bodyText,
-            };
-            process.nextTick(() => {
-                this.mailer!.sendMail(email).then(
-                    () =>
-                        this.logger.info(
-                            'Successfully sent scheduled-change-conflict email',
-                        ),
-                    (e) =>
-                        this.logger.warn(
-                            'Failed to send scheduled-change-conflict email',
-                            e,
-                        ),
-                );
-            });
-            return Promise.resolve(email);
-        }
-        return new Promise((res) => {
-            this.logger.warn(
-                'No mailer is configured. Please read the docs on how to configure an email service',
-            );
-            res({
-                from: this.sender,
-                to: recipient,
-                subject: SCHEDULED_CHANGE_CONFLICT_SUBJECT,
-                html: '',
-                text: '',
-            });
-        });
+        throw new Error("STUB");
     }
 
     async sendResetMail(
@@ -419,61 +154,7 @@ export class EmailService {
         recipient: string,
         resetLink: string,
     ): Promise<IEmailEnvelope> {
-        if (this.configured()) {
-            const year = new Date().getFullYear();
-            const bodyHtml = await this.compileTemplate(
-                'reset-password',
-                TemplateFormat.HTML,
-                {
-                    resetLink,
-                    name,
-                    year,
-                },
-            );
-            const bodyText = await this.compileTemplate(
-                'reset-password',
-                TemplateFormat.PLAIN,
-                {
-                    resetLink,
-                    name,
-                    year,
-                },
-            );
-            const email = {
-                from: this.sender,
-                to: recipient,
-                subject: RESET_MAIL_SUBJECT,
-                html: bodyHtml,
-                text: bodyText,
-            };
-            process.nextTick(() => {
-                this.mailer!.sendMail(email).then(
-                    () =>
-                        this.logger.info(
-                            'Successfully sent reset-password email',
-                        ),
-                    (e) =>
-                        this.logger.warn(
-                            'Failed to send reset-password email',
-                            e,
-                        ),
-                );
-            });
-            return Promise.resolve(email);
-        }
-        return new Promise((res) => {
-            this.logger.warn(
-                'No mailer is configured. Please read the docs on how to configure an emailservice',
-            );
-            this.logger.debug('Reset link: ', resetLink);
-            res({
-                from: this.sender,
-                to: recipient,
-                subject: RESET_MAIL_SUBJECT,
-                html: '',
-                text: '',
-            });
-        });
+        throw new Error("STUB");
     }
 
     async sendGettingStartedMail(
@@ -519,31 +200,12 @@ export class EmailService {
                 text: bodyText,
             };
             process.nextTick(() => {
-                this.mailer!.sendMail(email).then(
-                    () =>
-                        this.logger.info(
-                            'Successfully sent getting started email',
-                        ),
-                    (e) =>
-                        this.logger.warn(
-                            'Failed to send getting started email',
-                            e,
-                        ),
-                );
+                throw new Error("STUB");
             });
             return Promise.resolve(email);
         }
         return new Promise((res) => {
-            this.logger.warn(
-                'No mailer is configured. Please read the docs on how to configure an EmailService',
-            );
-            res({
-                from: this.sender,
-                to: recipient,
-                subject: GETTING_STARTED_SUBJECT,
-                html: '',
-                text: '',
-            });
+            throw new Error("STUB");
         });
     }
 
@@ -552,81 +214,7 @@ export class EmailService {
         userName: string,
         metrics: ProductivityReportMetrics,
     ): Promise<IEmailEnvelope> {
-        if (this.configured()) {
-            const context = productivityReportViewModel({
-                metrics,
-                userEmail,
-                userName,
-                unleashUrl: this.config.server.unleashUrl,
-            });
-
-            const template = 'productivity-report';
-
-            const bodyHtml = await this.compileTemplate(
-                template,
-                TemplateFormat.HTML,
-                context,
-            );
-            const bodyText = await this.compileTemplate(
-                template,
-                TemplateFormat.PLAIN,
-                context,
-            );
-
-            const headers: Record<string, string> = {};
-            Object.entries(this.config.email.optionalHeaders || {}).forEach(
-                ([key, value]) => {
-                    if (typeof value === 'string') {
-                        headers[key] = value;
-                    }
-                },
-            );
-
-            const email: IEmailEnvelope = {
-                from: this.sender,
-                to: userEmail,
-                bcc: '',
-                subject: PRODUCTIVITY_REPORT,
-                html: bodyHtml,
-                text: bodyText,
-                attachments: [
-                    this.resolveTemplateAttachment(
-                        template,
-                        'unleash-logo.png',
-                        'unleashLogo',
-                    ),
-                ],
-                headers,
-            } satisfies IEmailEnvelope;
-
-            process.nextTick(() => {
-                this.mailer!.sendMail(email).then(
-                    () =>
-                        this.logger.info(
-                            'Successfully sent productivity report email',
-                        ),
-                    (e) =>
-                        this.logger.warn(
-                            'Failed to send productivity report email',
-                            e,
-                        ),
-                );
-            });
-            return Promise.resolve(email);
-        }
-        return new Promise((res) => {
-            this.logger.warn(
-                'No mailer is configured. Please read the docs on how to configure an email service',
-            );
-            res({
-                from: this.sender,
-                to: userEmail,
-                bcc: '',
-                subject: PRODUCTIVITY_REPORT,
-                html: '',
-                text: '',
-            });
-        });
+        throw new Error("STUB");
     }
 
     isEnabled(): boolean {
@@ -672,17 +260,7 @@ export class EmailService {
         path: string;
         cid: string;
     } {
-        const topPath = path.resolve(__dirname, '../../mailtemplates');
-        const attachment = path.join(topPath, templateName, filename);
-        if (existsSync(attachment)) {
-            return {
-                filename,
-                path: attachment,
-                cid,
-            };
-        }
-
-        throw new NotFoundError('Could not find email attachment');
+        throw new Error("STUB");
     }
 
     configured(): boolean {

@@ -42,37 +42,15 @@ type IRouteOptions = IRouteOptionsNonGet | IRouteOptionsGet;
 const checkPermission =
     (permission: Permission = []) =>
     async (req, res, next) => {
-        const permissions = (
-            Array.isArray(permission) ? permission : [permission]
-        ).filter((p) => p !== NONE);
-
-        if (!permissions.length) {
-            return next();
-        }
-        if (req.checkRbac && (await req.checkRbac(permissions))) {
-            return next();
-        }
-        return res.status(403).json(new PermissionError(permissions)).end();
+        throw new Error("STUB");
     };
 
 const checkPrivateProjectPermissions = () => async (req, res, next) => {
-    if (
-        !req.checkPrivateProjectPermissions ||
-        (await req.checkPrivateProjectPermissions())
-    ) {
-        return next();
-    }
-    return res.status(404).end();
+    throw new Error("STUB");
 };
 
 const openAPIValidationMiddleware = async (err, req, res, next) => {
-    if (err?.status && err.validationErrors) {
-        const apiError = fromOpenApiValidationErrors(req, err.validationErrors);
-
-        res.status(apiError.statusCode).json(apiError);
-    } else {
-        next(err);
-    }
+    throw new Error("STUB");
 };
 
 /**
@@ -100,11 +78,7 @@ export default class Controller {
 
     private useRouteErrorHandler(handler: IRequestHandler): IRequestHandler {
         return async (req: Request, res: Response) => {
-            try {
-                await handler(req, res);
-            } catch (error) {
-                handleErrors(res, this.ownLogger, error);
-            }
+            throw new Error("STUB");
         };
     }
 
@@ -163,13 +137,7 @@ export default class Controller {
         permission: Permission = NONE,
         ...acceptedContentTypes: string[]
     ): void {
-        this.route({
-            method: 'put',
-            path,
-            handler,
-            permission,
-            acceptedContentTypes,
-        });
+        throw new Error("STUB");
     }
 
     patch(
@@ -178,13 +146,7 @@ export default class Controller {
         permission: Permission = NONE,
         ...acceptedContentTypes: string[]
     ): void {
-        this.route({
-            method: 'patch',
-            path,
-            handler,
-            permission,
-            acceptedContentTypes,
-        });
+        throw new Error("STUB");
     }
 
     delete(
@@ -207,14 +169,7 @@ export default class Controller {
         handler: Function,
         permission: Permission = NONE,
     ): void {
-        this.app.post(
-            path,
-            storeRequestedRoute,
-            checkPermission(permission),
-            checkPrivateProjectPermissions(),
-            filehandler.bind(this),
-            this.useRouteErrorHandler(handler.bind(this)),
-        );
+        throw new Error("STUB");
     }
 
     use(path: string, router: IRouter): void {
@@ -222,10 +177,10 @@ export default class Controller {
     }
 
     useWithMiddleware(path: string, router: IRouter, middleware: any): void {
-        this.app.use(path, middleware, router);
+        throw new Error("STUB");
     }
 
     get router(): IRouter {
-        return this.app;
+        throw new Error("STUB");
     }
 }

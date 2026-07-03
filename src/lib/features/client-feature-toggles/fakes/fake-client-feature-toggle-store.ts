@@ -15,35 +15,10 @@ export default class FakeClientFeatureToggleStore
         archived: boolean = false,
     ): Promise<IFeatureToggleClient[]> {
         const rows = this.featureToggles.filter((toggle) => {
-            if (featureQuery?.namePrefix) {
-                if (featureQuery.project) {
-                    return (
-                        toggle.name.startsWith(featureQuery.namePrefix) &&
-                        featureQuery.project.some((project) =>
-                            project.includes(toggle.project),
-                        )
-                    );
-                }
-                return toggle.name.startsWith(featureQuery.namePrefix);
-            }
-            if (featureQuery?.project) {
-                return featureQuery.project.some((project) =>
-                    project.includes(toggle.project),
-                );
-            }
-            return toggle.archived === archived;
+            throw new Error("STUB");
         });
 
-        const clientRows: IFeatureToggleClient[] = rows.map((t) => ({
-            ...t,
-            enabled: true,
-            strategies: [],
-            description: t.description,
-            type: t.type || 'Release',
-            stale: t.stale || false,
-            variants: [],
-            tags: [],
-        }));
+        const clientRows: IFeatureToggleClient[] = rows.map((t) => { throw new Error("STUB"); });
         return Promise.resolve(clientRows);
     }
 
@@ -62,25 +37,11 @@ export default class FakeClientFeatureToggleStore
     async getPlayground(
         query?: IFeatureToggleQuery,
     ): Promise<IFeatureToggleClient[]> {
-        const features = await this.getFeatures(query);
-        return features.map(({ strategies, ...rest }) => ({
-            ...rest,
-            strategies: strategies.map((strategy, index) => ({
-                ...strategy,
-                id: `strategy#${index}`,
-            })),
-        }));
+        throw new Error("STUB");
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async createFeature(feature: any): Promise<void> {
-        this.featureToggles.push({
-            project: feature.project || 'default',
-            createdAt: new Date(),
-            archived: false,
-            ...feature,
-        });
-
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 }

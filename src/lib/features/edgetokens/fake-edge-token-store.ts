@@ -15,7 +15,7 @@ export class FakeEdgeTokenStore implements IEdgeTokenStore {
         environment: string,
         projects: string[],
     ): Promise<IApiToken | undefined> {
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 
     loadClient(clientId: string): Promise<EdgeClient | undefined> {
@@ -23,7 +23,7 @@ export class FakeEdgeTokenStore implements IEdgeTokenStore {
     }
 
     saveToken(clientId: string, token: IApiToken): Promise<void> {
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 
     saveClient(clientId: string, secretEnc: Buffer): Promise<void> {
@@ -31,7 +31,7 @@ export class FakeEdgeTokenStore implements IEdgeTokenStore {
     }
 
     cleanExpiredNonces(): Promise<void> {
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 
     delete(tokenValue: string): Promise<void> {
@@ -39,6 +39,6 @@ export class FakeEdgeTokenStore implements IEdgeTokenStore {
     }
 
     deleteAll(): Promise<void> {
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 }

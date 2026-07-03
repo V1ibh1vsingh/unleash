@@ -27,101 +27,18 @@ export class ReadyCheckController extends Controller {
         }: Pick<IUnleashServices, 'openApiService' | 'frontendApiService'>,
         db?: Db,
     ) {
-        super(config);
-        this.logger = config.getLogger('ready-check.js');
-        this.db = db;
-        this.frontendApiService = frontendApiService;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getReady,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Operational'],
-                    release: { stable: '7.3.0' },
-                    operationId: 'getReady',
-                    summary: 'Get instance readiness status',
-                    description:
-                        'This operation returns information about whether this Unleash instance is ready to serve requests or not. Typically used by your deployment orchestrator (e.g. Kubernetes, Docker Swarm, Mesos, et al.).',
-                    responses: {
-                        200: createResponseSchema('readyCheckSchema'),
-                        503: emptyResponse,
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getReady(_: Request, res: Response<ReadyCheckSchema>): Promise<void> {
-        if (!this.frontendApiService.isCacheReady()) {
-            res.status(503).end();
-            return;
-        }
-
-        if (this.config.checkDbOnReady && this.db) {
-            try {
-                const timeoutMs = parseEnvVarNumber(
-                    process.env.DATABASE_STATEMENT_TIMEOUT_MS,
-                    200,
-                );
-
-                await this.runReadinessQuery(timeoutMs);
-                res.status(200).json({ health: 'GOOD' });
-                return;
-            } catch (err: any) {
-                this.logger.warn('Database readiness check failed', err);
-                res.status(503).end();
-                return;
-            }
-        }
-
-        res.status(200).json({ health: 'GOOD' });
+        throw new Error("STUB");
     }
 
     private async runReadinessQuery(timeoutMs: number): Promise<void> {
-        const client = getKnexClient(this.db!);
-        const pendingAcquire = client.pool.acquire();
-
-        const abortDelay = setTimeout(() => pendingAcquire.abort(), timeoutMs);
-        let connection: PoolClient | undefined;
-
-        try {
-            connection = (await pendingAcquire.promise) as PoolClient;
-        } finally {
-            clearTimeout(abortDelay);
-        }
-
-        try {
-            await connection.query('BEGIN');
-            await connection.query({
-                text: `SET LOCAL statement_timeout = ${timeoutMs}`,
-            });
-            await connection.query('SELECT 1');
-            await connection.query('COMMIT');
-        } catch (error) {
-            try {
-                await connection.query('ROLLBACK');
-            } catch (rollbackError) {
-                this.logger.debug(
-                    'Failed to rollback readiness timeout transaction',
-                    rollbackError,
-                );
-            }
-            throw error;
-        } finally {
-            if (connection) {
-                await client.releaseConnection(connection);
-            }
-        }
+        throw new Error("STUB");
     }
 }
 
 function getKnexClient(db: Db): Db['client'] {
-    if (db.client?.pool && typeof db.client.releaseConnection === 'function') {
-        return db.client as Db['client'];
-    }
-
-    throw new Error('Unsupported database handle for readiness check');
+    throw new Error("STUB");
 }

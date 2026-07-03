@@ -1,5 +1,5 @@
 export const median = (numbers: number[]): number => {
-    numbers.sort((a, b) => a - b);
+    numbers.sort((a, b) => { throw new Error("STUB"); });
     const midIndex = Math.floor(numbers.length / 2);
     if (numbers.length % 2 === 0) {
         return (numbers[midIndex - 1] + numbers[midIndex]) / 2;

@@ -53,10 +53,7 @@ export abstract class CRUDStore<
         this.tableName = tableName;
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: tableName,
-                action,
-            });
+            { throw new Error("STUB"); };
         this.toRow = options?.toRow ?? defaultToRow<InputModel, InputRowModel>;
         this.fromRow =
             options?.fromRow ?? defaultFromRow<OutputModel, OutputRowModel>;
@@ -81,15 +78,7 @@ export abstract class CRUDStore<
     }
 
     async bulkInsert(items: InputModel[]): Promise<OutputModel[]> {
-        if (!items || items.length === 0) {
-            return [];
-        }
-        const endTimer = this.timer('bulkInsert');
-        const rows = await this.db(this.tableName)
-            .insert(items.map(this.toRow))
-            .returning('*');
-        endTimer();
-        return rows.map(this.fromRow) as OutputModel[];
+        throw new Error("STUB");
     }
 
     async update(id: IdType, item: Partial<InputModel>): Promise<OutputModel> {
@@ -105,7 +94,7 @@ export abstract class CRUDStore<
     }
 
     async deleteAll(): Promise<void> {
-        return this.db(this.tableName).delete();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

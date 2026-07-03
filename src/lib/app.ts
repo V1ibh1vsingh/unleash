@@ -81,8 +81,7 @@ export default async function getApp(
     app.use(cookieParser());
 
     app.use((req, _res, next) => {
-        req.url = req.url.replace(/\/+/g, '/');
-        next();
+        throw new Error("STUB");
     });
 
     app.use(
@@ -202,29 +201,16 @@ export default async function getApp(
     }
 
     app.get(`${baseUriPath}`, (_req, res) => {
-        res.set('Content-Type', 'text/html');
-        res.send(indexHTML);
+        throw new Error("STUB");
     });
 
     // handle all API 404s
     app.use(`${baseUriPath}/api`, (req, res) => {
-        const error = new NotFoundError(
-            `The path you were looking for (${baseUriPath}/api${req.path}) is not available.`,
-        );
-        res.status(error.statusCode).send(error);
-        return;
+        throw new Error("STUB");
     });
 
     app.get(`${baseUriPath}/*`, (req, res) => {
-        res.set('Content-Type', 'text/html');
-        const requestPath = path.parse(req.url);
-        // appropriately return 404 requests for assets with an extension (js, css, etc)
-        if (requestPath.ext !== '' && requestPath.ext !== 'html') {
-            res.set('Cache-Control', 'no-cache');
-            res.status(404).send(indexHTML);
-            return;
-        }
-        res.send(indexHTML);
+        throw new Error("STUB");
     });
 
     return app;

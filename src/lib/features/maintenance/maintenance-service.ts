@@ -24,7 +24,7 @@ export default class MaintenanceService implements IMaintenanceStatus {
         this.logger = config.getLogger('services/maintenance-service.ts');
         this.settingService = settingService;
         this.resolveMaintenance = memoizee(
-            async () => (await this.getMaintenanceSetting()).enabled,
+            async () => { throw new Error("STUB"); },
             {
                 promise: true,
                 maxAge: minutesToMilliseconds(1),
@@ -45,22 +45,13 @@ export default class MaintenanceService implements IMaintenanceStatus {
     }
 
     async getMaintenanceSetting(): Promise<MaintenanceSchema> {
-        return this.settingService.getWithDefault(maintenanceSettingsKey, {
-            enabled: false,
-        });
+        throw new Error("STUB");
     }
 
     async toggleMaintenanceMode(
         setting: MaintenanceSchema,
         auditUser: IAuditUser,
     ): Promise<void> {
-        //@ts-expect-error
-        this.resolveMaintenance.clear();
-        return this.settingService.insert(
-            maintenanceSettingsKey,
-            setting,
-            auditUser,
-            false,
-        );
+        throw new Error("STUB");
     }
 }

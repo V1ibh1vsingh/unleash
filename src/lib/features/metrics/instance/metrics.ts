@@ -63,268 +63,33 @@ export default class ClientMetricsController extends Controller {
         >,
         config: IUnleashConfig,
     ) {
-        super(config);
-        const { getLogger } = config;
-
-        this.logger = getLogger('/api/client/metrics');
-        this.clientInstanceService = clientInstanceService;
-        this.openApiService = openApiService;
-        this.metricsV2 = clientMetricsServiceV2;
-        this.customMetricsService = customMetricsService;
-        this.flagResolver = config.flagResolver;
-
-        this.route({
-            method: 'post',
-            path: '',
-            handler: this.registerMetrics,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Client'],
-                    summary: 'Register client usage metrics',
-                    description: `Registers usage metrics. Stores information about how many times each flag was evaluated to enabled and disabled within a time frame. If provided, this operation will also store data on how many times each feature flag's variants were displayed to the end user.`,
-                    release: { stable: '4.14.0' },
-                    operationId: 'registerClientMetrics',
-                    requestBody: createRequestSchema('clientMetricsSchema'),
-                    responses: {
-                        ...getStandardResponses(400),
-                        202: emptyResponse,
-                        204: emptyResponse,
-                    },
-                }),
-                rateLimit({
-                    windowMs: minutesToMilliseconds(1),
-                    max: config.metricsRateLimiting.clientMetricsMaxPerMinute,
-                    validate: false,
-                    standardHeaders: true,
-                    legacyHeaders: false,
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/bulk',
-            handler: this.bulkMetrics,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Unleash Edge'],
-                    summary: 'Send metrics in bulk',
-                    description: `This operation accepts batched metrics from any client. Metrics will be inserted into Unleash's metrics storage`,
-                    release: { stable: '5.9.0' },
-                    operationId: 'clientBulkMetrics',
-                    requestBody: createRequestSchema('bulkMetricsSchema'),
-                    responses: {
-                        202: emptyResponse,
-                        ...getStandardResponses(400, 413, 415),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/custom',
-            handler: this.customMetrics,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Client'],
-                    summary: 'Send custom metrics',
-                    description: `This operation accepts custom metrics from clients. These metrics will be exposed via Prometheus in Unleash.`,
-                    release: { stable: '7.0.0' },
-                    operationId: 'clientCustomMetrics',
-                    requestBody: createRequestSchema('customMetricsSchema'),
-                    responses: {
-                        202: emptyResponse,
-                        ...getStandardResponses(400),
-                    },
-                }),
-                rateLimit({
-                    windowMs: minutesToMilliseconds(1),
-                    max: config.metricsRateLimiting.clientMetricsMaxPerMinute,
-                    validate: false,
-                    standardHeaders: true,
-                    legacyHeaders: false,
-                }),
-            ],
-        });
-
-        // Note: Custom metrics GET endpoints are now handled by the admin API
+        throw new Error("STUB");
     }
 
     private async processPromiseResults(
         promises: Promise<void>[],
     ): Promise<boolean> {
-        const results = await Promise.allSettled(promises);
-        const rejected = results.filter(
-            (result): result is PromiseRejectedResult =>
-                result.status === 'rejected',
-        );
-        if (rejected.length) {
-            this.logger.warn(
-                'Some promise tasks failed',
-                rejected.map((r) => r.reason?.message || r.reason),
-            );
-        }
-        return rejected.length === 0;
+        throw new Error("STUB");
     }
 
     async registerMetrics(
         req: IAuthRequest<void, void, ClientMetricsSchema>,
         res: Response,
     ): Promise<void> {
-        if (this.config.flagResolver.isEnabled('disableMetrics')) {
-            res.status(204).end();
-        } else {
-            try {
-                const { body: data, user } = req;
-                const clientIp = extractClientIp(req);
-                const { impactMetrics, ...metricsData } = data;
-                const environment =
-                    this.metricsV2.resolveMetricsEnvironment(user);
-
-                await this.clientInstanceService.registerInstance(
-                    metricsData,
-                    clientIp,
-                    environment,
-                );
-
-                await this.metricsV2.registerClientMetrics(
-                    metricsData,
-                    clientIp,
-                    environment,
-                );
-                if (impactMetrics) {
-                    await this.metricsV2.registerImpactMetrics(
-                        impactMetrics as Metric[],
-                    );
-                }
-
-                res.getHeaderNames().forEach((header) => {
-                    res.removeHeader(header);
-                });
-                res.status(202).end();
-            } catch (_e) {
-                res.status(400).end();
-            }
-        }
+        throw new Error("STUB");
     }
 
     async customMetrics(
         req: IAuthRequest<void, void, CustomMetricsSchema>,
         res: Response<void>,
     ): Promise<void> {
-        if (this.config.flagResolver.isEnabled('disableMetrics')) {
-            res.status(204).end();
-        } else {
-            try {
-                const { body } = req;
-
-                // Use Joi validation for custom metrics
-                await customMetricsSchema.validateAsync(body);
-
-                // Process and store custom metrics
-                if (body.metrics && Array.isArray(body.metrics)) {
-                    const validMetrics = body.metrics.filter(
-                        (metric) =>
-                            typeof metric.name === 'string' &&
-                            typeof metric.value === 'number',
-                    );
-
-                    if (validMetrics.length < body.metrics.length) {
-                        this.logger.warn(
-                            'Some invalid metric types found, skipping',
-                        );
-                    }
-
-                    this.customMetricsService.addMetrics(
-                        validMetrics as Omit<StoredCustomMetric, 'timestamp'>[],
-                    );
-                }
-
-                res.status(202).end();
-            } catch (e) {
-                this.logger.error('Failed to process custom metrics', e);
-                res.status(400).end();
-            }
-        }
+        throw new Error("STUB");
     }
 
     async bulkMetrics(
         req: IAuthRequest<void, void, BulkMetricsSchema>,
         res: Response<void>,
     ): Promise<void> {
-        if (this.config.flagResolver.isEnabled('disableMetrics')) {
-            res.status(204).end();
-        } else {
-            const { body, user } = req;
-            const clientIp = extractClientIp(req);
-            const { metrics, applications, impactMetrics } = body;
-            const promises: Promise<void>[] = [];
-
-            // when an app omits its `environment` and
-            // the filter on raw `metrics[]` entries — only metrics
-            // matching the token's scope are persisted
-            const acceptedEnvironment =
-                this.metricsV2.resolveUserEnvironment(user);
-
-            try {
-                for (const app of applications) {
-                    // per app `environment` from the body - when this bulk endpoint
-                    // forwards metrics from many environments for edge proxies
-                    const appEnvironment =
-                        app.environment ?? acceptedEnvironment;
-                    if (
-                        app.sdkType === 'frontend' &&
-                        typeof app.sdkVersion === 'string'
-                    ) {
-                        this.clientInstanceService.registerFrontendClient({
-                            appName: app.appName,
-                            instanceId: app.instanceId,
-                            environment: appEnvironment,
-                            sdkType: app.sdkType,
-                            sdkVersion: app.sdkVersion,
-                            projects: app.projects,
-                        });
-                    } else {
-                        promises.push(
-                            this.clientInstanceService.registerBackendClient(
-                                app,
-                                clientIp,
-                                appEnvironment,
-                            ),
-                        );
-                    }
-                }
-                if (metrics && metrics.length > 0) {
-                    const data: IClientMetricsEnv[] =
-                        await clientMetricsEnvBulkSchema.validateAsync(metrics);
-                    const filteredData = data.filter(
-                        (metric) => metric.environment === acceptedEnvironment,
-                    );
-                    promises.push(
-                        this.metricsV2.registerBulkMetrics(filteredData),
-                    );
-                }
-
-                if (impactMetrics && impactMetrics.length > 0) {
-                    promises.push(
-                        this.metricsV2.registerImpactMetrics(impactMetrics),
-                    );
-                }
-
-                const ok = await this.processPromiseResults(promises);
-                if (!ok) {
-                    res.status(400).end();
-                } else {
-                    res.status(202).end();
-                }
-            } catch (_e) {
-                await this.processPromiseResults(promises);
-                res.status(400).end();
-            }
-        }
+        throw new Error("STUB");
     }
 }

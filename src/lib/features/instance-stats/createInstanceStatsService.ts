@@ -179,10 +179,10 @@ export const createFakeInstanceStatsService = (config: IUnleashConfig) => {
     const trafficDataUsageStore = new FakeTrafficDataUsageStore();
     const featureStrategiesStore = new FakeFeatureStrategiesStore();
     const releasePlanTemplateStore = {
-        count: () => Promise.resolve(0),
+        count: () => { throw new Error("STUB"); },
     } as ReleasePlanTemplateStore;
     const releasePlanStore = {
-        count: () => Promise.resolve(0),
+        count: () => { throw new Error("STUB"); },
     } as ReleasePlanStore;
     const instanceStatsServiceStores = {
         featureToggleStore,

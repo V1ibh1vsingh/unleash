@@ -22,20 +22,16 @@ export class IntegrationEventsService {
         limit: number,
         offset: number,
     ): Promise<IntegrationEventSchema[]> {
-        return this.integrationEventsStore.getPaginatedEvents(
-            id,
-            limit,
-            offset,
-        );
+        throw new Error("STUB");
     }
 
     async registerEvent(
         integrationEvent: IntegrationEventWriteModel,
     ): Promise<IntegrationEventSchema> {
-        return this.integrationEventsStore.insert(integrationEvent);
+        throw new Error("STUB");
     }
 
     async cleanUpEvents(): Promise<void> {
-        await this.integrationEventsStore.cleanUpEvents();
+        throw new Error("STUB");
     }
 }

@@ -21,62 +21,11 @@ export const backendApiAccessMiddleware = (
         !authentication.enableApiToken ||
         authentication.type === IAuthType.NONE
     ) {
-        return (_req, _res, next) => next();
+        return (_req, _res, next) => { throw new Error("STUB"); };
     }
 
     return async (req: IAuthRequest | IApiRequest, res, next) => {
-        const allowDeprecatedApiTokenMiddleware = flagResolver.isEnabled(
-            'allowDeprecatedApiTokenMiddleware',
-        );
-        // Defer to api-token-middleware
-        if (allowDeprecatedApiTokenMiddleware) {
-            return next();
-        }
-
-        try {
-            const apiToken = req.header('authorization');
-            if (!apiToken) {
-                res.status(401).send({
-                    message: NO_TOKEN_WHERE_TOKEN_WAS_REQUIRED,
-                });
-                return;
-            }
-
-            // Disallow PAT/Service account tokens and admin tokens
-            if (apiToken.startsWith('user:') || apiToken.startsWith('*:*')) {
-                res.status(403).send({
-                    message: TOKEN_TYPE_ERROR_MESSAGE,
-                });
-                return;
-            }
-
-            const apiUser = apiToken
-                ? await apiTokenService.getUserForToken(apiToken)
-                : undefined;
-            const { CLIENT, BACKEND } = ApiTokenType;
-
-            if (apiUser) {
-                if (apiUser.type !== CLIENT && apiUser.type !== BACKEND) {
-                    res.status(403).send({
-                        message: TOKEN_TYPE_ERROR_MESSAGE,
-                    });
-                    return;
-                }
-                req.user = apiUser;
-                next();
-            } else {
-                res.status(401).send({
-                    message: NO_TOKEN_WHERE_TOKEN_WAS_REQUIRED,
-                });
-                return;
-            }
-        } catch (error) {
-            logger.warn(error);
-            res.status(401).send({
-                message: NO_TOKEN_WHERE_TOKEN_WAS_REQUIRED,
-            });
-            return;
-        }
+        throw new Error("STUB");
     };
 };
 

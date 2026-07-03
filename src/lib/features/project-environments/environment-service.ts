@@ -90,41 +90,15 @@ export default class EnvironmentService {
     async getProjectEnvironments(
         projectId: string,
     ): Promise<IProjectsAvailableOnEnvironment[]> {
-        // This function produces an object for every environment, in that object is a boolean
-        // describing whether that environment is enabled - aka not deprecated
-        const environments =
-            await this.projectStore.getEnvironmentsForProject(projectId);
-        const environmentsOnProject = new Set(
-            environments.map((env) => env.environment),
-        );
-
-        const allEnvironments =
-            await this.environmentStore.getProjectEnvironments(projectId);
-
-        return allEnvironments.map((env) => {
-            return {
-                ...env,
-                visible: environmentsOnProject.has(env.name),
-            };
-        });
+        throw new Error("STUB");
     }
 
     async updateSortOrder(sortOrder: ISortOrder): Promise<void> {
-        await sortOrderSchema.validateAsync(sortOrder);
-        await Promise.all(
-            Object.keys(sortOrder).map((key) => {
-                const value = sortOrder[key];
-                return this.environmentStore.updateSortOrder(key, value);
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async toggleEnvironment(name: string, value: boolean): Promise<void> {
-        const exists = await this.environmentStore.exists(name);
-        if (exists) {
-            return this.environmentStore.toggle(name, value);
-        }
-        throw new NotFoundError(`Could not find environment ${name}`);
+        throw new Error("STUB");
     }
 
     async addEnvironmentToProject(
@@ -168,29 +142,7 @@ export default class EnvironmentService {
         strategy: CreateFeatureStrategySchema,
         auditUser: IAuditUser,
     ): Promise<CreateFeatureStrategySchema> {
-        if (strategy.name !== 'flexibleRollout') {
-            throw new BadDataError(
-                'Only "flexibleRollout" strategy can be used as a default strategy for an environment',
-            );
-        }
-        const previousDefaultStrategy =
-            await this.projectStore.getDefaultStrategy(projectId, environment);
-        const defaultStrategy = await this.projectStore.updateDefaultStrategy(
-            projectId,
-            environment,
-            strategy,
-        );
-        await this.eventService.storeEvent(
-            new DefaultStrategyUpdatedEvent({
-                project: projectId,
-                environment,
-                preData: previousDefaultStrategy,
-                data: defaultStrategy,
-                auditUser,
-            }),
-        );
-
-        return defaultStrategy;
+        throw new Error("STUB");
     }
 
     async overrideEnabledProjects(
@@ -202,7 +154,7 @@ export default class EnvironmentService {
 
         const allEnvironments = await this.environmentStore.getAll();
         const existingEnvironmentsToEnable = allEnvironments.filter((env) =>
-            environmentNamesToEnable.includes(env.name),
+            { throw new Error("STUB"); },
         );
 
         if (
@@ -216,9 +168,9 @@ export default class EnvironmentService {
         }
 
         const environmentsNotAlreadyEnabled =
-            existingEnvironmentsToEnable.filter((env) => !env.enabled);
+            existingEnvironmentsToEnable.filter((env) => { throw new Error("STUB"); });
         const environmentsToDisable = allEnvironments.filter((env) => {
-            return !environmentNamesToEnable.includes(env.name) && env.enabled;
+            throw new Error("STUB");
         });
 
         await this.environmentStore.disable(environmentsToDisable);
@@ -236,29 +188,20 @@ export default class EnvironmentService {
     ) {
         const projectLinks =
             await this.projectStore.getProjectLinksForEnvironments(
-                toDisable.map((env) => env.name),
+                toDisable.map((env) => { throw new Error("STUB"); }),
             );
 
         const unlinkTasks = projectLinks.map((link) => {
-            return this.forceRemoveEnvironmentFromProject(
-                link.environmentName,
-                link.projectId,
-            );
+            throw new Error("STUB");
         });
         await Promise.all(unlinkTasks.flat());
 
         const uniqueProjects = [
-            ...new Set(projectLinks.map((link) => link.projectId)),
+            ...new Set(projectLinks.map((link) => { throw new Error("STUB"); })),
         ];
 
         const linkTasks = uniqueProjects.flatMap((project) => {
-            return toEnable.map((enabledEnv) => {
-                return this.addEnvironmentToProject(
-                    enabledEnv.name,
-                    project,
-                    SYSTEM_USER_AUDIT,
-                );
-            });
+            throw new Error("STUB");
         });
 
         await Promise.all(linkTasks);
@@ -283,16 +226,6 @@ export default class EnvironmentService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const _projectEnvs =
-            await this.projectStore.getEnvironmentsForProject(projectId);
-
-        await this.forceRemoveEnvironmentFromProject(environment, projectId);
-        await this.eventService.storeEvent(
-            new ProjectEnvironmentRemoved({
-                project: projectId,
-                environment,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 }

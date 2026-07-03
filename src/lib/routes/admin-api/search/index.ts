@@ -6,16 +6,6 @@ import Controller from '../../controller.js';
 
 export class SearchApi extends Controller {
     constructor(config: IUnleashConfig, services: IUnleashServices, _db: Db) {
-        super(config);
-
-        this.app.use(
-            '/features',
-            new FeatureSearchController(config, services).router,
-        );
-
-        this.app.use(
-            '/events',
-            new EventSearchController(config, services).router,
-        );
+        throw new Error("STUB");
     }
 }

@@ -73,7 +73,7 @@ export default class SegmentStore implements ISegmentStore {
         return this.db
             .from(T.segments)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async create(
@@ -161,7 +161,7 @@ export default class SegmentStore implements ISegmentStore {
             .from('change_requests')
             .whereNotIn('state', ['Applied', 'Rejected', 'Cancelled']);
 
-        const pendingChangeRequestIds = pendingCRs.map((cr) => cr.id);
+        const pendingChangeRequestIds = pendingCRs.map((cr) => { throw new Error("STUB"); });
 
         const crFeatures = await this.db
             .select(
@@ -224,53 +224,12 @@ export default class SegmentStore implements ISegmentStore {
         combinedUsageData: any,
     ): ISegmentRow[] {
         return rows.map((row) => {
-            const usageData = combinedUsageData[row.id];
-            if (usageData) {
-                return {
-                    ...row,
-                    used_in_features: usageData.features.size,
-                    used_in_projects: usageData.projects.size,
-                };
-            } else {
-                return {
-                    ...row,
-                    used_in_features: 0,
-                    used_in_projects: 0,
-                };
-            }
+            throw new Error("STUB");
         });
     }
 
     private combineUsageData = (pendingCRs, crFeatures) => {
-        const changeRequestToProjectMap = pendingCRs.reduce(
-            (acc, { id, project }) => {
-                acc[id] = project;
-                return acc;
-            },
-            {},
-        );
-
-        const combinedUsageData = crFeatures.reduce((acc, segmentEvent) => {
-            const { payload, changeRequestId, feature } = segmentEvent;
-            const project = changeRequestToProjectMap[changeRequestId];
-
-            for (const segmentId of payload.segments) {
-                const existingData = acc[segmentId];
-                if (existingData) {
-                    acc[segmentId] = {
-                        features: existingData.features.add(feature),
-                        projects: existingData.projects.add(project),
-                    };
-                } else {
-                    acc[segmentId] = {
-                        features: new Set([feature]),
-                        projects: new Set([project]),
-                    };
-                }
-            }
-            return acc;
-        }, {});
-        return combinedUsageData;
+        throw new Error("STUB");
     };
 
     private mergeCurrentUsageWithCombinedData(
@@ -279,16 +238,7 @@ export default class SegmentStore implements ISegmentStore {
     ) {
         currentSegmentUsage.forEach(
             ({ segmentId, featureName, projectName }) => {
-                const usage = combinedUsageData[segmentId];
-                if (usage) {
-                    usage.features.add(featureName);
-                    usage.projects.add(projectName);
-                } else {
-                    combinedUsageData[segmentId] = {
-                        features: new Set([featureName]),
-                        projects: new Set([projectName]),
-                    };
-                }
+                throw new Error("STUB");
             },
         );
     }
@@ -311,7 +261,7 @@ export default class SegmentStore implements ISegmentStore {
     }
 
     deleteAll(): Promise<void> {
-        return this.db(T.segments).del();
+        throw new Error("STUB");
     }
 
     async exists(id: number): Promise<boolean> {
@@ -351,14 +301,7 @@ export default class SegmentStore implements ISegmentStore {
     }
 
     async getAllFeatureStrategySegments(): Promise<IFeatureStrategySegment[]> {
-        const rows: IFeatureStrategySegmentRow[] = await this.db
-            .select(['segment_id', 'feature_strategy_id'])
-            .from(T.featureStrategySegment);
-
-        return rows.map((row) => ({
-            featureStrategyId: row.feature_strategy_id,
-            segmentId: row.segment_id,
-        }));
+        throw new Error("STUB");
     }
 
     async existsByName(name: string): Promise<boolean> {
@@ -371,16 +314,11 @@ export default class SegmentStore implements ISegmentStore {
     }
 
     async getProjectSegmentCount(projectId: string): Promise<number> {
-        const result = await this.db.raw(
-            `SELECT COUNT(*) FROM ${T.segments} WHERE segment_project_id = ?`,
-            [projectId],
-        );
-
-        return Number(result.rows[0].count);
+        throw new Error("STUB");
     }
 
     prefixColumns(): string[] {
-        return COLUMNS.map((c) => `${T.segments}.${c}`);
+        return COLUMNS.map((c) => { throw new Error("STUB"); });
     }
 
     mapRow(row?: ISegmentRow): ISegment {

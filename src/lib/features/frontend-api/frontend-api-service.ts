@@ -79,47 +79,22 @@ export class FrontendApiService {
     }
 
     isCacheReady(): boolean {
-        return this.globalFrontendApiCache.isReady();
+        throw new Error("STUB");
     }
 
     async waitForCacheReady(): Promise<void> {
-        return this.globalFrontendApiCache.readyPromise;
+        throw new Error("STUB");
     }
 
     async getFrontendApiFeatures(
         token: IApiUser,
         context: Context,
     ): Promise<FrontendApiFeatureSchema[]> {
-        const client = await this.clientForFrontendApiToken(token);
-        const definitions = client.getFeatureToggleDefinitions() || [];
-        const sessionId =
-            context.sessionId || crypto.randomBytes(18).toString('hex');
-        const evaluationContext = {
-            ...context,
-            sessionId,
-        };
-
-        const resultDefinitions: FrontendApiFeatureSchema[] = [];
-        for (const feature of definitions) {
-            const variant = client.getVariant(feature.name, evaluationContext);
-            if (variant.feature_enabled) {
-                resultDefinitions.push({
-                    name: feature.name,
-                    enabled: Boolean(feature.enabled),
-                    variant,
-                    impressionData: Boolean(feature.impressionData),
-                });
-            }
-        }
-
-        return resultDefinitions;
+        throw new Error("STUB");
     }
 
     private resolveProject(user: IUser | IApiUser) {
-        if (user instanceof ApiUser) {
-            return user.projects;
-        }
-        return ['default'];
+        throw new Error("STUB");
     }
 
     async registerFrontendApiMetrics(
@@ -128,125 +103,40 @@ export class FrontendApiService {
         ip: string,
         sdkVersion?: string | string[],
     ): Promise<void> {
-        FrontendApiService.assertExpectedTokenType(token);
-
-        const environment =
-            this.services.clientMetricsServiceV2.resolveMetricsEnvironment(
-                token as ApiUser,
-            );
-
-        await this.services.clientMetricsServiceV2.registerClientMetrics(
-            metrics,
-            ip,
-            environment,
-        );
-
-        // Because we're keeping impact metrics out of the client schema for now,
-        // we need to check for it separately here. We can remove this once impact
-        // metrics are fully integrated into the client schema.
-        const { impactMetrics } = metrics as ClientMetricsSchema & {
-            impactMetrics?: Metric[];
-        };
-
-        if (impactMetrics) {
-            await this.services.clientMetricsServiceV2.registerImpactMetrics(
-                impactMetrics as Metric[],
-            );
-        }
-
-        if (metrics.instanceId && typeof sdkVersion === 'string') {
-            const client = {
-                appName: metrics.appName,
-                instanceId: metrics.instanceId,
-                sdkVersion: sdkVersion,
-                sdkType: 'frontend' as const,
-                environment: environment,
-                projects: this.resolveProject(token),
-            };
-            this.services.clientInstanceService.registerFrontendClient(client);
-        }
+        throw new Error("STUB");
     }
 
     private async clientForFrontendApiToken(token: IApiUser): Promise<Unleash> {
-        FrontendApiService.assertExpectedTokenType(token);
-
-        let client = this.clients.get(token.secret);
-        if (!client) {
-            client = this.createClientForFrontendApiToken(token);
-            this.clients.set(token.secret, client);
-            this.config.eventBus.emit(FRONTEND_API_REPOSITORY_CREATED);
-        }
-
-        return client;
+        throw new Error("STUB");
     }
 
     private async createClientForFrontendApiToken(
         token: IApiUser,
     ): Promise<Unleash> {
-        const repository = new FrontendApiRepository(
-            this.config,
-            this.globalFrontendApiCache,
-            token,
-        );
-        const client = new Unleash({
-            appName: 'frontend-api',
-            url: 'unused',
-            storageProvider: new InMemStorageProvider(),
-            disableMetrics: true,
-            repository,
-            disableAutoStart: true,
-            skipInstanceCountWarning: true,
-        });
-
-        client.on(UnleashEvents.Error, (error) => {
-            this.logger.error('We found an event error', error);
-        });
-
-        await client.start();
-
-        return client;
+        throw new Error("STUB");
     }
 
     async deleteClientForFrontendApiToken(secret: string): Promise<void> {
-        const clientPromise = this.clients.get(secret);
-        if (clientPromise) {
-            const client = await clientPromise;
-            client.destroy();
-            this.clients.delete(secret);
-        }
+        throw new Error("STUB");
     }
 
     stopAll(): void {
-        this.clients.forEach((promise) => {
-            promise.then((c) => c.destroy());
-        });
+        throw new Error("STUB");
     }
 
     refreshData(): Promise<void> {
-        return this.globalFrontendApiCache.refreshData();
+        throw new Error("STUB");
     }
 
     private static assertExpectedTokenType({ type }: IApiUser) {
-        if (!(type === ApiTokenType.FRONTEND || type === ApiTokenType.ADMIN)) {
-            throw new InvalidTokenError();
-        }
+        throw new Error("STUB");
     }
 
     async setFrontendCorsSettings(
         value: FrontendSettings['frontendApiOrigins'],
         auditUser: IAuditUser,
     ): Promise<void> {
-        const error = validateOrigins(value);
-        if (error) {
-            throw new BadDataError(error);
-        }
-        const settings = (await this.getFrontendSettings(false)) || {};
-        await this.services.settingService.insert(
-            frontendSettingsKey,
-            { ...settings, frontendApiOrigins: value },
-            auditUser,
-            false,
-        );
+        throw new Error("STUB");
     }
 
     async fetchFrontendSettings(): Promise<FrontendSettings> {

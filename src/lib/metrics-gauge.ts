@@ -48,13 +48,11 @@ export class DbMetricsMonitor {
         ) {
             const resultArray = this.asArray(definition.map(result));
             resultArray
-                .filter((r) => typeof r.value !== 'number')
+                .filter((r) => { throw new Error("STUB"); })
                 .forEach((r) => {
-                    this.log.debug(
-                        `Invalid value for ${definition.name}: ${r.value}. Value must be an number.`,
-                    );
+                    throw new Error("STUB");
                 });
-            return resultArray.filter((r) => typeof r.value === 'number');
+            return resultArray.filter((r) => { throw new Error("STUB"); });
         }
         return [];
     }
@@ -64,53 +62,20 @@ export class DbMetricsMonitor {
     ): Task {
         const gauge = createGauge(definition);
         const task = async () => {
-            try {
-                const results = await this.fetch(definition);
-                if (results.length > 0) {
-                    gauge.reset();
-                    for (const r of results) {
-                        // when r.value is zero, we are writing a zero value to the gauge which might not be what we want in some cases
-                        if (r.labels) {
-                            gauge.labels(r.labels).set(r.value);
-                        } else {
-                            gauge.set(r.value);
-                        }
-                    }
-                }
-            } catch (e) {
-                this.log.warn(`Failed to refresh ${definition.name}`, e);
-            }
+            throw new Error("STUB");
         };
         this.updaters.set(definition.name, { target: gauge, task });
         return task;
     }
 
     refreshMetrics = async () => {
-        const tasks = Array.from(this.updaters.entries()).map(
-            ([name, updater]) => ({ name, task: updater.task }),
-        );
-        for (const { name, task } of tasks) {
-            this.log.debug(`Refreshing metric ${name}`);
-            await task();
-        }
+        throw new Error("STUB");
     };
 
     async findValue(
         name: string,
         labels?: Record<string, string | number>,
     ): Promise<number | undefined> {
-        const gauge = await this.updaters.get(name)?.target.gauge?.get();
-        if (gauge && gauge.values.length > 0) {
-            const values = labels
-                ? gauge.values.filter(({ labels: l }) => {
-                      return Object.entries(labels).every(
-                          ([key, value]) => l[key] === value,
-                      );
-                  })
-                : gauge.values;
-            // return first value
-            return values.map(({ value }) => value).shift();
-        }
-        return undefined;
+        throw new Error("STUB");
     }
 }

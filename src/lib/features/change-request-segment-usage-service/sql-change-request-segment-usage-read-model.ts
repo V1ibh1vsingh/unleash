@@ -26,20 +26,9 @@ export class ChangeRequestSegmentUsageReadModel
 
         const queryResult = await query;
         const strategies = queryResult.rows
-            .filter((row) => row.payload?.segments?.includes(segmentId))
+            .filter((row) => { throw new Error("STUB"); })
             .map((row) => {
-                const { payload, project, environment, feature } = row;
-                return {
-                    projectId: project,
-                    featureName: feature,
-                    environment: environment,
-                    strategyName: payload.name,
-                    ...(payload.id ? { id: payload.id } : {}),
-                    changeRequest: {
-                        id: row.change_request_id,
-                        title: row.title || null,
-                    },
-                };
+                throw new Error("STUB");
             });
 
         return strategies;

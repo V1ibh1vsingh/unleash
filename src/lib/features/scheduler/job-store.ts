@@ -28,33 +28,14 @@ export class JobStore
     ) {
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(config.eventBus, DB_TIME, {
-                store: TABLE,
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async acquireBucket(
         key: string,
         bucketLengthInMinutes: number,
     ): Promise<{ name: string; bucket: Date } | undefined> {
-        const endTimer = this.timer('acquireBucket');
-
-        const bucket = await this.db<Row<JobModel>>(TABLE)
-            .insert({
-                name: key,
-                // note: date_floor_round is a custom function defined in the DB
-                bucket: this.db.raw(
-                    `date_floor_round(now(), '${bucketLengthInMinutes} minutes')`,
-                ),
-                stage: 'started',
-            })
-            .onConflict(['name', 'bucket'])
-            .ignore()
-            .returning(['name', 'bucket']);
-
-        endTimer();
-        return bucket[0];
+        throw new Error("STUB");
     }
 
     async update(
@@ -95,7 +76,7 @@ export class JobStore
     }
 
     async deleteAll(): Promise<void> {
-        return this.db(TABLE).delete();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -103,6 +84,6 @@ export class JobStore
     async count(): Promise<number> {
         return this.db(TABLE)
             .count()
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 }

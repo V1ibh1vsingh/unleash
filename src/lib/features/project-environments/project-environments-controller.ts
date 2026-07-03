@@ -54,84 +54,7 @@ export default class ProjectEnvironmentsController extends Controller {
             | 'projectService'
         >,
     ) {
-        super(config);
-
-        this.logger = config.getLogger('admin-api/project/environments.ts');
-        this.environmentService = transactionalEnvironmentService;
-        this.openApiService = openApiService;
-        this.projectService = projectService;
-
-        this.route({
-            method: 'post',
-            path: PREFIX,
-            handler: this.addEnvironmentToProject,
-            permission: UPDATE_PROJECT,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '4.13.0' },
-                    operationId: 'addEnvironmentToProject',
-                    summary: 'Add an environment to a project.',
-                    description:
-                        'This endpoint adds the provided environment to the specified project, with optional support for enabling and disabling change requests for the environment and project.',
-                    requestBody: createRequestSchema(
-                        'projectEnvironmentSchema',
-                    ),
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403, 409),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'delete',
-            path: `${PREFIX}/:environment`,
-            acceptAnyContentType: true,
-            handler: this.removeEnvironmentFromProject,
-            permission: UPDATE_PROJECT,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '4.13.0' },
-                    operationId: 'removeEnvironmentFromProject',
-                    summary: 'Remove an environment from a project.',
-                    description:
-                        'This endpoint removes the specified environment from the project.',
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(400, 401, 403),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: `${PREFIX}/:environment/default-strategy`,
-            handler: this.updateDefaultStrategyForProjectEnvironment,
-            permission: [UPDATE_PROJECT, PROJECT_DEFAULT_STRATEGY_WRITE],
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Projects'],
-                    release: { stable: '5.1.0' },
-                    operationId: 'addDefaultStrategyToProjectEnvironment',
-                    summary: 'Set environment-default strategy',
-                    description:
-                        'Sets a default strategy for this environment. Unleash will use this strategy by default when enabling a feature flag. Use the wild card "*" for `:environment` to add to all environments. ',
-                    requestBody: createRequestSchema(
-                        'createFeatureStrategySchema',
-                    ),
-                    responses: {
-                        200: createResponseSchema(
-                            'createFeatureStrategySchema',
-                        ),
-                        ...getStandardResponses(400),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async addEnvironmentToProject(
@@ -147,7 +70,7 @@ export default class ProjectEnvironmentsController extends Controller {
         await this.projectService.getProject(projectId); // Validates that the project exists
 
         await this.environmentService.transactional((service) =>
-            service.addEnvironmentToProject(environment, projectId, req.audit),
+            { throw new Error("STUB"); },
         );
 
         res.status(200).end();
@@ -157,17 +80,7 @@ export default class ProjectEnvironmentsController extends Controller {
         req: IAuthRequest<IProjectEnvironmentParams>,
         res: Response<void>,
     ): Promise<void> {
-        const { projectId, environment } = req.params;
-
-        await this.environmentService.transactional((service) =>
-            service.removeEnvironmentFromProject(
-                environment,
-                projectId,
-                req.audit,
-            ),
-        );
-
-        res.status(200).end();
+        throw new Error("STUB");
     }
 
     async updateDefaultStrategyForProjectEnvironment(
@@ -177,23 +90,6 @@ export default class ProjectEnvironmentsController extends Controller {
         >,
         res: Response<CreateFeatureStrategySchema>,
     ): Promise<void> {
-        const { projectId, environment } = req.params;
-        const strategy = req.body;
-
-        const saved = await this.environmentService.transactional((service) =>
-            service.updateDefaultStrategy(
-                environment,
-                projectId,
-                strategy,
-                req.audit,
-            ),
-        );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            createFeatureStrategySchema.$id,
-            serializeDates(saved),
-        );
+        throw new Error("STUB");
     }
 }

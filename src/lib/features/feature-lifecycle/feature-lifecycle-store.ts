@@ -31,10 +31,7 @@ export class FeatureLifecycleStore implements IFeatureLifecycleStore {
     constructor(db: Db, eventBus: EventEmitter) {
         this.db = db;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'feature-lifecycle',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async insert(
@@ -45,13 +42,13 @@ export class FeatureLifecycleStore implements IFeatureLifecycleStore {
             .select('name')
             .whereIn(
                 'name',
-                featureLifecycleStages.map((stage) => stage.feature),
+                featureLifecycleStages.map((stage) => { throw new Error("STUB"); }),
             );
         const existingFeaturesSet = new Set(
-            existingFeatures.map((item) => item.name),
+            existingFeatures.map((item) => { throw new Error("STUB"); }),
         );
         const validStages = featureLifecycleStages.filter((stage) =>
-            existingFeaturesSet.has(stage.feature),
+            { throw new Error("STUB"); },
         );
 
         if (validStages.length === 0) {
@@ -61,23 +58,14 @@ export class FeatureLifecycleStore implements IFeatureLifecycleStore {
         const baseTime = new Date();
         const result = await this.db('feature_lifecycles')
             .insert(
-                validStages.map((stage, index) => ({
-                    feature: stage.feature,
-                    stage: stage.stage,
-                    status: stage.status,
-                    status_value: stage.statusValue,
-                    created_at: new Date(baseTime.getTime() + index), // prevent identical times for stages in bulk update
-                })),
+                validStages.map((stage, index) => { throw new Error("STUB"); }),
             )
             .returning('*')
             .onConflict(['feature', 'stage'])
             .ignore();
 
         stopTimer();
-        return result.map((row) => ({
-            stage: row.stage,
-            feature: row.feature,
-        }));
+        return result.map((row) => { throw new Error("STUB"); });
     }
 
     async get(feature: string): Promise<FeatureLifecycleView> {
@@ -87,11 +75,7 @@ export class FeatureLifecycleStore implements IFeatureLifecycleStore {
             .orderBy('created_at', 'asc');
         stopTimer();
 
-        return results.map(({ stage, status, created_at }: DBType) => ({
-            stage,
-            ...(status ? { status } : {}),
-            enteredStageAt: new Date(created_at),
-        }));
+        return results.map(({ stage, status, created_at }: DBType) => { throw new Error("STUB"); });
     }
 
     async getAll(): Promise<FeatureLifecycleProjectItem[]> {
@@ -103,12 +87,7 @@ export class FeatureLifecycleStore implements IFeatureLifecycleStore {
         stopTimer();
 
         return results.map(
-            ({ feature, stage, created_at, project }: DBProjectType) => ({
-                feature,
-                stage,
-                project,
-                enteredStageAt: new Date(created_at),
-            }),
+            ({ feature, stage, created_at, project }: DBProjectType) => { throw new Error("STUB"); },
         );
     }
 
@@ -119,20 +98,11 @@ export class FeatureLifecycleStore implements IFeatureLifecycleStore {
     }
 
     async deleteAll(): Promise<void> {
-        const stopTimer = this.timer('deleteAll');
-        await this.db('feature_lifecycles').del();
-        stopTimer();
+        throw new Error("STUB");
     }
 
     async deleteStage(stage: FeatureLifecycleStage): Promise<void> {
-        const stopTimer = this.timer('deleteStage');
-        await this.db('feature_lifecycles')
-            .where({
-                stage: stage.stage,
-                feature: stage.feature,
-            })
-            .del();
-        stopTimer();
+        throw new Error("STUB");
     }
 
     async stageExists(stage: FeatureLifecycleStage): Promise<boolean> {

@@ -42,15 +42,10 @@ export class ReleasePlanMilestoneStore extends CRUDStore<
     async deleteAllConnectedToReleasePlanTemplate(
         templateId: string,
     ): Promise<void> {
-        await this.db(TABLE)
-            .where('release_plan_definition_id', templateId)
-            .delete();
+        throw new Error("STUB");
     }
 
     async updateStartTime(milestoneId: string): Promise<void> {
-        await this.db.raw(
-            `UPDATE ${TABLE} SET started_at = NOW() WHERE id = ?`,
-            [milestoneId],
-        );
+        throw new Error("STUB");
     }
 }

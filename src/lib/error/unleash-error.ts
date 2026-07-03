@@ -49,14 +49,11 @@ export abstract class UnleashError extends Error {
     additionalParameters: object;
 
     constructor(message: string, name?: string) {
-        super();
-        this.id = randomId();
-        this.name = name || this.constructor.name;
-        super.message = message;
+        throw new Error("STUB");
     }
 
     help(): string {
-        return `Get help for id ${this.id}`;
+        throw new Error("STUB");
     }
 
     toJSON(): ApiErrorSchema {

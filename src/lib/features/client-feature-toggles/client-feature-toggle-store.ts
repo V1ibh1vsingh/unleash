@@ -53,10 +53,7 @@ export default class FeatureToggleClientStore
         this.db = db;
         this.logger = getLogger('feature-toggle-client-store.ts');
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'client-feature-toggle',
-                action,
-            });
+            { throw new Error("STUB"); };
         this.flagResolver = flagResolver;
     }
 
@@ -145,10 +142,7 @@ export default class FeatureToggleClientStore
 
             if (userId) {
                 query = query.leftJoin(`favorite_features`, function () {
-                    this.on(
-                        'favorite_features.feature',
-                        'features.name',
-                    ).andOnVal('favorite_features.user_id', '=', userId);
+                    throw new Error("STUB");
                 });
                 selectColumns = [
                     ...selectColumns,
@@ -187,77 +181,13 @@ export default class FeatureToggleClientStore
         stopTimer();
 
         const featureToggles = rows.reduce((acc, r) => {
-            const feature: PartialDeep<IFeatureToggleClient> = acc[r.name] ?? {
-                strategies: [],
-            };
-            if (this.isUnseenStrategyRow(feature, r) && !r.strategy_disabled) {
-                feature.strategies?.push(this.rowToStrategy(r));
-            }
-            if (this.isNewTag(feature, r)) {
-                this.addTag(feature, r);
-            }
-            if (featureQuery?.inlineSegmentConstraints && r.segment_id) {
-                this.addSegmentToStrategy(feature, r);
-            } else if (
-                !featureQuery?.inlineSegmentConstraints &&
-                r.segment_id
-            ) {
-                this.addSegmentIdsToStrategy(feature, r);
-            }
-            if (r.parent && !isAdmin) {
-                feature.dependencies = feature.dependencies || [];
-                feature.dependencies.push({
-                    feature: r.parent,
-                    enabled: r.parent_enabled,
-                    ...(r.parent_enabled
-                        ? { variants: r.parent_variants }
-                        : {}),
-                });
-            }
-            feature.impressionData = r.impression_data;
-            feature.enabled = !!r.enabled;
-            feature.name = r.name;
-            feature.description = r.description;
-            feature.project = r.project;
-            feature.stale = r.stale;
-            feature.type = r.type;
-            feature.lastSeenAt = r.last_seen_at;
-            feature.variants = r.variants || [];
-            feature.project = r.project;
-            if (isAdmin) {
-                feature.favorite = r.favorite;
-                feature.lastSeenAt = r.last_seen_at;
-                feature.createdAt = r.created_at;
-            }
-
-            acc[r.name] = feature;
-            return acc;
+            throw new Error("STUB");
         }, {});
 
         const features: IFeatureToggleClient[] = Object.values(featureToggles);
 
         // strip away unwanted properties
-        const cleanedFeatures = features.map(({ strategies, ...rest }) => ({
-            ...rest,
-            strategies: strategies
-                ?.sort(sortStrategies)
-                .map(({ id, title, sortOrder, milestoneId, ...strategy }) => ({
-                    ...strategy,
-                    ...(strategy.segments
-                        ? {
-                              segments: [...strategy.segments].sort(
-                                  (a, b) => a - b,
-                              ),
-                          }
-                        : {}),
-
-                    ...(isPlayground && title ? { title } : {}),
-
-                    // We should not send strategy IDs from the client API,
-                    // as this breaks old versions of the Go SDK (at least).
-                    ...(isAdmin || isPlayground ? { id } : {}),
-                })),
-        }));
+        const cleanedFeatures = features.map(({ strategies, ...rest }) => { throw new Error("STUB"); });
 
         return cleanedFeatures;
     }
@@ -289,7 +219,7 @@ export default class FeatureToggleClientStore
     ): boolean {
         return (
             row.strategy_id &&
-            !feature.strategies?.find((s) => s?.id === row.strategy_id)
+            !feature.strategies?.find((s) => { throw new Error("STUB"); })
         );
     }
 
@@ -311,7 +241,7 @@ export default class FeatureToggleClientStore
             row.tag_value &&
             !feature.tags?.some(
                 (tag) =>
-                    tag?.type === row.tag_type && tag?.value === row.tag_value,
+                    { throw new Error("STUB"); },
             )
         );
     }
@@ -321,7 +251,7 @@ export default class FeatureToggleClientStore
         row: Record<string, any>,
     ) {
         feature.strategies
-            ?.find((s) => s?.id === row.strategy_id)
+            ?.find((s) => { throw new Error("STUB"); })
             ?.constraints?.push(...row.segment_constraints);
     }
 
@@ -330,7 +260,7 @@ export default class FeatureToggleClientStore
         row: Record<string, any>,
     ) {
         const strategy = feature.strategies?.find(
-            (s) => s?.id === row.strategy_id,
+            (s) => { throw new Error("STUB"); },
         );
         if (!strategy) {
             return;
@@ -364,10 +294,6 @@ export default class FeatureToggleClientStore
     async getPlayground(
         featureQuery?: IFeatureToggleQuery,
     ): Promise<IFeatureToggleClient[]> {
-        return this.getAll({
-            featureQuery,
-            archived: false,
-            requestType: 'playground',
-        });
+        throw new Error("STUB");
     }
 }

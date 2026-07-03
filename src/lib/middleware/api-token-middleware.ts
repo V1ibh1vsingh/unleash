@@ -40,49 +40,11 @@ export const apiAccessMiddleware = (
     logger.debug('Enabling api-token middleware');
 
     if (!authentication.enableApiToken) {
-        return (_req, _res, next) => next();
+        return (_req, _res, next) => { throw new Error("STUB"); };
     }
 
     return async (req: IAuthRequest | IApiRequest, res, next) => {
-        if (req.user) {
-            return next();
-        }
-
-        try {
-            const apiToken = req.header('authorization');
-            if (!apiToken?.startsWith('user:')) {
-                const apiUser = apiToken
-                    ? await apiTokenService.getUserForToken(apiToken)
-                    : undefined;
-                const { CLIENT, BACKEND, FRONTEND } = ApiTokenType;
-
-                if (apiUser) {
-                    if (
-                        ((apiUser.type === CLIENT ||
-                            apiUser.type === BACKEND) &&
-                            !isClientApi(req)) ||
-                        (apiUser.type === FRONTEND && !isProxyApi(req))
-                    ) {
-                        res.status(403).send({
-                            message: TOKEN_TYPE_ERROR_MESSAGE,
-                        });
-                        return;
-                    }
-                    req.user = apiUser;
-                } else if (isClientApi(req) || isProxyApi(req)) {
-                    // If we're here, we know that api token middleware was enabled, otherwise we'd returned a no-op middleware
-                    // We explicitly only protect client and proxy apis, since admin apis are protected by our permission checker
-                    // Reject with 401
-                    res.status(401).send({
-                        message: NO_TOKEN_WHERE_TOKEN_WAS_REQUIRED,
-                    });
-                    return;
-                }
-            }
-        } catch (error) {
-            logger.warn(error);
-        }
-        next();
+        throw new Error("STUB");
     };
 };
 

@@ -13,21 +13,7 @@ export default class RemoteAddressStrategy extends Strategy {
         }
         return parameters.IPs.split(/\s*,\s*/).some(
             (range: string): Boolean => {
-                if (range === context.remoteAddress) {
-                    return true;
-                }
-                if (Address4.isValid(range)) {
-                    try {
-                        const subnetRange = new Address4(range);
-                        const remoteAddress = new Address4(
-                            context.remoteAddress || '',
-                        );
-                        return remoteAddress.isInSubnet(subnetRange);
-                    } catch (_err) {
-                        return false;
-                    }
-                }
-                return false;
+                throw new Error("STUB");
             },
         );
     }

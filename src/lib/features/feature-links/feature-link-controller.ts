@@ -34,73 +34,7 @@ export default class FeatureLinkController extends Controller {
             openApiService,
         }: FeatureLinkServices,
     ) {
-        super(config);
-        this.transactionalFeatureLinkService = transactionalFeatureLinkService;
-        this.openApiService = openApiService;
-        this.flagResolver = config.flagResolver;
-
-        this.route({
-            method: 'post',
-            path: PATH,
-            handler: this.createFeatureLink,
-            permission: UPDATE_FEATURE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Features'],
-                    release: { beta: '7', stable: '8' },
-                    operationId: 'createFeatureLink',
-                    summary: 'Create a feature link',
-                    description: 'Create a new link for a feature.',
-                    responses: {
-                        204: emptyResponse,
-                        ...getStandardResponses(400, 401, 403, 415),
-                    },
-                    requestBody: createRequestSchema('linkSchema'),
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'put',
-            path: PATH_LINK,
-            handler: this.updateFeatureLink,
-            permission: UPDATE_FEATURE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Features'],
-                    release: { beta: '7', stable: '8' },
-                    operationId: 'updateFeatureLink',
-                    summary: 'Update a feature link',
-                    description: 'Update an existing feature link.',
-                    responses: {
-                        204: emptyResponse,
-                        ...getStandardResponses(400, 401, 403, 404, 415),
-                    },
-                    requestBody: createRequestSchema('linkSchema'),
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'delete',
-            path: PATH_LINK,
-            handler: this.deleteFeatureLink,
-            acceptAnyContentType: true,
-            permission: UPDATE_FEATURE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Features'],
-                    release: { beta: '7', stable: '8' },
-                    operationId: 'deleteFeatureLink',
-                    summary: 'Delete a feature link',
-                    description: 'Delete a feature link by id.',
-                    responses: {
-                        204: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async createFeatureLink(
@@ -111,17 +45,7 @@ export default class FeatureLinkController extends Controller {
         >,
         res: Response,
     ): Promise<void> {
-        const { projectId, featureName } = req.params;
-
-        await this.transactionalFeatureLinkService.transactional((service) =>
-            service.createLink(
-                projectId,
-                { ...req.body, featureName },
-                req.audit,
-            ),
-        );
-
-        res.status(204).end();
+        throw new Error("STUB");
     }
 
     async updateFeatureLink(
@@ -132,17 +56,7 @@ export default class FeatureLinkController extends Controller {
         >,
         res: Response,
     ): Promise<void> {
-        const { projectId, linkId, featureName } = req.params;
-
-        await this.transactionalFeatureLinkService.transactional((service) =>
-            service.updateLink(
-                { projectId, linkId },
-                { ...req.body, featureName },
-                req.audit,
-            ),
-        );
-
-        res.status(204).end();
+        throw new Error("STUB");
     }
 
     async deleteFeatureLink(
@@ -153,12 +67,6 @@ export default class FeatureLinkController extends Controller {
         >,
         res: Response,
     ): Promise<void> {
-        const { projectId, linkId } = req.params;
-
-        await this.transactionalFeatureLinkService.transactional((service) =>
-            service.deleteLink({ projectId, linkId }, req.audit),
-        );
-
-        res.status(204).end();
+        throw new Error("STUB");
     }
 }

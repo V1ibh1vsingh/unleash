@@ -107,27 +107,11 @@ export class User implements IUser {
         companyRole,
         productUpdatesEmailConsent,
     }: UserData) {
-        if (!id) {
-            throw new ValidationError('Id is required', [], undefined);
-        }
-
-        this.id = id;
-        this.name = name!;
-        this.username = username!;
-        this.email = email!;
-        this.imageUrl = imageUrl || this.generateImageUrl();
-        this.seenAt = seenAt;
-        this.loginAttempts = loginAttempts;
-        this.createdAt = createdAt;
-        this.accountType = isService ? 'Service Account' : 'User';
-        this.scimId = scimId;
-        this.seatType = seatType;
-        this.companyRole = companyRole;
-        this.productUpdatesEmailConsent = productUpdatesEmailConsent;
+        throw new Error("STUB");
     }
 
     generateImageUrl(): string {
-        return generateImageUrl(this);
+        throw new Error("STUB");
     }
 }
 

@@ -26,54 +26,13 @@ export class SimplePasswordProvider extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'userService' | 'openApiService'>,
     ) {
-        super(config);
-        this.openApiService = openApiService;
-        this.userService = userService;
-
-        this.route({
-            method: 'post',
-            path: '/login',
-            handler: this.login,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Auth'],
-                    summary: 'Log in',
-                    description:
-                        'Logs in the user and creates an active session',
-                    release: { stable: '4.14.0' },
-                    operationId: 'login',
-                    requestBody: createRequestSchema('loginSchema'),
-                    responses: {
-                        200: createResponseSchema('userSchema'),
-                        ...getStandardResponses(401),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async login(
         req: IAuthRequest<void, void, LoginSchema>,
         res: Response<UserSchema>,
     ): Promise<void> {
-        const { username, password } = req.body;
-        const userAgent = req.get('user-agent');
-
-        const { isAPI, ...user } = await this.userService.loginUser(
-            username,
-            password,
-            {
-                userAgent,
-                ip: extractClientIp(req),
-            },
-        );
-        req.session.user = user;
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            userSchema.$id,
-            serializeDates(user),
-        );
+        throw new Error("STUB");
     }
 }

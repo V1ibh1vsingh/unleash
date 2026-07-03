@@ -37,24 +37,7 @@ export const collapseHourlyMetrics = (
 ): IClientMetricsEnv[] => {
     const grouped = new Map<string, IClientMetricsEnv>();
     metrics.forEach((metric) => {
-        const hourlyMetric = {
-            ...metric,
-            timestamp: startOfHour(metric.timestamp),
-        };
-        const key = createMetricKey(hourlyMetric);
-        if (!grouped[key]) {
-            grouped[key] = hourlyMetric;
-        } else {
-            grouped[key].yes = metric.yes + (grouped[key].yes || 0);
-            grouped[key].no = metric.no + (grouped[key].no || 0);
-
-            if (metric.variants) {
-                grouped[key].variants = mergeRecords(
-                    metric.variants,
-                    grouped[key].variants ?? {},
-                );
-            }
-        }
+        throw new Error("STUB");
     });
     return Object.values(grouped);
 };
@@ -63,16 +46,6 @@ export const spreadVariants = (
     metrics: IClientMetricsEnv[],
 ): IClientMetricsEnvVariant[] => {
     return metrics.flatMap((item) => {
-        if (!item.variants) {
-            return [];
-        }
-        return Object.entries(item.variants).map(([variant, count]) => ({
-            featureName: item.featureName,
-            appName: item.appName,
-            environment: item.environment,
-            timestamp: item.timestamp,
-            variant,
-            count,
-        }));
+        throw new Error("STUB");
     });
 };

@@ -13,15 +13,7 @@ import type { IFeaturesReadModel } from '../feature-toggle/types/features-read-m
 
 export const createFeatureLinkService =
     (config: IUnleashConfig) => (db: Db) => {
-        const eventService = createEventsService(db, config);
-        const featureLinkStore = new FeatureLinkStore(db, config);
-        const featuresReadModel = new FeaturesReadModel(db);
-
-        return new FeatureLinkService(
-            { featureLinkStore, featuresReadModel },
-            config,
-            eventService,
-        );
+        throw new Error("STUB");
     };
 
 export const createFakeFeatureLinkService = (

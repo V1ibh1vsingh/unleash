@@ -99,11 +99,7 @@ export default class ClientInstanceService {
     }
 
     private updateSeenClient = (data: IClientApp) => {
-        const current = this.seenClients[this.clientKey(data)];
-        this.seenClients[this.clientKey(data)] = {
-            ...current,
-            ...data,
-        };
+        throw new Error("STUB");
     };
 
     public async registerInstance(
@@ -111,18 +107,11 @@ export default class ClientInstanceService {
         clientIp: string,
         environment: string,
     ): Promise<void> {
-        this.updateSeenClient({
-            appName: data.appName,
-            instanceId: data.instanceId ?? 'default',
-            environment,
-            clientIp: clientIp,
-        });
+        throw new Error("STUB");
     }
 
     public registerFrontendClient(data: IFrontendClientApp): void {
-        data.createdBy = SYSTEM_USER.username!;
-
-        this.updateSeenClient(data);
+        throw new Error("STUB");
     }
 
     public async registerBackendClient(
@@ -130,55 +119,15 @@ export default class ClientInstanceService {
         clientIp: string,
         environment: string,
     ): Promise<void> {
-        const value = await clientRegisterSchema.validateAsync(data);
-        value.clientIp = clientIp;
-        value.createdBy = SYSTEM_USER.username!;
-        value.sdkType = 'backend';
-
-        const existing = this.seenClients[this.clientKey(value)];
-        value.environment = existing?.environment ?? environment; // existing or from the authenticated API token
-
-        this.updateSeenClient(value);
-        this.eventBus.emit(CLIENT_REGISTERED, value);
-
-        if (value.sdkVersion && value.sdkVersion.indexOf(':') > -1) {
-            const [sdkName, sdkVersion] = value.sdkVersion.split(':');
-            const heartbeatEvent: ISdkHeartbeat = {
-                sdkName,
-                sdkVersion,
-                metadata: {
-                    platformName: data.platformName,
-                    platformVersion: data.platformVersion,
-                    yggdrasilVersion: data.yggdrasilVersion,
-                    specVersion: data.specVersion,
-                },
-            };
-
-            this.eventStore.emit(CLIENT_REGISTER, heartbeatEvent);
-        }
+        throw new Error("STUB");
     }
 
     async announceUnannounced(): Promise<void> {
-        if (this.clientApplicationsStore) {
-            const appsToAnnounce =
-                await this.clientApplicationsStore.setUnannouncedToAnnounced();
-            if (appsToAnnounce.length > 0) {
-                const events: ApplicationCreatedEvent[] = appsToAnnounce.map(
-                    (app) => ({
-                        type: APPLICATION_CREATED,
-                        createdBy: app.createdBy || SYSTEM_USER.username!,
-                        data: app,
-                        createdByUserId: app.createdByUserId || SYSTEM_USER.id,
-                        ip: '', // TODO: fix this, how do we get the ip from the client? This comes from a row in the DB
-                    }),
-                );
-                await this.eventStore.batchStore(events);
-            }
-        }
+        throw new Error("STUB");
     }
 
     clientKey(client: IClientApp): string {
-        return `${client.appName}_${client.instanceId}`;
+        throw new Error("STUB");
     }
 
     async bulkAdd(): Promise<void> {
@@ -191,20 +140,7 @@ export default class ClientInstanceService {
             const uniqueRegistrations = Object.values(this.seenClients);
             const uniqueApps: Partial<IClientApplication>[] = Object.values(
                 uniqueRegistrations.reduce((soFar, reg) => {
-                    let existingProjects = [];
-                    if (soFar[`${reg.appName} ${reg.environment}`]) {
-                        existingProjects =
-                            soFar[`${reg.appName} ${reg.environment}`]
-                                .projects || [];
-                    }
-                    soFar[`${reg.appName} ${reg.environment}`] = {
-                        ...reg,
-                        projects: [
-                            ...existingProjects,
-                            ...(reg.projects || []),
-                        ],
-                    };
-                    return soFar;
+                    throw new Error("STUB");
                 }, {}),
             );
             this.seenClients = {};
@@ -225,158 +161,57 @@ export default class ClientInstanceService {
         query: IClientApplicationsSearchParams,
         userId: number,
     ): Promise<IClientApplications> {
-        const applications = await this.clientApplicationsStore.getApplications(
-            { ...query, sortBy: query.sortBy || 'appName' },
-        );
-        const accessibleProjects =
-            await this.privateProjectChecker.getUserAccessibleProjects(userId);
-        if (accessibleProjects.mode === 'all') {
-            return applications;
-        } else {
-            return {
-                applications: applications.applications.map((application) => {
-                    return {
-                        ...application,
-                        usage: application.usage?.filter(
-                            (usageItem) =>
-                                usageItem.project === ALL_PROJECTS ||
-                                accessibleProjects.projects.includes(
-                                    usageItem.project,
-                                ),
-                        ),
-                    };
-                }),
-                total: applications.total,
-            };
-        }
+        throw new Error("STUB");
     }
 
     async getApplication(appName: string): Promise<IApplication> {
-        const [seenToggles, application, instances, strategies, features] =
-            await Promise.all([
-                this.clientMetricsStoreV2.getSeenTogglesForApp(appName),
-                this.clientApplicationsStore.get(appName),
-                this.clientInstanceStore.getByAppName(appName),
-                this.strategyStore.getAll(),
-                this.featureToggleStore.getAll(),
-            ]);
-        if (application === undefined) {
-            throw new NotFoundError(
-                `Could not find application with appName ${appName}`,
-            );
-        }
-        return {
-            appName: application.appName,
-            createdAt: application.createdAt,
-            description: application.description,
-            url: application.url,
-            color: application.color,
-            icon: application.icon,
-            strategies: application.strategies.map((name) => {
-                const found = strategies.find((f) => f.name === name);
-                return found || { name, notFound: true };
-            }),
-            instances,
-            seenToggles: seenToggles.map((name) => {
-                const found = features.find((f) => f.name === name);
-                return found || { name, notFound: true };
-            }),
-            links: {
-                self: `/api/applications/${application.appName}`,
-            },
-        };
+        throw new Error("STUB");
     }
 
     async getApplicationOverview(
         appName: string,
         userId: number,
     ): Promise<IApplicationOverview> {
-        const result =
-            await this.clientApplicationsStore.getApplicationOverview(appName);
-        const accessibleProjects =
-            await this.privateProjectChecker.filterUserAccessibleProjects(
-                userId,
-                result.projects,
-            );
-        result.projects = accessibleProjects;
-        result.environments.forEach((environment) => {
-            environment.issues.outdatedSdks = findOutdatedSDKs(
-                environment.sdks,
-            );
-        });
-        return result;
+        throw new Error("STUB");
     }
 
     async getRecentApplicationEnvironmentInstances(
         appName: string,
         environment: string,
     ) {
-        const instances =
-            await this.clientInstanceStore.getRecentByAppNameAndEnvironment(
-                appName,
-                environment,
-            );
-
-        return instances.map((instance) => ({
-            instanceId: instance.instanceId,
-            clientIp: instance.clientIp,
-            sdkVersion: instance.sdkVersion,
-            lastSeen: instance.lastSeen,
-        }));
+        throw new Error("STUB");
     }
 
     async deleteApplication(appName: string): Promise<void> {
-        await this.clientInstanceStore.deleteForApplication(appName);
-        await this.clientApplicationsStore.delete(appName);
+        throw new Error("STUB");
     }
 
     async createApplication(input: IApplication): Promise<void> {
-        await this.clientApplicationsStore.upsert(input);
+        throw new Error("STUB");
     }
 
     async removeOldInstances(): Promise<void> {
-        return this.clientInstanceStore.removeOldInstances();
+        throw new Error("STUB");
     }
 
     async removeInactiveApplications(): Promise<number> {
-        return this.clientApplicationsStore.removeInactiveApplications();
+        throw new Error("STUB");
     }
 
     async getOutdatedSdks(): Promise<OutdatedSdksSchema['sdks']> {
-        const sdkApps = await this.clientInstanceStore.groupApplicationsBySdk();
-
-        return sdkApps.filter((sdkApp) => isOutdatedSdk(sdkApp.sdkVersion));
+        throw new Error("STUB");
     }
 
     async getOutdatedSdksByProject(
         projectId: string,
     ): Promise<OutdatedSdksSchema['sdks']> {
-        const sdkApps =
-            await this.clientInstanceStore.groupApplicationsBySdkAndProject(
-                projectId,
-            );
-
-        return sdkApps.filter((sdkApp) => isOutdatedSdk(sdkApp.sdkVersion));
+        throw new Error("STUB");
     }
 
     async usesSdkOlderThan(
         sdkName: string,
         sdkVersion: string,
     ): Promise<boolean> {
-        const semver = parseStrictSemVer(sdkVersion);
-        const instancesOfSdk =
-            await this.clientInstanceStore.getBySdkName(sdkName);
-        return instancesOfSdk.some((instance) => {
-            if (instance.sdkVersion) {
-                const [_sdkName, sdkVersion] = instance.sdkVersion.split(':');
-                const instanceUsedSemver = parseStrictSemVer(sdkVersion);
-                return (
-                    instanceUsedSemver !== null &&
-                    semver !== null &&
-                    instanceUsedSemver < semver
-                );
-            }
-            return false;
-        });
+        throw new Error("STUB");
     }
 }

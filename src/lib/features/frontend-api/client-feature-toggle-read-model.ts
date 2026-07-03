@@ -23,10 +23,7 @@ export default class ClientFeatureToggleReadModel
     constructor(db: Db, eventBus: EventEmitter) {
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'client-feature-toggle-read-model',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     public async getAll(): Promise<
@@ -72,11 +69,7 @@ export default class ClientFeatureToggleReadModel
                 'features.name',
             )
             .leftJoin('feature_strategies as fs', function () {
-                this.on('fs.feature_name', '=', 'features.name').andOn(
-                    'fs.environment',
-                    '=',
-                    'fe.environment',
-                );
+                throw new Error("STUB");
             })
             .leftJoin(
                 'feature_strategy_segment as fss',
@@ -104,61 +97,10 @@ export default class ClientFeatureToggleReadModel
         > = {};
 
         rows.forEach((row) => {
-            const environment = row.environment;
-            const featureName = row.name;
-
-            if (!featureTogglesByEnv[environment]) {
-                featureTogglesByEnv[environment] = {};
-            }
-
-            if (!featureTogglesByEnv[environment][featureName]) {
-                featureTogglesByEnv[environment][featureName] = {
-                    name: featureName,
-                    strategies: [],
-                    variants: row.variants || [],
-                    impressionData: row.impression_data,
-                    enabled: !!row.enabled,
-                    description: row.description,
-                    project: row.project,
-                    stale: row.stale,
-                    type: row.type,
-                };
-            }
-
-            const feature = featureTogglesByEnv[environment][featureName];
-
-            if (row.parent) {
-                feature.dependencies = feature.dependencies || [];
-                feature.dependencies.push({
-                    feature: row.parent,
-                    enabled: row.parent_enabled,
-                    ...(row.parent_enabled
-                        ? { variants: row.parent_variants }
-                        : {}),
-                });
-            }
-
-            if (
-                this.isUnseenStrategyRow(feature, row) &&
-                !row.strategy_disabled
-            ) {
-                feature.strategies = feature.strategies || [];
-                feature.strategies.push(this.rowToStrategy(row));
-            }
-            if (row.segment_id) {
-                this.addSegmentIdsToStrategy(feature, row);
-            }
+            throw new Error("STUB");
         });
         Object.values(featureTogglesByEnv).forEach((envFeatures) => {
-            Object.values(envFeatures).forEach((feature) => {
-                if (feature.strategies) {
-                    feature.strategies = feature.strategies
-                        .sort((a, b) => {
-                            return (a.sortOrder || 0) - (b.sortOrder || 0);
-                        })
-                        .map(({ id, sortOrder, ...strategy }) => strategy);
-                }
-            });
+            throw new Error("STUB");
         });
 
         return featureTogglesByEnv;
@@ -169,7 +111,7 @@ export default class ClientFeatureToggleReadModel
         row: Record<string, any>,
     ) {
         const strategy = feature.strategies?.find(
-            (s) => s?.id === row.strategy_id,
+            (s) => { throw new Error("STUB"); },
         );
         if (!strategy) {
             return;
@@ -199,7 +141,7 @@ export default class ClientFeatureToggleReadModel
     ): boolean {
         return (
             row.strategy_id &&
-            !feature.strategies?.find((s) => s?.id === row.strategy_id)
+            !feature.strategies?.find((s) => { throw new Error("STUB"); })
         );
     }
 }

@@ -26,17 +26,11 @@ export default class TagStore implements ITagStore {
         this.db = db;
         this.logger = getLogger('tag-store.ts');
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'tag',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async getTagsByType(type: string): Promise<ITag[]> {
-        const stopTimer = this.timer('getTagByType');
-        const rows = await this.db.select(COLUMNS).from(TABLE).where({ type });
-        stopTimer();
-        return rows.map(this.rowToTag);
+        throw new Error("STUB");
     }
 
     async getAll(): Promise<ITag[]> {
@@ -85,17 +79,11 @@ export default class TagStore implements ITagStore {
     }
 
     async deleteAll(): Promise<void> {
-        const stopTimer = this.timer('deleteAll');
-        await this.db(TABLE).del();
-        stopTimer();
+        throw new Error("STUB");
     }
 
     async bulkImport(tags: ITag[]): Promise<ITag[]> {
-        return this.db(TABLE)
-            .insert(tags)
-            .returning(COLUMNS)
-            .onConflict(['type', 'value'])
-            .ignore();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

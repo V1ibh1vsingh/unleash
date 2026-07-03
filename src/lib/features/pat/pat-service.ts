@@ -40,19 +40,7 @@ export default class PatService {
         forUserId: number,
         auditUser: IAuditUser,
     ): Promise<PatSchema> {
-        await this.validatePat(pat, forUserId);
-
-        const secret = this.generateSecretKey();
-        const newPat = await this.patStore.create(pat, secret, forUserId);
-
-        await this.eventService.storeEvent(
-            new PatCreatedEvent({
-                data: { ...pat, secret: '***' },
-                auditUser,
-            }),
-        );
-
-        return { ...newPat, secret };
+        throw new Error("STUB");
     }
 
     async getAll(userId: number): Promise<PatSchema[]> {
@@ -64,45 +52,17 @@ export default class PatService {
         forUserId: number,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const pat = await this.patStore.get(id);
-
-        await this.eventService.storeEvent(
-            new PatDeletedEvent({
-                data: { ...pat, secret: '***' },
-                auditUser,
-            }),
-        );
-
-        return this.patStore.deleteForUser(id, forUserId);
+        throw new Error("STUB");
     }
 
     async validatePat(
         { description, expiresAt }: CreatePatSchema,
         userId: number,
     ): Promise<void> {
-        if (!description) {
-            throw new BadDataError('PAT description cannot be empty.');
-        }
-
-        if (new Date(expiresAt) < new Date()) {
-            throw new BadDataError('The expiry date should be in future.');
-        }
-
-        if ((await this.patStore.countByUser(userId)) >= PAT_LIMIT) {
-            throw new OperationDeniedError(
-                `Too many PATs (${PAT_LIMIT}) already exist for this user.`,
-            );
-        }
-
-        if (
-            await this.patStore.existsWithDescriptionByUser(description, userId)
-        ) {
-            throw new NameExistsError('PAT description already exists.');
-        }
+        throw new Error("STUB");
     }
 
     private generateSecretKey() {
-        const randomStr = crypto.randomBytes(28).toString('hex');
-        return `user:${randomStr}`;
+        throw new Error("STUB");
     }
 }

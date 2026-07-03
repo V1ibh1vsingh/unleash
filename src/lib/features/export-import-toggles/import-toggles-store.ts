@@ -24,10 +24,7 @@ export class ImportTogglesStore implements IImportTogglesStore {
         const rows = await this.db
             .from('permissions')
             .whereIn('permission', names);
-        return rows.map((row) => ({
-            name: row.permission,
-            displayName: row.display_name,
-        }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async deleteStrategiesForFeatures(
@@ -45,7 +42,7 @@ export class ImportTogglesStore implements IImportTogglesStore {
         environment: string,
     ): Promise<boolean> {
         if (featureNames.length === 0) return true;
-        const joinedFeatureNames = featureNames.map(() => '?').join(',');
+        const joinedFeatureNames = featureNames.map(() => { throw new Error("STUB"); }).join(',');
         const result = await this.db.raw(
             `SELECT EXISTS (SELECT 1 FROM feature_strategies WHERE environment = ? and feature_name in (${joinedFeatureNames})) AS present`,
             [environment, ...featureNames],
@@ -59,12 +56,12 @@ export class ImportTogglesStore implements IImportTogglesStore {
             .select('name')
             .whereNot('archived_at', null)
             .whereIn('name', featureNames);
-        return rows.map((row) => row.name);
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getExistingFeatures(featureNames: string[]): Promise<string[]> {
         const rows = await this.db(T.features).whereIn('name', featureNames);
-        return rows.map((row) => row.name);
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getFeaturesInOtherProjects(
@@ -75,7 +72,7 @@ export class ImportTogglesStore implements IImportTogglesStore {
             .select(['name', 'project'])
             .whereNot('project', project)
             .whereIn('name', featureNames);
-        return rows.map((row) => ({ name: row.name, project: row.project }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getFeaturesInProject(
@@ -87,7 +84,7 @@ export class ImportTogglesStore implements IImportTogglesStore {
             .where('project', project)
             .where('archived_at', null)
             .whereIn('name', featureNames);
-        return rows.map((row) => row.name);
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getProjectFeaturesLimit(
@@ -105,7 +102,7 @@ export class ImportTogglesStore implements IImportTogglesStore {
             .andWhere('project', project)
             .where('archived_at', null)
             .count()
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
 
         const newFeaturesCount = featureNames.length - existingFeaturesCount;
 
@@ -113,7 +110,7 @@ export class ImportTogglesStore implements IImportTogglesStore {
             .where('project', project)
             .count()
             .where('archived_at', null)
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
 
         return {
             limit,

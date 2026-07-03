@@ -5,6 +5,6 @@ import type {
 
 export class FakeLastSeenReadModel implements ILastSeenReadModel {
     getForFeature(_features: string[]): Promise<IFeatureLastSeenResults> {
-        return Promise.resolve({});
+        throw new Error("STUB");
     }
 }

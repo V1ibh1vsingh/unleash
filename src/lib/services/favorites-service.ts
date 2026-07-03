@@ -54,93 +54,31 @@ export class FavoritesService {
         { feature, user }: IFavoriteFeatureProps,
         auditUser: IAuditUser,
     ): Promise<IFavoriteFeature> {
-        const data = await this.favoriteFeaturesStore.addFavoriteFeature({
-            feature: feature,
-            userId: user.id,
-        });
-        if (data === undefined) {
-            throw new NotFoundError(
-                `Feature with name ${feature} did not exist`,
-            );
-        }
-        await this.eventService.storeEvent(
-            new FeatureFavoritedEvent({
-                featureName: feature,
-                data: {
-                    feature,
-                },
-                auditUser,
-            }),
-        );
-        return data;
+        throw new Error("STUB");
     }
 
     async unfavoriteFeature(
         { feature, user }: IFavoriteFeatureProps,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const data = await this.favoriteFeaturesStore.delete({
-            feature: feature,
-            userId: user.id,
-        });
-        await this.eventService.storeEvent(
-            new FeatureUnfavoritedEvent({
-                featureName: feature,
-                data: {
-                    feature,
-                },
-                auditUser,
-            }),
-        );
-        return data;
+        throw new Error("STUB");
     }
 
     async favoriteProject(
         { project, user }: IFavoriteProjectProps,
         auditUser: IAuditUser,
     ): Promise<IFavoriteProject> {
-        const data = await this.favoriteProjectsStore.addFavoriteProject({
-            project,
-            userId: user.id,
-        });
-        if (data === undefined) {
-            throw new NotFoundError(`Project with id ${project} was not found`);
-        }
-        await this.eventService.storeEvent(
-            new ProjectFavoritedEvent({
-                data: {
-                    project,
-                },
-                project,
-                auditUser,
-            }),
-        );
-        return data;
+        throw new Error("STUB");
     }
 
     async unfavoriteProject(
         { project, user }: IFavoriteProjectProps,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const _data = await this.favoriteProjectsStore.delete({
-            project: project,
-            userId: user.id,
-        });
-        await this.eventService.storeEvent(
-            new ProjectUnfavoritedEvent({
-                data: {
-                    project,
-                },
-                project,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async isFavoriteProject(favorite: IFavoriteProjectKey): Promise<boolean> {
-        if (favorite.userId) {
-            return this.favoriteProjectsStore.exists(favorite);
-        }
-        return Promise.resolve(false);
+        throw new Error("STUB");
     }
 }

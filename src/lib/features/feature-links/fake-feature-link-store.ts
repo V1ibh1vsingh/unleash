@@ -13,9 +13,7 @@ export default class FakeFeatureLinkStore implements IFeatureLinkStore {
         }
 
         const filteredLinks = this.links.filter((link) => {
-            return Object.entries(query).every(([key, value]) => {
-                return link[key] === value;
-            });
+            throw new Error("STUB");
         });
 
         return filteredLinks.length;
@@ -31,24 +29,24 @@ export default class FakeFeatureLinkStore implements IFeatureLinkStore {
     }
 
     async delete(id: string): Promise<void> {
-        const index = this.links.findIndex((link) => link.id === id);
+        const index = this.links.findIndex((link) => { throw new Error("STUB"); });
         if (index !== -1) {
             this.links.splice(index, 1);
         }
     }
 
     async deleteAll(): Promise<void> {
-        this.links = [];
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async exists(id: string): Promise<boolean> {
-        return this.links.some((link) => link.id === id);
+        return this.links.some((link) => { throw new Error("STUB"); });
     }
 
     async get(id: string): Promise<IFeatureLink> {
-        const link = this.links.find((link) => link.id === id);
+        const link = this.links.find((link) => { throw new Error("STUB"); });
         if (link) {
             return link;
         }

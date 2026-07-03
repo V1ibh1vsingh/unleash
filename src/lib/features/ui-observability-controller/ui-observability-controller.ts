@@ -21,38 +21,10 @@ export class UiObservabilityController extends Controller {
         config: IUnleashConfig,
         { openApiService }: Pick<IUnleashServices, 'openApiService'>,
     ) {
-        super(config);
-        this.logger = config.getLogger('/admin-api/ui-observability.js');
-
-        this.route({
-            method: 'post',
-            path: '',
-            handler: this.recordUiError,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Admin UI'],
-                    release: { stable: '5.10.0' },
-                    operationId: 'uiObservability',
-                    summary: 'Accepts errors from the UI client',
-                    description:
-                        'This endpoint accepts error reports from the UI client, so that we can add observability on UI errors.',
-                    requestBody: createRequestSchema('recordUiErrorSchema'),
-                    responses: {
-                        204: emptyResponse,
-                        ...getStandardResponses(401, 403),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async recordUiError(req: Request, res: Response): Promise<void> {
-        this.logger.warn(
-            `UI Observability Error: ${req.body.errorMessage}`,
-            req.body.errorStack,
-        );
-
-        res.status(204).end();
+        throw new Error("STUB");
     }
 }

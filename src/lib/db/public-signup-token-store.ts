@@ -32,41 +32,7 @@ interface ITokenUserRow {
 }
 
 const tokenRowReducer = (acc, tokenRow) => {
-    const {
-        userId,
-        userName,
-        userUsername,
-        roleId,
-        roleName,
-        roleType,
-        ...token
-    } = tokenRow;
-    if (!acc[tokenRow.secret]) {
-        acc[tokenRow.secret] = {
-            secret: token.secret,
-            name: token.name,
-            url: token.url,
-            expiresAt: token.expires_at,
-            enabled: token.enabled,
-            createdAt: token.created_at,
-            createdBy: token.created_by,
-            role: {
-                id: roleId,
-                name: roleName,
-                type: roleType,
-            },
-            users: [],
-        };
-    }
-    const currentToken = acc[tokenRow.secret];
-    if (userId) {
-        currentToken.users.push({
-            id: userId,
-            name: userName,
-            username: userUsername,
-        });
-    }
-    return acc;
+    throw new Error("STUB");
 };
 
 const toRow = (newToken: IPublicSignupTokenCreate) => {
@@ -94,16 +60,13 @@ export class PublicSignupTokenStore implements IPublicSignupTokenStore {
     constructor(db: Db, eventBus: EventEmitter, _getLogger: LogProvider) {
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'public-signup-tokens',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     count(): Promise<number> {
         return this.db(TABLE)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     private makeTokenUsersQuery() {
@@ -140,10 +103,7 @@ export class PublicSignupTokenStore implements IPublicSignupTokenStore {
     }
 
     async addTokenUser(secret: string, userId: number): Promise<void> {
-        await this.db<ITokenUserRow>(TOKEN_USERS_TABLE).insert(
-            { user_id: userId, secret },
-            ['created_at'],
-        );
+        throw new Error("STUB");
     }
 
     async insert(
@@ -194,7 +154,7 @@ export class PublicSignupTokenStore implements IPublicSignupTokenStore {
     }
 
     async deleteAll(): Promise<void> {
-        return this.db<ITokenInsert>(TABLE).del();
+        throw new Error("STUB");
     }
 
     async update(

@@ -23,88 +23,17 @@ export default class CustomMetricsController extends Controller {
         }: Pick<IUnleashServices, 'customMetricsService' | 'openApiService'>,
         config: IUnleashConfig,
     ) {
-        super(config);
-        const { getLogger } = config;
-
-        this.logger = getLogger('/admin-api/custom-metrics');
-        this.openApiService = openApiService;
-        this.customMetricsService = customMetricsService;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getCustomMetrics,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Metrics'],
-                    summary: 'Get stored custom metrics',
-                    description: `Retrieves the stored custom metrics data.`,
-                    release: { stable: '7.0.0' },
-                    operationId: 'getCustomMetrics',
-                    responses: {
-                        200: emptyResponse,
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/prometheus',
-            handler: this.getPrometheusMetrics,
-            permission: NONE,
-            middleware: [
-                this.openApiService.validPath({
-                    tags: ['Metrics'],
-                    summary: 'Get metrics in Prometheus format',
-                    description: `Exposes all custom metrics in Prometheus text format for scraping.`,
-                    release: { stable: '7.0.0' },
-                    operationId: 'getPrometheusMetrics',
-                    responses: {
-                        200: {
-                            description: 'Prometheus formatted metrics',
-                            content: {
-                                'text/plain': {
-                                    schema: {
-                                        type: 'string',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getCustomMetrics(_req: IAuthRequest, res: Response): Promise<void> {
-        try {
-            const allMetrics = this.customMetricsService.getMetrics();
-
-            res.json({
-                metrics: allMetrics,
-                count: allMetrics.length,
-                metricNames: this.customMetricsService.getMetricNames(),
-            });
-        } catch (e) {
-            this.logger.error('Error retrieving custom metrics', e);
-            res.status(500).end();
-        }
+        throw new Error("STUB");
     }
 
     async getPrometheusMetrics(
         _req: IAuthRequest,
         res: Response,
     ): Promise<void> {
-        try {
-            const output = this.customMetricsService.getPrometheusMetrics();
-
-            res.set('Content-Type', 'text/plain');
-            res.send(output);
-        } catch (e) {
-            this.logger.error('Error generating Prometheus metrics', e);
-            res.status(500).end();
-        }
+        throw new Error("STUB");
     }
 }

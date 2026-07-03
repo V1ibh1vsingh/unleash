@@ -71,22 +71,14 @@ export type ValidatedUrl = {
 };
 
 const defaultLookup = async (hostname: string) => {
-    try {
-        return await dnsLookup(hostname, { all: true, order: 'ipv4first' });
-    } catch (error) {
-        // old addon tests use nock-only hostnames; keep production DNS failures strict.
-        if (process.env.NODE_ENV === 'test') {
-            return [{ address: '93.184.216.34', family: 4 as const }];
-        }
-        throw error;
-    }
+    throw new Error("STUB");
 };
 
 const isAllowListed = (hostname: string, allowList?: UrlAllowList) => {
     const host = hostname.toLowerCase();
     return Boolean(
-        allowList?.hosts.some((h) => h.toLowerCase() === host) ||
-            allowList?.suffixes.some((s) => host.endsWith(s)),
+        allowList?.hosts.some((h) => { throw new Error("STUB"); }) ||
+            allowList?.suffixes.some((s) => { throw new Error("STUB"); }),
     );
 };
 
@@ -94,43 +86,5 @@ export const validateUrl = async (
     rawUrl: string,
     options: ValidateUrlOptions = {},
 ): Promise<ValidatedUrl> => {
-    const url = new URL(rawUrl);
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        throw new ValidationError(`Invalid protocol: ${url.protocol}`, [], url);
-    }
-    const hostname = url.hostname.toLowerCase();
-    const ipFamily = net.isIP(hostname);
-    const resolved =
-        ipFamily !== 0
-            ? [{ address: hostname, family: ipFamily as 4 | 6 }]
-            : await (options.lookup ?? defaultLookup)(hostname);
-    if (resolved.length === 0) {
-        throw new ValidationError(
-            `Hostname did not resolve: ${hostname}`,
-            [],
-            url,
-        );
-    }
-
-    const allowPrivate =
-        options.allowPrivateNetworkUrls ||
-        isAllowListed(hostname, options.allowList);
-
-    if (!allowPrivate) {
-        const blocked = resolved.find(({ address }) => !isPublicIp(address));
-        if (blocked) {
-            throw new ValidationError(
-                `URL resolves to a non-public address: ${blocked.address}`,
-                [],
-                url,
-            );
-        }
-    }
-    const pinned = resolved[0];
-    return {
-        url,
-        hostname,
-        pinnedAddress: pinned.address,
-        family: pinned.family as 4 | 6,
-    };
+    throw new Error("STUB");
 };

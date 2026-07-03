@@ -16,32 +16,26 @@ export class CustomMetricsService {
     }
 
     addMetric(metric: Omit<StoredCustomMetric, 'timestamp'>): void {
-        this.store.addMetric(metric);
+        throw new Error("STUB");
     }
 
     addMetrics(metrics: Omit<StoredCustomMetric, 'timestamp'>[]): void {
-        this.store.addMetrics(metrics);
+        throw new Error("STUB");
     }
 
     getMetrics(): StoredCustomMetric[] {
-        return this.store.getMetrics();
+        throw new Error("STUB");
     }
 
     getMetricNames(): string[] {
-        return this.store.getMetricNames();
+        throw new Error("STUB");
     }
 
     getPrometheusMetrics(): string {
-        return this.store.getPrometheusMetrics();
+        throw new Error("STUB");
     }
 
     clearMetricsForTesting(): void {
-        if (this.store instanceof CustomMetricsStore) {
-            (this.store as any).customMetricsStore = new Map();
-        } else {
-            this.logger.warn(
-                'Cannot clear metrics - store is not an instance of CustomMetricsStore',
-            );
-        }
+        throw new Error("STUB");
     }
 }

@@ -55,22 +55,17 @@ class ContextService {
     }
 
     async getAllWithoutProject(): Promise<IContextField[]> {
-        const allFields = await this.contextFieldStore.getAll();
-        return allFields.filter((field) => !field.project);
+        throw new Error("STUB");
     }
 
     async getAllForProject(projectId: string): Promise<IContextField[]> {
-        const allFields = await this.contextFieldStore.getAll();
-        return allFields.filter((field) => field.project === projectId);
+        throw new Error("STUB");
     }
 
     async getAssignableFieldsForProject(
         projectId: string,
     ): Promise<IContextField[]> {
-        const allFields = await this.contextFieldStore.getAll();
-        return allFields.filter(
-            (field) => field.project === projectId || !field.project,
-        );
+        throw new Error("STUB");
     }
 
     async getContextFields({
@@ -82,77 +77,22 @@ class ContextService {
         projectId?: string;
         userId: number;
     }): Promise<IContextField[]> {
-        if (projectId) {
-            if (include?.match(/^root$/i)) {
-                return this.getAssignableFieldsForProject(projectId);
-            }
-
-            return this.getAllForProject(projectId);
-        }
-
-        if (include?.match(/^project$/i)) {
-            const allFields = await this.getAll();
-
-            const accessibleProjects =
-                await this.privateProjectChecker.getUserAccessibleProjects(
-                    userId,
-                );
-
-            if (accessibleProjects.mode === 'all') {
-                return allFields;
-            }
-
-            const projectSet = new Set(accessibleProjects.projects);
-
-            return allFields.filter(
-                (contextField) =>
-                    !contextField.project ||
-                    projectSet.has(contextField.project),
-            );
-        }
-
-        return this.getAllWithoutProject();
+        throw new Error("STUB");
     }
 
     async getContextField(name: string): Promise<IContextField> {
-        const field = await this.contextFieldStore.get(name);
-        if (field === undefined) {
-            throw new NotFoundError(
-                `Could not find context field with name ${name}`,
-            );
-        }
-        return field;
+        throw new Error("STUB");
     }
 
     async getStrategiesByContextField(
         name: string,
         userId: number,
     ): Promise<ContextFieldStrategiesSchema> {
-        const strategies =
-            await this.featureStrategiesStore.getStrategiesByContextField(name);
-        const accessibleProjects =
-            await this.privateProjectChecker.getUserAccessibleProjects(userId);
-        if (accessibleProjects.mode === 'all') {
-            return this.mapStrategies(strategies);
-        } else {
-            return this.mapStrategies(
-                strategies.filter((strategy) =>
-                    accessibleProjects.projects.includes(strategy.projectId),
-                ),
-            );
-        }
+        throw new Error("STUB");
     }
 
     private mapStrategies(strategies: IFeatureStrategy[]) {
-        return {
-            strategies: strategies.map((strategy) => ({
-                id: strategy.id,
-                projectId: strategy.projectId,
-                featureName: strategy.featureName,
-                strategyName: strategy.strategyName,
-                environment: strategy.environment,
-            })),
-        };
+        throw new Error("STUB");
     }
 
     async createContextField(
@@ -180,130 +120,28 @@ class ContextService {
         updatedContextField: IContextFieldDto,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const contextField = await this.contextFieldStore.get(
-            updatedContextField.name,
-        );
-        if (contextField === undefined) {
-            throw new NotFoundError(
-                `Could not find context field with name: ${updatedContextField.name}`,
-            );
-        }
-        const value = await contextSchema.validateAsync(updatedContextField);
-
-        await this.contextFieldStore.update(value);
-
-        const { createdAt, sortOrder, ...previousContextField } = contextField;
-        await this.eventService.storeEvent({
-            type: CONTEXT_FIELD_UPDATED,
-            createdBy: auditUser.username,
-            createdByUserId: auditUser.id,
-            ip: auditUser.ip,
-            preData: previousContextField,
-            data: value,
-        });
+        throw new Error("STUB");
     }
 
     async updateLegalValue(
         contextFieldLegalValue: { name: string; legalValue: LegalValueSchema },
         auditUser: IAuditUser,
     ): Promise<void> {
-        const contextField = await this.contextFieldStore.get(
-            contextFieldLegalValue.name,
-        );
-        if (contextField === undefined) {
-            throw new NotFoundError(
-                `Context field with name ${contextFieldLegalValue.name} was not found`,
-            );
-        }
-        const validatedLegalValue = await legalValueSchema.validateAsync(
-            contextFieldLegalValue.legalValue,
-        );
-
-        const legalValues = contextField.legalValues
-            ? [...contextField.legalValues]
-            : [];
-
-        const existingIndex = legalValues.findIndex(
-            (legalvalue) => legalvalue.value === validatedLegalValue.value,
-        );
-
-        if (existingIndex !== -1) {
-            legalValues[existingIndex] = validatedLegalValue;
-        } else {
-            legalValues.push(validatedLegalValue);
-        }
-
-        const newContextField = { ...contextField, legalValues };
-
-        await this.contextFieldStore.update(newContextField);
-
-        await this.eventService.storeEvent({
-            type: CONTEXT_FIELD_UPDATED,
-            createdBy: auditUser.username,
-            createdByUserId: auditUser.id,
-            ip: auditUser.ip,
-            preData: contextField,
-            data: newContextField,
-        });
+        throw new Error("STUB");
     }
 
     async deleteLegalValue(
         contextFieldLegalValue: { name: string; legalValue: string },
         auditUser: IAuditUser,
     ): Promise<void> {
-        const contextField = await this.contextFieldStore.get(
-            contextFieldLegalValue.name,
-        );
-        if (contextField === undefined) {
-            throw new NotFoundError(
-                `Could not find context field with name ${contextFieldLegalValue.name}`,
-            );
-        }
-
-        const newContextField = {
-            ...contextField,
-            legalValues: contextField.legalValues?.filter(
-                (legalValue) =>
-                    legalValue.value !== contextFieldLegalValue.legalValue,
-            ),
-        };
-
-        await this.contextFieldStore.update(newContextField);
-
-        await this.eventService.storeEvent({
-            type: CONTEXT_FIELD_UPDATED,
-            createdBy: auditUser.username,
-            createdByUserId: auditUser.id,
-            ip: auditUser.ip,
-            preData: contextField,
-            data: newContextField,
-        });
+        throw new Error("STUB");
     }
 
     async deleteContextField(
         name: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const contextField = await this.contextFieldStore.get(name);
-
-        const strategies =
-            await this.featureStrategiesStore.getStrategiesByContextField(name);
-
-        if (strategies.length > 0) {
-            throw new ConflictError(
-                `This context field is in use by existing flags. To delete it, first remove its usage from all flags.`,
-            );
-        }
-
-        // delete
-        await this.contextFieldStore.delete(name);
-        await this.eventService.storeEvent({
-            type: CONTEXT_FIELD_DELETED,
-            createdBy: auditUser.username,
-            createdByUserId: auditUser.id,
-            ip: auditUser.ip,
-            preData: contextField,
-        });
+        throw new Error("STUB");
     }
 
     async validateUniqueName({

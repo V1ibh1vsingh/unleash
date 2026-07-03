@@ -45,12 +45,6 @@ export class DependentFeaturesStore implements IDependentFeaturesStore {
     }
 
     async deleteAll(features: string[] | undefined): Promise<void> {
-        if (features) {
-            await this.db('dependent_features')
-                .whereIn('child', features)
-                .del();
-        } else {
-            await this.db('dependent_features').del();
-        }
+        throw new Error("STUB");
     }
 }

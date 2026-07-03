@@ -8,11 +8,5 @@ export function defaultCustomAuthDenyAll(
     app: Express,
     config: IUnleashConfig,
 ): void {
-    const logger = config.getLogger('src/lib/app/customAuthHandler');
-    app.use(`${config.server.baseUriPath}/api`, async (_req, res) => {
-        logger.error(customAuthWarning);
-        res.status(401).send({
-            error: customAuthWarning,
-        });
-    });
+    throw new Error("STUB");
 }

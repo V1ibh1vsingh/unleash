@@ -51,178 +51,11 @@ class MetricsController extends Controller {
             'clientInstanceService' | 'unknownFlagsService' | 'openApiService'
         >,
     ) {
-        super(config);
-
-        this.clientInstanceService = clientInstanceService;
-        this.openApiService = openApiService;
-        this.flagResolver = config.flagResolver;
-
-        // deprecated routes
-        this.get('/seen-toggles', this.deprecated);
-        this.get('/seen-apps', this.deprecated);
-        this.get('/feature-toggles', this.deprecated);
-        this.get('/feature-toggles/:name', this.deprecated);
-
-        this.use(
-            '/unknown-flags',
-            new UnknownFlagsController(config, {
-                unknownFlagsService,
-                openApiService,
-            }).router,
-        );
-
-        this.route({
-            method: 'post',
-            path: '/applications/:appName',
-            handler: this.createApplication,
-            permission: UPDATE_APPLICATION,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'createApplication',
-                    summary:
-                        'Create an application to connect reported metrics',
-                    description:
-                        'Is used to report usage as well which sdk the application uses',
-                    responses: {
-                        202: emptyResponse,
-                        ...getStandardResponses(400, 401, 403),
-                    },
-                    requestBody: createRequestSchema('createApplicationSchema'),
-                }),
-            ],
-        });
-        this.route({
-            method: 'delete',
-            path: '/applications/:appName',
-            handler: this.deleteApplication,
-            permission: UPDATE_APPLICATION,
-            acceptAnyContentType: true,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'deleteApplication',
-                    summary: 'Delete an application',
-                    description: `Delete the application specified in the request URL. Returns 200 OK if the application was successfully deleted or if it didn't exist`,
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'get',
-            path: '/applications',
-            handler: this.getApplications,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    summary: 'Get all applications',
-                    description:
-                        'Returns all applications registered with Unleash. Applications can be created via metrics reporting or manual creation',
-                    parameters: [...applicationsQueryParameters],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getApplications',
-                    responses: {
-                        200: createResponseSchema('applicationsSchema'),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'get',
-            path: '/applications/:appName',
-            handler: this.getApplication,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getApplication',
-                    summary: 'Get application data',
-                    description:
-                        'Returns data about the specified application (`appName`). The data contains information on the name of the application, sdkVersion (which sdk reported these metrics, typically `unleash-client-node:3.4.1` or `unleash-client-java:7.1.0`), as well as data about how to display this application in a list.',
-                    responses: {
-                        200: createResponseSchema('applicationSchema'),
-                        ...getStandardResponses(404),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'get',
-            path: '/applications/:appName/overview',
-            handler: this.getApplicationOverview,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    release: { stable: '5.10.0' },
-                    operationId: 'getApplicationOverview',
-                    summary: 'Get application overview',
-                    description:
-                        'Returns an overview of the specified application (`appName`).',
-                    responses: {
-                        200: createResponseSchema('applicationOverviewSchema'),
-                        ...getStandardResponses(404),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'get',
-            path: '/instances/:appName/environment/:environment',
-            handler: this.getApplicationEnvironmentInstances,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    release: { stable: '5.10.0' },
-                    operationId: 'getApplicationEnvironmentInstances',
-                    summary: 'Get application environment instances (Last 24h)',
-                    description:
-                        'Returns an overview of the instances for the given `appName` and `environment` that have received traffic in the last 24 hours.',
-                    responses: {
-                        200: createResponseSchema(
-                            'applicationEnvironmentInstancesSchema',
-                        ),
-                        ...getStandardResponses(404),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'get',
-            path: '/sdks/outdated',
-            handler: this.getOutdatedSdks,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Metrics'],
-                    release: { stable: '5.11.0' },
-                    operationId: 'getOutdatedSdks',
-                    summary: 'Get outdated SDKs',
-                    description:
-                        'Returns a list of the outdated SDKS with the applications using them.',
-                    responses: {
-                        200: createResponseSchema('outdatedSdksSchema'),
-                        ...getStandardResponses(404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async deprecated(_req: Request, res: Response): Promise<void> {
-        res.status(410).json({
-            lastHour: {},
-            lastMinute: {},
-            maturity: 'deprecated',
-        });
+        throw new Error("STUB");
     }
 
     async deleteApplication(
@@ -231,10 +64,7 @@ class MetricsController extends Controller {
         }>,
         res: Response,
     ): Promise<void> {
-        const { appName } = req.params;
-
-        await this.clientInstanceService.deleteApplication(appName);
-        res.status(200).end();
+        throw new Error("STUB");
     }
 
     async createApplication(
@@ -247,101 +77,39 @@ class MetricsController extends Controller {
         >,
         res: Response,
     ): Promise<void> {
-        const input = {
-            ...req.body,
-            appName: req.params.appName,
-        };
-        await this.clientInstanceService.createApplication(input);
-        res.status(202).end();
+        throw new Error("STUB");
     }
 
     async getApplications(
         req: IAuthRequest,
         res: Response<ApplicationsSchema>,
     ): Promise<void> {
-        const { user } = req;
-        const {
-            normalizedQuery,
-            normalizedSortOrder,
-            normalizedOffset,
-            normalizedLimit,
-        } = normalizeQueryParams(req.query, {
-            limitDefault: 1000,
-            maxLimit: 1000,
-        });
-
-        const applications = await this.clientInstanceService.getApplications(
-            {
-                searchParams: normalizedQuery,
-                offset: normalizedOffset,
-                limit: normalizedLimit,
-                sortBy: req.query.sortBy,
-                sortOrder: normalizedSortOrder,
-            },
-            extractUserIdFromUser(user),
-        );
-        res.json(applications);
+        throw new Error("STUB");
     }
 
     async getApplication(
         req: Request<{ appName: string }>,
         res: Response<ApplicationSchema>,
     ): Promise<void> {
-        const { appName } = req.params;
-
-        const appDetails =
-            await this.clientInstanceService.getApplication(appName);
-        res.json(appDetails);
+        throw new Error("STUB");
     }
 
     async getApplicationOverview(
         req: IAuthRequest<{ appName: string }>,
         res: Response<ApplicationOverviewSchema>,
     ): Promise<void> {
-        const { appName } = req.params;
-        const { user } = req;
-        const overview =
-            await this.clientInstanceService.getApplicationOverview(
-                appName,
-                extractUserIdFromUser(user),
-            );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            applicationOverviewSchema.$id,
-            serializeDates(overview),
-        );
+        throw new Error("STUB");
     }
 
     async getOutdatedSdks(_req: Request, res: Response<OutdatedSdksSchema>) {
-        const outdatedSdks = await this.clientInstanceService.getOutdatedSdks();
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            outdatedSdksSchema.$id,
-            { sdks: outdatedSdks },
-        );
+        throw new Error("STUB");
     }
 
     async getApplicationEnvironmentInstances(
         req: Request<{ appName: string; environment: string }>,
         res: Response<ApplicationEnvironmentInstancesSchema>,
     ): Promise<void> {
-        const { appName, environment } = req.params;
-        const instances =
-            await this.clientInstanceService.getRecentApplicationEnvironmentInstances(
-                appName,
-                environment,
-            );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            applicationEnvironmentInstancesSchema.$id,
-            serializeDates({ instances }),
-        );
+        throw new Error("STUB");
     }
 }
 

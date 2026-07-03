@@ -21,13 +21,7 @@ export class FeaturesReadModel implements IFeaturesReadModel {
         featureName: string,
         projectId: string,
     ): Promise<boolean> {
-        const rows = await this.db('features')
-            .where('name', featureName)
-            .andWhere('project', projectId)
-            .andWhere('archived_at', null)
-            .select('name');
-
-        return rows.length > 0;
+        throw new Error("STUB");
     }
 
     async featuresInTheSameProject(

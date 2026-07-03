@@ -88,10 +88,7 @@ export const uiConfigSchema = {
             description: resourceLimitsSchema.description,
             example: {
                 ...Object.entries(resourceLimitsSchema.properties).reduce(
-                    (acc, [prop, { example }]) => ({
-                        ...acc,
-                        [prop]: example,
-                    }),
+                    (acc, [prop, { example }]) => { throw new Error("STUB"); },
                     {},
                 ),
             },

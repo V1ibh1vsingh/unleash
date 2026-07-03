@@ -4,6 +4,6 @@ export class FakeProjectStaleFlagsReadModel
     implements IProjectStaleFlagsReadModel
 {
     async getStaleFlagCountForProject(): Promise<number> {
-        return 0;
+        throw new Error("STUB");
     }
 }

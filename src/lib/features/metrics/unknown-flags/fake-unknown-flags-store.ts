@@ -39,14 +39,7 @@ export class FakeUnknownFlagsStore implements IUnknownFlagsStore {
 
             const reports = Array.from(appsMap.entries()).map(
                 ([appName, envMap]) => {
-                    const environments = Array.from(envMap.entries()).map(
-                        ([environment, seenAt]) => {
-                            if (!lastSeenAt || seenAt > lastSeenAt)
-                                lastSeenAt = seenAt;
-                            return { environment, seenAt };
-                        },
-                    );
-                    return { appName, environments };
+                    throw new Error("STUB");
                 },
             );
 
@@ -64,11 +57,7 @@ export class FakeUnknownFlagsStore implements IUnknownFlagsStore {
         const flags = this.groupFlags(flat);
         if (orderBy) {
             flags.sort((a, b) => {
-                for (const { column, order } of orderBy) {
-                    if (a[column] < b[column]) return order === 'asc' ? -1 : 1;
-                    if (a[column] > b[column]) return order === 'asc' ? 1 : -1;
-                }
-                return 0;
+                throw new Error("STUB");
             });
         }
         if (!limit) return flags;
@@ -85,7 +74,7 @@ export class FakeUnknownFlagsStore implements IUnknownFlagsStore {
     }
 
     async deleteAll(): Promise<void> {
-        this.unknownFlagMap.clear();
+        throw new Error("STUB");
     }
 
     async count(): Promise<number> {

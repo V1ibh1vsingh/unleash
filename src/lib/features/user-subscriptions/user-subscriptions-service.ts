@@ -35,7 +35,7 @@ export class UserSubscriptionsService {
     }
 
     async getUserSubscriptions(userId: number) {
-        return this.userSubscriptionsReadModel.getUserSubscriptions(userId);
+        throw new Error("STUB");
     }
 
     async subscribe(
@@ -43,19 +43,7 @@ export class UserSubscriptionsService {
         subscription: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const entry: UnsubscribeEntry = {
-            userId,
-            subscription,
-        };
-
-        await this.userUnsubscribeStore.delete(entry);
-        await this.eventService.storeEvent(
-            new UserPreferenceUpdatedEvent({
-                userId,
-                data: { subscription, action: 'subscribed' },
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async unsubscribe(
@@ -63,18 +51,6 @@ export class UserSubscriptionsService {
         subscription: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const entry: UnsubscribeEntry = {
-            userId,
-            subscription,
-        };
-
-        await this.userUnsubscribeStore.insert(entry);
-        await this.eventService.storeEvent(
-            new UserPreferenceUpdatedEvent({
-                userId,
-                data: { subscription, action: 'unsubscribed' },
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 }

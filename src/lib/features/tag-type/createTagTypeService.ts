@@ -11,10 +11,7 @@ import {
 export const createTagTypeService =
     (config: IUnleashConfig) =>
     (db: Db): TagTypeService => {
-        const { getLogger, eventBus } = config;
-        const eventService = createEventsService(db, config);
-        const tagTypeStore = new TagTypeStore(db, eventBus, getLogger);
-        return new TagTypeService({ tagTypeStore }, config, eventService);
+        throw new Error("STUB");
     };
 
 export const createFakeTagTypeService = (

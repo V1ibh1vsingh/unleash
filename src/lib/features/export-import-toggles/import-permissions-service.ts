@@ -36,13 +36,13 @@ export class ImportPermissionsService {
         dto: ImportTogglesSchema,
     ): Promise<ITagType[]> {
         const existingTagTypes = (await this.tagTypeService.getAll()).map(
-            (tagType) => tagType.name,
+            (tagType) => { throw new Error("STUB"); },
         );
         const newTagTypes = dto.data.tagTypes?.filter(
-            (tagType) => !existingTagTypes.includes(tagType.name),
+            (tagType) => { throw new Error("STUB"); },
         );
         return [
-            ...new Map(newTagTypes.map((item) => [item.name, item])).values(),
+            ...new Map(newTagTypes.map((item) => { throw new Error("STUB"); })).values(),
         ];
     }
 
@@ -54,10 +54,7 @@ export class ImportPermissionsService {
         return (
             dto.data.contextFields?.filter(
                 (contextField) =>
-                    !availableContextFields.some(
-                        (availableField) =>
-                            availableField.name === contextField.name,
-                    ),
+                    { throw new Error("STUB"); },
             ) || []
         );
     }
@@ -89,16 +86,15 @@ export class ImportPermissionsService {
             this.getNewTagTypes(dto),
             this.getNewContextFields(dto),
             this.importTogglesStore.strategiesExistForFeatures(
-                dto.data.features.map((feature) => feature.name),
+                dto.data.features.map((feature) => { throw new Error("STUB"); }),
                 dto.environment,
             ),
             dto.data.featureEnvironments?.filter(
                 (featureEnvironment) =>
-                    Array.isArray(featureEnvironment.variants) &&
-                    featureEnvironment.variants.length > 0,
+                    { throw new Error("STUB"); },
             ) || Promise.resolve([]),
             this.importTogglesStore.getExistingFeatures(
-                dto.data.features.map((feature) => feature.name),
+                dto.data.features.map((feature) => { throw new Error("STUB"); }),
             ),
         ]);
         const permissions = [UPDATE_FEATURE];
@@ -130,21 +126,12 @@ export class ImportPermissionsService {
 
         const results = await Promise.all(
             displayPermissions.map((permission) =>
-                this.accessService
-                    .hasPermission(
-                        user,
-                        permission.name,
-                        dto.project,
-                        dto.environment,
-                    )
-                    .then(
-                        (hasPermission) => [permission, hasPermission] as const,
-                    ),
+                { throw new Error("STUB"); },
             ),
         );
         return results
-            .filter(([, hasAccess]) => !hasAccess)
-            .map(([permission]) => permission.displayName);
+            .filter(([, hasAccess]) => { throw new Error("STUB"); })
+            .map(([permission]) => { throw new Error("STUB"); });
     }
 
     async verifyPermissions(
@@ -152,13 +139,6 @@ export class ImportPermissionsService {
         user: IUser,
         mode: Mode,
     ): Promise<void> {
-        const missingPermissions = await this.getMissingPermissions(
-            dto,
-            user,
-            mode,
-        );
-        if (missingPermissions.length > 0) {
-            throw new PermissionError(missingPermissions);
-        }
+        throw new Error("STUB");
     }
 }

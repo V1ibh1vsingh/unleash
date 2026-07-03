@@ -35,66 +35,13 @@ export default class FeatureLifecycleCountController extends Controller {
             featureLifecycleReadModel,
         }: Pick<IUnleashStores, 'featureLifecycleReadModel'>,
     ) {
-        super(config);
-        this.featureLifecycleReadModel = featureLifecycleReadModel;
-        this.openApiService = openApiService;
-        this.privateProjectChecker = privateProjectChecker;
-
-        this.route({
-            method: 'get',
-            path: '/count',
-            handler: this.getStageCount,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Features'],
-                    release: { beta: '7', stable: '8' },
-                    summary: 'Get all features lifecycle stage count',
-                    description:
-                        'Information about the number of features in each lifecycle stage.',
-                    operationId: 'getFeatureLifecycleStageCount',
-                    responses: {
-                        200: createResponseSchema(
-                            'featureLifecycleCountSchema',
-                        ),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getStageCount(
         req: IAuthRequest,
         res: Response<FeatureLifecycleCountSchema>,
     ): Promise<void> {
-        const user = req.user;
-        const accessibleProjects =
-            await this.privateProjectChecker.getUserAccessibleProjects(user.id);
-
-        const projectsToFilter =
-            accessibleProjects.mode === 'limited'
-                ? accessibleProjects.projects
-                : undefined;
-
-        const stageCounts =
-            await this.featureLifecycleReadModel.getStageCount(
-                projectsToFilter,
-            );
-
-        const result: Record<string, number> = stageCounts.reduce(
-            (acc, { stage, count }) => {
-                acc[stage === 'pre-live' ? 'preLive' : stage] = count;
-                return acc;
-            },
-            { initial: 0, preLive: 0, live: 0, completed: 0, archived: 0 },
-        );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            featureLifecycleCountSchema.$id,
-            result,
-        );
+        throw new Error("STUB");
     }
 }

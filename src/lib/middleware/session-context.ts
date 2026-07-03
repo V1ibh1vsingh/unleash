@@ -22,27 +22,6 @@ export const sessionContextMiddleware = (
     flagResolver: IFlagResolver,
 ): RequestHandler => {
     return (req, _res, next) => {
-        if (!flagResolver.isEnabled('sessionInspector')) {
-            return next();
-        }
-        const session = req.session as
-            | (typeof req.session & {
-                  user?: unknown;
-                  ip?: string;
-                  userAgent?: string;
-              })
-            | undefined;
-        if (session?.user) {
-            if (!session.ip) {
-                session.ip = extractClientIp(req);
-            }
-            if (!session.userAgent) {
-                const userAgent = req.headers['user-agent'];
-                if (userAgent) {
-                    session.userAgent = userAgent;
-                }
-            }
-        }
-        next();
+        throw new Error("STUB");
     };
 };

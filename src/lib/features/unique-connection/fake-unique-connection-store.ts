@@ -23,6 +23,6 @@ export class FakeUniqueConnectionStore implements IUniqueConnectionStore {
     }
 
     async deleteAll(): Promise<void> {
-        this.uniqueConnectionsRecord = {};
+        throw new Error("STUB");
     }
 }

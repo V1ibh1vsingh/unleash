@@ -70,15 +70,8 @@ export function registerIntegrationMetrics({
         name: 'integration_available',
         help: 'Available integrations with this Unleash server. removal_target set if deprecated.',
         labelNames: ['name', 'deprecated', 'removal_target'] as const,
-        query: async () => collectAvailableIntegrations(addonProviders),
-        mapMetric: (s: AvailableIntegration) => ({
-            value: 1,
-            labels: {
-                name: s.name,
-                deprecated: s.deprecated,
-                removal_target: s.removal_target,
-            },
-        }),
+        query: async () => { throw new Error("STUB"); },
+        mapMetric: (s: AvailableIntegration) => { throw new Error("STUB"); },
     });
 
     registerGaugeWithParams({
@@ -86,11 +79,8 @@ export function registerIntegrationMetrics({
         name: 'integration_configured',
         help: 'Configured integrations on this Unleash server, per state.',
         labelNames: ['name', 'state'] as const,
-        query: () => collectConfiguredIntegrations(stores, logger),
-        mapMetric: (s: ConfiguredIntegration) => ({
-            value: s.count,
-            labels: { name: s.name, state: s.state },
-        }),
+        query: () => { throw new Error("STUB"); },
+        mapMetric: (s: ConfiguredIntegration) => { throw new Error("STUB"); },
     });
 
     registerAuthLoginTotalCounter(eventBus);
@@ -116,7 +106,7 @@ function registerGaugeWithParams<T extends { name: string }>({
         help,
         labelNames: labelNames as string[],
         query,
-        map: (metrics) => metrics.map(mapMetric),
+        map: (metrics) => { throw new Error("STUB"); },
     });
 }
 
@@ -130,10 +120,7 @@ function registerAuthLoginTotalCounter(eventBus: EventEmitter): void {
     eventBus.on(
         AUTH_LOGIN_COMPLETED,
         (payload: { provider: string; outcome: 'success' | 'failure' }) => {
-            authLoginTotal.increment({
-                provider: payload.provider,
-                outcome: payload.outcome,
-            });
+            throw new Error("STUB");
         },
     );
 }
@@ -142,19 +129,11 @@ function collectAvailableIntegrations(
     addonProviders: IAddonProviders,
 ): AvailableIntegration[] {
     const addons = Object.values(addonProviders).map(
-        ({ definition: { name, deprecated } }) => ({
-            name,
-            deprecated: String(Boolean(deprecated)),
-            removal_target: typeof deprecated === 'string' ? deprecated : '',
-        }),
+        ({ definition: { name, deprecated } }) => { throw new Error("STUB"); },
     );
 
     const authProviders = Object.values(AUTH_PROVIDERS_CATALOG).map(
-        ({ name, deprecatedRemovalTarget }) => ({
-            name,
-            deprecated: String(Boolean(deprecatedRemovalTarget)),
-            removal_target: deprecatedRemovalTarget ?? '',
-        }),
+        ({ name, deprecatedRemovalTarget }) => { throw new Error("STUB"); },
     );
 
     return [...addons, ...authProviders];
@@ -172,51 +151,16 @@ export async function collectConfiguredIntegrations(
         count: number;
     }> = [];
     addons.forEach((addon) => {
-        const enabled = addons.filter(
-            (a) => a.provider === addon.provider && a.enabled,
-        ).length;
-        const disabled = addons.filter(
-            (a) => a.provider === addon.provider && !a.enabled,
-        ).length;
-
-        if (enabled > 0)
-            addonBuckets.push({
-                name: addon.provider,
-                state: 'enabled',
-                count: enabled,
-            });
-        if (disabled > 0)
-            addonBuckets.push({
-                name: addon.provider,
-                state: 'disabled',
-                count: disabled,
-            });
+        throw new Error("STUB");
     });
 
     const authBuckets = (
         await Promise.all(
             Object.values(AUTH_PROVIDERS_CATALOG).map(async (provider) => {
-                try {
-                    const row = await stores.settingStore.get<{
-                        enabled?: boolean;
-                        disabled?: boolean;
-                    }>(provider.configId);
-
-                    return {
-                        name: provider.name,
-                        state: resolveAuthState(provider, row),
-                        count: 1,
-                    } satisfies ConfiguredIntegration;
-                } catch (error) {
-                    logger?.warn(
-                        `Failed to fetch auth config for ${provider.name}`,
-                        { error },
-                    );
-                    return null;
-                }
+                throw new Error("STUB");
             }),
         )
-    ).filter((r) => r !== null);
+    ).filter((r) => { throw new Error("STUB"); });
 
     return [...addonBuckets, ...authBuckets];
 }

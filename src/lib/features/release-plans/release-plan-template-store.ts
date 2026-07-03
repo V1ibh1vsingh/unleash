@@ -43,7 +43,7 @@ export class ReleasePlanTemplateStore extends CRUDStore<
             .orderBy('created_at');
         endTimer();
         return templates.map(({ milestones, ...template }) =>
-            fromRow(template),
+            { throw new Error("STUB"); },
         );
     }
 
@@ -62,130 +62,15 @@ export class ReleasePlanTemplateStore extends CRUDStore<
     }
 
     async checkNameAlreadyExists(name: string, id?: string): Promise<boolean> {
-        const exists = await this.db(TABLE)
-            .where('discriminator', 'template')
-            .where({ name })
-            .modify((qb) => {
-                if (id) {
-                    qb.whereNot('id', id);
-                }
-            })
-            .first()
-            .select('id');
-
-        return Boolean(exists);
+        throw new Error("STUB");
     }
 
     processReleasePlanTemplateRows(templateRows): ReleasePlanTemplate {
-        return {
-            id: templateRows[0].templateId,
-            discriminator: templateRows[0].templateDiscriminator,
-            name: templateRows[0].templateName,
-            description: templateRows[0].templateDescription,
-            createdByUserId: templateRows[0].templateCreatedByUserId,
-            createdAt: templateRows[0].templateCreatedAt,
-            milestones: templateRows.reduce(
-                (acc: ReleasePlanMilestone[], row) => {
-                    if (!row.milestoneId) {
-                        return acc;
-                    }
-                    let milestone = acc.find((m) => m.id === row.milestoneId);
-                    if (!milestone) {
-                        milestone = {
-                            id: row.milestoneId,
-                            name: row.milestoneName,
-                            sortOrder: row.milestoneSortOrder,
-                            strategies: [],
-                            releasePlanDefinitionId: row.templateId,
-                        };
-                        acc.push(milestone);
-                    }
-                    if (!row.strategyId) {
-                        return acc;
-                    }
-                    let strategy = milestone.strategies?.find(
-                        (s) => s.id === row.strategyId,
-                    );
-                    if (!strategy) {
-                        strategy = {
-                            id: row.strategyId,
-                            milestoneId: row.milestoneId,
-                            sortOrder: row.strategySortOrder,
-                            title: row.strategyTitle,
-                            name: row.strategyName,
-                            strategyName: row.strategyName,
-                            parameters: row.strategyParameters ?? {},
-                            constraints: row.strategyConstraints,
-                            variants: row.strategyVariants ?? [],
-                            segments: [],
-                            disabled: row.strategyDisabled ?? false,
-                        };
-                        milestone.strategies = [
-                            ...(milestone.strategies || []),
-                            strategy,
-                        ];
-                    }
-
-                    if (row.segmentId) {
-                        strategy.segments = [
-                            ...(strategy.segments || []),
-                            row.segmentId,
-                        ];
-                    }
-
-                    return acc;
-                },
-                [],
-            ),
-            archivedAt: templateRows[0].templateArchivedAt,
-        };
+        throw new Error("STUB");
     }
 
     async getById(id: string): Promise<ReleasePlanTemplate> {
-        const endTimer = this.timer('getById');
-        const templateRows = await this.db(`${TABLE} AS rpd`)
-            .where('rpd.id', id)
-            .leftJoin(
-                'milestones AS mi',
-                'mi.release_plan_definition_id',
-                'rpd.id',
-            )
-            .leftJoin('milestone_strategies AS ms', 'ms.milestone_id', 'mi.id')
-            .leftJoin(
-                'milestone_strategy_segments AS mss',
-                'mss.milestone_strategy_id',
-                'ms.id',
-            )
-            .orderBy('mi.sort_order', 'asc')
-            .orderBy('ms.sort_order', 'asc')
-            .select(
-                'rpd.id AS templateId',
-                'rpd.discriminator AS templateDiscriminator',
-                'rpd.name AS templateName',
-                'rpd.description as templateDescription',
-                'rpd.created_by_user_id as templateCreatedByUserId',
-                'rpd.created_at as templateCreatedAt',
-                'rpd.archived_at AS templateArchivedAt',
-                'mi.id AS milestoneId',
-                'mi.name AS milestoneName',
-                'mi.sort_order AS milestoneSortOrder',
-                'ms.id AS strategyId',
-                'ms.sort_order AS strategySortOrder',
-                'ms.title AS strategyTitle',
-                'ms.strategy_name AS strategyName',
-                'ms.parameters AS strategyParameters',
-                'ms.constraints AS strategyConstraints',
-                'ms.variants AS strategyVariants',
-                'ms.disabled AS strategyDisabled',
-                'mss.segment_id AS segmentId',
-            );
-        endTimer();
-
-        if (!templateRows.length) {
-            throw new NotFoundError(`Could not find template with id ${id}`);
-        }
-
-        return this.processReleasePlanTemplateRows(templateRows);
+        throw new Error("STUB");
     }
 
     override async insert(
@@ -200,9 +85,6 @@ export class ReleasePlanTemplateStore extends CRUDStore<
     }
 
     async archive(id: string): Promise<void> {
-        const endTimer = this.timer('archive');
-        const now = new Date();
-        await this.db(TABLE).where('id', id).update({ archived_at: now });
-        endTimer();
+        throw new Error("STUB");
     }
 }

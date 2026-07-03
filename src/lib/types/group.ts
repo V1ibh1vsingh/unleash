@@ -88,19 +88,6 @@ export default class Group implements IGroup {
         createdAt,
         scimId,
     }: IGroup) {
-        if (!id) {
-            throw new ValidationError('Id is required', [], undefined);
-        }
-
-        Joi.assert(name, Joi.string(), 'Name');
-
-        this.id = id;
-        this.name = name;
-        this.rootRole = rootRole;
-        this.description = description || '';
-        this.mappingsSSO = mappingsSSO || [];
-        this.createdBy = createdBy || SYSTEM_USER_AUDIT.username;
-        this.createdAt = createdAt;
-        this.scimId = scimId;
+        throw new Error("STUB");
     }
 }

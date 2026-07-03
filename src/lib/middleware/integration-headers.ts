@@ -16,19 +16,14 @@ const userAgentMatches = [
 ];
 
 export const getFilteredOrigin = (request: Request): string | undefined => {
-    const origin = request.headers[ORIGIN];
-    if (origin && httpMatcher.test(origin)) {
-        return origin;
-    }
-
-    return undefined;
+    throw new Error("STUB");
 };
 
 export const determineIntegrationSource = (
     userAgent: string,
 ): string | undefined => {
     return (
-        userAgentMatches.find((candidate) => candidate.matcher.test(userAgent))
+        userAgentMatches.find((candidate) => { throw new Error("STUB"); })
             ?.label ?? 'Other'
     );
 };

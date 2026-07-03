@@ -34,15 +34,7 @@ export class FavoriteFeaturesStore implements IFavoriteFeaturesStore {
         userId,
         feature,
     }: IFavoriteFeatureKey): Promise<IFavoriteFeature> {
-        const insertedFeature = await this.db<IFavoriteFeatureRow>(
-            T.FAVORITE_FEATURES,
-        )
-            .insert({ feature, user_id: userId })
-            .onConflict(['user_id', 'feature'])
-            .merge()
-            .returning('*');
-
-        return rowToFavorite(insertedFeature[0]);
+        throw new Error("STUB");
     }
 
     async delete({ userId, feature }: IFavoriteFeatureKey): Promise<void> {
@@ -52,7 +44,7 @@ export class FavoriteFeaturesStore implements IFavoriteFeaturesStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(T.FAVORITE_FEATURES).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

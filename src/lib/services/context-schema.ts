@@ -16,7 +16,7 @@ export const contextSchema = joi
         legalValues: joi
             .array()
             .allow(null)
-            .unique((a, b) => a.value === b.value)
+            .unique((a, b) => { throw new Error("STUB"); })
             .optional()
             .items(legalValueSchema),
         stickiness: joi.boolean().optional().default(false),

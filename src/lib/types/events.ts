@@ -214,13 +214,7 @@ export class StrategiesOrderChangedEvent extends BaseEvent {
         preData: StrategyIds;
         auditUser: IAuditUser;
     }) {
-        super(STRATEGY_ORDER_CHANGED, p.auditUser);
-        const { project, featureName, environment, data, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.environment = environment;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -386,14 +380,7 @@ export class FeatureChangeProjectEvent extends BaseEvent {
         featureName: string;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_PROJECT_CHANGE, p.auditUser);
-        const { newProject, oldProject, featureName } = p;
-        this.project = newProject;
-        this.featureName = featureName;
-        this.data = {
-            newProject,
-            oldProject,
-        };
+        throw new Error("STUB");
     }
 }
 
@@ -410,11 +397,7 @@ export class FeatureCreatedEvent extends BaseEvent {
         data: FeatureToggle;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_CREATED, p.auditUser);
-        const { project, featureName, data } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.data = data;
+        throw new Error("STUB");
     }
 }
 
@@ -512,11 +495,7 @@ export class FeatureCompletedEvent extends BaseEvent {
         data: FeatureLifecycleCompleted;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_COMPLETED, p.auditUser);
-        const { featureName, data, project } = p;
-        this.featureName = featureName;
-        this.data = data;
-        this.project = project;
+        throw new Error("STUB");
     }
 }
 
@@ -529,10 +508,7 @@ export class FeatureUncompletedEvent extends BaseEvent {
         auditUser: IAuditUser;
         project: string;
     }) {
-        super(FEATURE_UNCOMPLETED, p.auditUser);
-        const { featureName, project } = p;
-        this.featureName = featureName;
-        this.project = project;
+        throw new Error("STUB");
     }
 }
 
@@ -663,10 +639,7 @@ export class FeatureArchivedEvent extends BaseEvent {
         featureName: string;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_ARCHIVED, p.auditUser);
-        const { project, featureName } = p;
-        this.project = project;
-        this.featureName = featureName;
+        throw new Error("STUB");
     }
 }
 
@@ -682,10 +655,7 @@ export class FeatureRevivedEvent extends BaseEvent {
         featureName: string;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_REVIVED, p.auditUser);
-        const { project, featureName } = p;
-        this.project = project;
-        this.featureName = featureName;
+        throw new Error("STUB");
     }
 }
 
@@ -707,12 +677,7 @@ export class FeatureDeletedEvent extends BaseEvent {
         tags: ITag[];
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_DELETED, p.auditUser);
-        const { project, featureName, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.preData = preData;
-        this.tags = p.tags;
+        throw new Error("STUB");
     }
 }
 
@@ -734,12 +699,7 @@ export class FeatureMetadataUpdateEvent extends BaseEvent {
         preData: FeatureToggle;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_METADATA_UPDATED, p.auditUser);
-        const { project, featureName, data, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -757,12 +717,7 @@ export class FeatureLinkAddedEvent extends BaseEvent {
         data: { url: string; title?: string };
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_LINK_ADDED, p.auditUser);
-        const { project, featureName, data } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.data = data;
-        this.preData = null;
+        throw new Error("STUB");
     }
 }
 
@@ -782,12 +737,7 @@ export class FeatureLinkUpdatedEvent extends BaseEvent {
         preData: { url: string; title?: string };
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_LINK_UPDATED, p.auditUser);
-        const { project, featureName, data, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -805,12 +755,7 @@ export class FeatureLinkRemovedEvent extends BaseEvent {
         preData: { url: string; title?: string };
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_LINK_REMOVED, p.auditUser);
-        const { project, featureName, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.data = null;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -832,12 +777,7 @@ export class FeatureStrategyAddEvent extends BaseEvent {
         data: IStrategyConfig;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_STRATEGY_ADD, p.auditUser);
-        const { project, featureName, environment, data } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.environment = environment;
-        this.data = data;
+        throw new Error("STUB");
     }
 }
 
@@ -862,13 +802,7 @@ export class FeatureStrategyUpdateEvent extends BaseEvent {
         preData: IStrategyConfig;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_STRATEGY_UPDATE, p.auditUser);
-        const { project, featureName, environment, data, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.environment = environment;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -888,12 +822,7 @@ export class FeatureStrategyRemoveEvent extends BaseEvent {
         preData: IStrategyConfig;
         auditUser: IAuditUser;
     }) {
-        super(FEATURE_STRATEGY_REMOVE, p.auditUser);
-        const { project, featureName, environment, preData } = p;
-        this.project = project;
-        this.featureName = featureName;
-        this.environment = environment;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -971,11 +900,7 @@ export class ProjectUserAddedEvent extends BaseEvent {
         data: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_USER_ADDED, p.auditUser);
-        const { project, data } = p;
-        this.project = project;
-        this.data = data;
-        this.preData = null;
+        throw new Error("STUB");
     }
 }
 
@@ -991,11 +916,7 @@ export class ProjectUserRemovedEvent extends BaseEvent {
         preData: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_USER_REMOVED, p.auditUser);
-        const { project, preData } = p;
-        this.project = project;
-        this.data = null;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -1012,11 +933,7 @@ export class ProjectUserUpdateRoleEvent extends BaseEvent {
         preData: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_USER_ROLE_CHANGED, eventData.auditUser);
-        const { project, data, preData } = eventData;
-        this.project = project;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -1032,11 +949,7 @@ export class ProjectGroupAddedEvent extends BaseEvent {
         data: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_GROUP_ADDED, p.auditUser);
-        const { project, data } = p;
-        this.project = project;
-        this.data = data;
-        this.preData = null;
+        throw new Error("STUB");
     }
 }
 
@@ -1052,11 +965,7 @@ export class ProjectAccessAddedEvent extends BaseEvent {
         data: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_ACCESS_ADDED, p.auditUser);
-        const { project, data } = p;
-        this.project = project;
-        this.data = data;
-        this.preData = null;
+        throw new Error("STUB");
     }
 }
 
@@ -1073,11 +982,7 @@ export class ProjectAccessUserRolesUpdated extends BaseEvent {
         preData: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_ACCESS_USER_ROLES_UPDATED, p.auditUser);
-        const { project, data, preData } = p;
-        this.project = project;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -1094,11 +999,7 @@ export class ProjectAccessGroupRolesUpdated extends BaseEvent {
         preData: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_ACCESS_GROUP_ROLES_UPDATED, p.auditUser);
-        const { project, data, preData } = p;
-        this.project = project;
-        this.data = data;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -1144,11 +1045,7 @@ export class ProjectAccessUserRolesDeleted extends BaseEvent {
         preData: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_ACCESS_USER_ROLES_DELETED, p.auditUser);
-        const { project, preData } = p;
-        this.project = project;
-        this.data = null;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -1164,11 +1061,7 @@ export class ProjectAccessGroupRolesDeleted extends BaseEvent {
         preData: any;
         auditUser: IAuditUser;
     }) {
-        super(PROJECT_ACCESS_GROUP_ROLES_DELETED, p.auditUser);
-        const { project, preData } = p;
-        this.project = project;
-        this.data = null;
-        this.preData = preData;
+        throw new Error("STUB");
     }
 }
 
@@ -1982,13 +1875,7 @@ interface IUserEventData
     > {}
 
 function mapUserToData(user: IUserEventData): any {
-    return {
-        id: user.id,
-        name: user.name,
-        username: user.username,
-        email: user.email,
-        rootRole: user.rootRole,
-    };
+    throw new Error("STUB");
 }
 
 export class UserPreferenceUpdatedEvent extends BaseEvent {

@@ -66,9 +66,6 @@ export default class SimpleAddon extends Addon {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async handleEvent(event: IEvent, parameters: any): Promise<void> {
-        this.events.push({
-            event,
-            parameters,
-        });
+        throw new Error("STUB");
     }
 }

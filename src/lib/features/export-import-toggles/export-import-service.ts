@@ -274,14 +274,7 @@ export default class ExportImportService
         user: IUser,
         mode = 'regular' as Mode,
     ): Promise<void> {
-        await allSettledWithRejection([
-            this.verifyStrategies(dto),
-            this.verifyContextFields(dto),
-            this.importPermissionsService.verifyPermissions(dto, user, mode),
-            this.verifyFeatures(dto),
-            this.verifySegments(dto),
-            this.verifyDependencies(dto),
-        ]);
+        throw new Error("STUB");
     }
 
     async fileImportVerify(dto: ImportTogglesSchema): Promise<void> {
@@ -311,9 +304,7 @@ export default class ExportImportService
         user: IUser,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const cleanedDto = await this.cleanData(dto);
-        await this.importVerify(cleanedDto, user);
-        await this.processImport(cleanedDto, user, auditUser);
+        throw new Error("STUB");
     }
 
     async importFromFile(
@@ -364,7 +355,7 @@ export default class ExportImportService
 
     private async importLinks(dto: ImportTogglesSchema, auditUser: IAuditUser) {
         await this.importTogglesStore.deleteLinksForFeatures(
-            (dto.data.links ?? []).map((featureLink) => featureLink.feature),
+            (dto.data.links ?? []).map((featureLink) => { throw new Error("STUB"); }),
         );
 
         const links = dto.data.links || [];
@@ -390,25 +381,7 @@ export default class ExportImportService
     ) {
         await Promise.all(
             (dto.data.dependencies || []).flatMap((dependency) => {
-                const feature = dto.data.features.find(
-                    (feature) => feature.name === dependency.feature,
-                );
-                if (!feature?.project) {
-                    return [];
-                }
-
-                const projectId = feature!.project!;
-                return dependency.dependencies.map((parentDependency) =>
-                    this.dependentFeaturesService.upsertFeatureDependency(
-                        {
-                            child: dependency.feature,
-                            projectId,
-                        },
-                        parentDependency,
-                        user,
-                        auditUser,
-                    ),
-                );
+                throw new Error("STUB");
             }),
         );
     }
@@ -420,14 +393,7 @@ export default class ExportImportService
     ) {
         await Promise.all(
             (dto.data.featureEnvironments || []).map((featureEnvironment) =>
-                this.featureToggleService.updateEnabled(
-                    dto.project,
-                    featureEnvironment.name,
-                    dto.environment,
-                    featureEnvironment.enabled,
-                    auditUser,
-                    user,
-                ),
+                { throw new Error("STUB"); },
             ),
         );
     }
@@ -441,34 +407,26 @@ export default class ExportImportService
         ): featureStrategy is WithRequired<
             FeatureStrategySchema,
             'featureName'
-        > => Boolean(featureStrategy.featureName);
+        > => { throw new Error("STUB"); };
         await Promise.all(
             dto.data.featureStrategies
                 ?.filter(hasFeatureName)
                 .map(({ featureName, ...restOfFeatureStrategy }) =>
-                    this.featureToggleService.createStrategy(
-                        restOfFeatureStrategy,
-                        {
-                            featureName,
-                            environment: dto.environment,
-                            projectId: dto.project,
-                        },
-                        auditUser,
-                    ),
+                    { throw new Error("STUB"); },
                 ),
         );
     }
 
     private async deleteStrategies(dto: ImportTogglesSchema) {
         return this.importTogglesStore.deleteStrategiesForFeatures(
-            dto.data.features.map((feature) => feature.name),
+            dto.data.features.map((feature) => { throw new Error("STUB"); }),
             dto.environment,
         );
     }
 
     private async importTags(dto: ImportTogglesSchema, auditUser: IAuditUser) {
         await this.importTogglesStore.deleteTagsForFeatures(
-            dto.data.features.map((feature) => feature.name),
+            dto.data.features.map((feature) => { throw new Error("STUB"); }),
         );
 
         const featureTags = dto.data.featureTags || [];
@@ -493,16 +451,7 @@ export default class ExportImportService
         const newContextFields = (await this.getNewContextFields(dto)) || [];
         await Promise.all(
             newContextFields.map((contextField) =>
-                this.contextService.createContextField(
-                    {
-                        name: contextField.name,
-                        description: contextField.description,
-                        legalValues: contextField.legalValues,
-                        stickiness: contextField.stickiness,
-                        project: contextField.project ? dto.project : undefined,
-                    },
-                    auditUser,
-                ),
+                { throw new Error("STUB"); },
             ),
         );
     }
@@ -514,9 +463,7 @@ export default class ExportImportService
         const newTagTypes = await this.getNewTagTypes(dto);
         return Promise.all(
             newTagTypes.map((tagType) => {
-                return tagType
-                    ? this.tagTypeService.createTagType(tagType, auditUser)
-                    : Promise.resolve();
+                throw new Error("STUB");
             }),
         );
     }
@@ -528,20 +475,11 @@ export default class ExportImportService
         const featureEnvsWithVariants =
             dto.data.featureEnvironments?.filter(
                 (featureEnvironment) =>
-                    Array.isArray(featureEnvironment.variants) &&
-                    featureEnvironment.variants.length > 0,
+                    { throw new Error("STUB"); },
             ) || [];
         await Promise.all(
             featureEnvsWithVariants.map((featureEnvironment) => {
-                return featureEnvironment.featureName
-                    ? this.featureToggleService.legacySaveVariantsOnEnv(
-                          dto.project,
-                          featureEnvironment.featureName,
-                          dto.environment,
-                          featureEnvironment.variants as IVariant[],
-                          auditUser,
-                      )
-                    : Promise.resolve();
+                throw new Error("STUB");
             }),
         );
     }
@@ -582,17 +520,10 @@ export default class ExportImportService
             ? dto.data.segments
                   .filter(
                       (importingSegment) =>
-                          !supportedSegments.find(
-                              (existingSegment) =>
-                                  importingSegment.name ===
-                                      existingSegment.name &&
-                                  (!existingSegment.project ||
-                                      existingSegment.project ===
-                                          targetProject),
-                          ),
+                          { throw new Error("STUB"); },
                   )
 
-                  .map((it) => it.name)
+                  .map((it) => { throw new Error("STUB"); })
             : [];
     }
 
@@ -601,12 +532,12 @@ export default class ExportImportService
     ): Promise<string[]> {
         const dependentFeatures =
             dto.data.dependencies?.flatMap((dependency) =>
-                dependency.dependencies.map((d) => d.feature),
+                { throw new Error("STUB"); },
             ) || [];
-        const importedFeatures = dto.data.features.map((f) => f.name);
+        const importedFeatures = dto.data.features.map((f) => { throw new Error("STUB"); });
 
         const missingFromImported = dependentFeatures.filter(
-            (feature) => !importedFeatures.includes(feature),
+            (feature) => { throw new Error("STUB"); },
         );
 
         let missingFeatures: string[] = [];
@@ -614,9 +545,9 @@ export default class ExportImportService
         if (missingFromImported.length) {
             const featuresFromStore = (
                 await this.toggleStore.getAllByNames(missingFromImported)
-            ).map((f) => f.name);
+            ).map((f) => { throw new Error("STUB"); });
             missingFeatures = missingFromImported.filter(
-                (feature) => !featuresFromStore.includes(feature),
+                (feature) => { throw new Error("STUB"); },
             );
         }
         return missingFeatures;
@@ -648,11 +579,7 @@ export default class ExportImportService
         if (Array.isArray(unsupportedContextFields)) {
             const [firstError, ...remainingErrors] =
                 unsupportedContextFields.map((field) => {
-                    const description = `${field.name} is not supported.`;
-                    return {
-                        description,
-                        message: description,
-                    };
+                    throw new Error("STUB");
                 });
             if (firstError !== undefined) {
                 throw new BadDataError(
@@ -683,12 +610,7 @@ export default class ExportImportService
         const existingSegments = await this.segmentReadModel.getAll();
 
         const segmentMapping = new Map(
-            dto.data.segments?.map((segment) => [
-                segment.id,
-                existingSegments.find(
-                    (existingSegment) => existingSegment.name === segment.name,
-                )?.id,
-            ]),
+            dto.data.segments?.map((segment) => { throw new Error("STUB"); }),
         );
 
         return {
@@ -696,12 +618,7 @@ export default class ExportImportService
             data: {
                 ...dto.data,
                 featureStrategies: dto.data.featureStrategies.map(
-                    (strategy) => ({
-                        ...strategy,
-                        segments: strategy.segments?.map(
-                            (segment) => segmentMapping.get(segment)!,
-                        ),
-                    }),
+                    (strategy) => { throw new Error("STUB"); },
                 ),
             },
         };
@@ -713,30 +630,26 @@ export default class ExportImportService
         const archivedFeatures = await this.getArchivedFeatures(dto);
         const featureTags =
             dto.data.featureTags?.filter(
-                (tag) => !archivedFeatures.includes(tag.featureName),
+                (tag) => { throw new Error("STUB"); },
             ) || [];
         return {
             ...dto,
             data: {
                 ...dto.data,
                 features: dto.data.features.filter(
-                    (feature) => !archivedFeatures.includes(feature.name),
+                    (feature) => { throw new Error("STUB"); },
                 ),
                 featureEnvironments: dto.data.featureEnvironments?.filter(
                     (environment) =>
-                        environment.featureName &&
-                        !archivedFeatures.includes(environment.featureName),
+                        { throw new Error("STUB"); },
                 ),
                 featureStrategies: dto.data.featureStrategies.filter(
                     (strategy) =>
-                        strategy.featureName &&
-                        !archivedFeatures.includes(strategy.featureName),
+                        { throw new Error("STUB"); },
                 ),
                 featureTags,
                 tagTypes: dto.data.tagTypes?.filter((tagType) =>
-                    featureTags
-                        .map((tag) => tag.tagType)
-                        .includes(tagType.name),
+                    { throw new Error("STUB"); },
                 ),
             },
         };
@@ -747,12 +660,7 @@ export default class ExportImportService
 
         const [firstError, ...remainingErrors] = unsupportedStrategies.map(
             (strategy) => {
-                const description = `${strategy.name} is not supported.`;
-
-                return {
-                    description,
-                    message: description,
-                };
+                throw new Error("STUB");
             },
         );
         if (firstError !== undefined) {
@@ -769,7 +677,7 @@ export default class ExportImportService
     }: ImportTogglesSchema): Promise<FeatureNameCheckResultWithFeaturePattern> {
         return this.featureToggleService.checkFeatureFlagNamesAgainstProjectPattern(
             project,
-            data.features.map((f) => f.name),
+            data.features.map((f) => { throw new Error("STUB"); }),
         );
     }
 
@@ -778,7 +686,7 @@ export default class ExportImportService
         data,
     }: ImportTogglesSchema): Promise<ProjectFeaturesLimit> {
         return this.importTogglesStore.getProjectFeaturesLimit(
-            [...new Set(data.features.map((f) => f.name))],
+            [...new Set(data.features.map((f) => { throw new Error("STUB"); }))],
             project,
         );
     }
@@ -789,9 +697,7 @@ export default class ExportImportService
         const supportedStrategies = await this.strategyService.getStrategies();
         return dto.data.featureStrategies.filter(
             (featureStrategy) =>
-                !supportedStrategies.find(
-                    (strategy) => featureStrategy.name === strategy.name,
-                ),
+                { throw new Error("STUB"); },
         );
     }
 
@@ -799,7 +705,7 @@ export default class ExportImportService
         const supportedStrategies = await this.strategyService.getStrategies();
         const uniqueFeatureStrategies = [
             ...new Set(
-                dto.data.featureStrategies.map((strategy) => strategy.name),
+                dto.data.featureStrategies.map((strategy) => { throw new Error("STUB"); }),
             ),
         ];
         return uniqueFeatureStrategies.filter(
@@ -810,10 +716,7 @@ export default class ExportImportService
     isCustomStrategy = (
         supportedStrategies: IStrategy[],
     ): ((x: string) => boolean) => {
-        const customStrategies = supportedStrategies
-            .filter((s) => s.editable)
-            .map((strategy) => strategy.name);
-        return (featureStrategy) => customStrategies.includes(featureStrategy);
+        throw new Error("STUB");
     };
 
     private async getUnsupportedContextFields(dto: ImportTogglesSchema) {
@@ -821,58 +724,47 @@ export default class ExportImportService
         const targetProject = dto.project;
 
         return dto.data.contextFields?.filter((importingField) => {
-            if (!isValidField(importingField, availableContextFields)) {
-                return true;
-            }
-
-            const existingField = availableContextFields.find(
-                (field) => field.name === importingField.name,
-            );
-
-            return (
-                existingField?.project &&
-                existingField.project !== targetProject
-            );
+            throw new Error("STUB");
         });
     }
 
     private async getArchivedFeatures(dto: ImportTogglesSchema) {
         return this.importTogglesStore.getArchivedFeatures(
-            dto.data.features.map((feature) => feature.name),
+            dto.data.features.map((feature) => { throw new Error("STUB"); }),
         );
     }
 
     private async getOtherProjectFeatures(dto: ImportTogglesSchema) {
         const otherProjectsFeatures =
             await this.importTogglesStore.getFeaturesInOtherProjects(
-                dto.data.features.map((feature) => feature.name),
+                dto.data.features.map((feature) => { throw new Error("STUB"); }),
                 dto.project,
             );
         return otherProjectsFeatures.map(
-            (it) => `${it.name} (in project ${it.project})`,
+            (it) => { throw new Error("STUB"); },
         );
     }
 
     private async getExistingProjectFeatures(dto: ImportTogglesSchema) {
         return this.importTogglesStore.getFeaturesInProject(
-            dto.data.features.map((feature) => feature.name),
+            dto.data.features.map((feature) => { throw new Error("STUB"); }),
             dto.project,
         );
     }
 
     private getDuplicateFeatures(dto: ImportTogglesSchema) {
-        return findDuplicates(dto.data.features.map((feature) => feature.name));
+        return findDuplicates(dto.data.features.map((feature) => { throw new Error("STUB"); }));
     }
 
     private async getNewTagTypes(dto: ImportTogglesSchema) {
         const existingTagTypes = (await this.tagTypeService.getAll()).map(
-            (tagType) => tagType.name,
+            (tagType) => { throw new Error("STUB"); },
         );
         const newTagTypes = (dto.data.tagTypes || []).filter(
-            (tagType) => !existingTagTypes.includes(tagType.name),
+            (tagType) => { throw new Error("STUB"); },
         );
         return [
-            ...new Map(newTagTypes.map((item) => [item.name, item])).values(),
+            ...new Map(newTagTypes.map((item) => { throw new Error("STUB"); })).values(),
         ];
     }
 
@@ -881,10 +773,7 @@ export default class ExportImportService
 
         return dto.data.contextFields?.filter(
             (contextField) =>
-                !availableContextFields.some(
-                    (availableField) =>
-                        availableField.name === contextField.name,
-                ),
+                { throw new Error("STUB"); },
         );
     }
 
@@ -892,170 +781,13 @@ export default class ExportImportService
         query: ExportQuerySchema,
         auditUser: IAuditUser,
     ): Promise<ExportResultSchema> {
-        let featureNames: string[] = [];
-        if (typeof query.tag === 'string') {
-            featureNames = await this.featureTagService.listFeatures(query.tag);
-        } else if (Array.isArray(query.features) && query.features.length) {
-            featureNames = query.features;
-        } else if (typeof query.project === 'string') {
-            const allProjectFeatures = await this.toggleStore.getAll({
-                project: query.project,
-            });
-            featureNames = allProjectFeatures.map((feature) => feature.name);
-        } else {
-            const allFeatures = await this.toggleStore.getAll();
-            featureNames = allFeatures.map((feature) => feature.name);
-        }
-
-        const [
-            features,
-            featureEnvironments,
-            featureStrategies,
-            strategySegments,
-            contextFields,
-            featureTags,
-            segments,
-            tagTypes,
-            featureDependencies,
-            featureLinks,
-        ] = await Promise.all([
-            this.toggleStore.getAllByNames(featureNames),
-            await this.featureEnvironmentStore.getAllByFeatures(
-                featureNames,
-                query.environment,
-            ),
-            this.featureStrategiesStore.getAllByFeatures(
-                featureNames,
-                query.environment,
-            ),
-            this.segmentReadModel.getAllFeatureStrategySegments(),
-            this.contextFieldStore.getAll(),
-            this.featureTagStore.getAllByFeatures(featureNames),
-            this.segmentReadModel.getAll(),
-            this.tagTypeStore.getAll(),
-            this.dependentFeaturesReadModel.getDependencies(featureNames),
-            this.featureLinksReadModel.getLinks(...featureNames),
-        ]);
-        this.addSegmentsToStrategies(featureStrategies, strategySegments);
-        const filteredContextFields = contextFields
-            .filter(
-                (field) =>
-                    featureEnvironments.some((featureEnv) =>
-                        featureEnv.variants?.some(
-                            (variant) =>
-                                variant.stickiness === field.name ||
-                                variant.overrides?.some(
-                                    (override) =>
-                                        override.contextName === field.name,
-                                ),
-                        ),
-                    ) ||
-                    featureStrategies.some(
-                        (strategy) =>
-                            strategy.parameters.stickiness === field.name ||
-                            strategy.constraints.some(
-                                (constraint) =>
-                                    constraint.contextName === field.name,
-                            ),
-                    ),
-            )
-            .map((item) => {
-                const { usedInFeatures, usedInProjects, ...rest } = item;
-                return rest;
-            });
-        const filteredSegments = segments.filter((segment) =>
-            featureStrategies.some((strategy) =>
-                strategy.segments?.includes(segment.id),
-            ),
-        );
-        const filteredTagTypes = tagTypes.filter((tagType) =>
-            featureTags.map((tag) => tag.tagType).includes(tagType.name),
-        );
-
-        const groupedFeatureDependencies = groupBy(
-            featureDependencies,
-            'feature',
-        );
-        const mappedFeatureDependencies = Object.entries(
-            groupedFeatureDependencies,
-        ).map(([feature, dependencies]) => ({
-            feature,
-            dependencies: dependencies.map((d) => d.dependency),
-        }));
-
-        const groupedFeatureLinks = groupBy(featureLinks, 'feature');
-        const mappedFeatureLinks = Object.entries(groupedFeatureLinks).map(
-            ([feature, links]) => ({
-                feature,
-                links: links.map((link) => ({
-                    id: link.id,
-                    url: link.url,
-                    title: link.title,
-                })),
-            }),
-        );
-
-        const result = {
-            features: features.map((item) => {
-                const { createdAt, archivedAt, ...rest } = item;
-                return rest;
-            }),
-            featureStrategies: featureStrategies.map((item) => {
-                const name = item.strategyName;
-                const {
-                    createdAt,
-                    projectId,
-                    environment,
-                    strategyName,
-                    milestoneId,
-                    ...rest
-                } = item;
-                return {
-                    name,
-                    ...rest,
-                };
-            }),
-            featureEnvironments: featureEnvironments.map((item) => {
-                const { lastSeenAt, ...rest } = item;
-                return {
-                    ...rest,
-                    name: item.featureName,
-                };
-            }),
-            contextFields: filteredContextFields.map((item) => {
-                const { createdAt, ...rest } = item;
-                return rest;
-            }),
-            featureTags,
-            segments: filteredSegments.map((item) => {
-                const { id, name } = item;
-                return {
-                    id,
-                    name,
-                };
-            }),
-            tagTypes: filteredTagTypes,
-            dependencies: mappedFeatureDependencies,
-            links: mappedFeatureLinks,
-        };
-        await this.eventService.storeEvent(
-            new FeaturesExportedEvent({ data: result, auditUser }),
-        );
-
-        return result;
+        throw new Error("STUB");
     }
 
     addSegmentsToStrategies(
         featureStrategies: IFeatureStrategy[],
         strategySegments: IFeatureStrategySegment[],
     ): void {
-        featureStrategies.forEach((featureStrategy) => {
-            featureStrategy.segments = strategySegments
-                .filter(
-                    (segment) =>
-                        segment.featureStrategyId === featureStrategy.id,
-                )
-                .map((segment) => segment.segmentId);
-        });
+        throw new Error("STUB");
     }
 }

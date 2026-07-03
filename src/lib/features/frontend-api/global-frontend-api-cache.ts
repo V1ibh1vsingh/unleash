@@ -45,25 +45,15 @@ export class GlobalFrontendApiCache extends EventEmitter {
         clientFeatureToggleReadModel: IClientFeatureToggleReadModel,
         configurationRevisionService: EventEmitter,
     ) {
-        super();
-        this.logger = config.getLogger('global-frontend-api-cache.ts');
-        this.clientFeatureToggleReadModel = clientFeatureToggleReadModel;
-        this.configurationRevisionService = configurationRevisionService;
-        this.segmentReadModel = segmentReadModel;
-        this.onUpdateRevisionEvent = this.onUpdateRevisionEvent.bind(this);
-        this.readyPromise = this.refreshData();
-        this.configurationRevisionService.on(
-            UPDATE_REVISION,
-            this.onUpdateRevisionEvent,
-        );
+        throw new Error("STUB");
     }
 
     isReady(): boolean {
-        return this.status === 'ready' || this.status === 'updated';
+        throw new Error("STUB");
     }
 
     getSegment(id: number): Segment | undefined {
-        return this.segments.find((segment) => segment.id === id);
+        return this.segments.find((segment) => { throw new Error("STUB"); });
     }
 
     getToggle(name: string, token: IApiUser): FeatureInterface {
@@ -88,7 +78,7 @@ export class GlobalFrontendApiCache extends EventEmitter {
             return Object.values(features);
         }
         return Object.values(features).filter(
-            (feature) => feature.project && projects.includes(feature.project),
+            (feature) => { throw new Error("STUB"); },
         );
     }
 
@@ -104,32 +94,19 @@ export class GlobalFrontendApiCache extends EventEmitter {
 
     // TODO: fetch only relevant projects/environments based on tokens
     public async refreshData() {
-        try {
-            this.featuresByEnvironment = await this.getAllFeatures();
-            this.segments = await this.getAllSegments();
-            if (this.status === 'starting') {
-                this.status = 'ready';
-                this.emit('ready');
-            } else if (this.status === 'ready' || this.status === 'updated') {
-                this.status = 'updated';
-                this.emit('updated');
-            }
-        } catch (e) {
-            this.logger.error('Cannot load data for token', e);
-        }
+        throw new Error("STUB");
     }
 
     private async getAllFeatures(): Promise<FrontendApiFeatureCache> {
-        const features = await this.clientFeatureToggleReadModel.getAll();
-        return this.mapFeatures(features);
+        throw new Error("STUB");
     }
 
     private async getAllSegments(): Promise<Segment[]> {
-        return mapSegmentsForClient(await this.segmentReadModel.getAll());
+        throw new Error("STUB");
     }
 
     private async onUpdateRevisionEvent() {
-        await this.refreshData();
+        throw new Error("STUB");
     }
 
     private environmentNameForToken(token: IApiUser): string {
@@ -142,19 +119,6 @@ export class GlobalFrontendApiCache extends EventEmitter {
     private mapFeatures(
         features: Record<string, Record<string, IFeatureToggleClient>>,
     ): FrontendApiFeatureCache {
-        const entries = Object.entries(features).map(([key, value]) => [
-            key,
-            Object.fromEntries(
-                Object.entries(value).map(([innerKey, innerValue]) => [
-                    innerKey,
-                    mapFeatureForClient({
-                        ...innerValue,
-                        stale: innerValue.stale || false,
-                    }),
-                ]),
-            ),
-        ]);
-
-        return Object.fromEntries(entries);
+        throw new Error("STUB");
     }
 }

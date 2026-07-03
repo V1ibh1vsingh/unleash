@@ -43,136 +43,18 @@ class TagController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'tagService' | 'openApiService'>,
     ) {
-        super(config);
-        this.tagService = tagService;
-        this.openApiService = openApiService;
-        this.flagResolver = config.flagResolver;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getTags,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Tags'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getTags',
-                    summary: 'List all tags.',
-                    description: 'List all tags available in Unleash.',
-                    responses: {
-                        200: createResponseSchema('tagsSchema'),
-                        ...getStandardResponses(401, 403),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'post',
-            path: '',
-            handler: this.createTag,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Tags'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'createTag',
-                    summary: 'Create a new tag.',
-                    description: 'Create a new tag with the specified data.',
-                    responses: {
-                        201: resourceCreatedResponseSchema(
-                            'tagWithVersionSchema',
-                        ),
-                        ...getStandardResponses(400, 401, 403, 409, 415),
-                    },
-                    requestBody: createRequestSchema('createTagSchema'),
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:type',
-            handler: this.getTagsByType,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Tags'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getTagsByType',
-                    summary: 'List all tags of a given type.',
-                    description:
-                        'List all tags of a given type. If the tag type does not exist it returns an empty list.',
-                    responses: {
-                        200: createResponseSchema('tagsSchema'),
-                        ...getStandardResponses(401, 403),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'get',
-            path: '/:type/:value',
-            handler: this.getTag,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Tags'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getTag',
-                    summary: 'Get a tag by type and value.',
-                    description:
-                        'Get a tag by type and value. Can be used to check whether a given tag already exists in Unleash or not.',
-                    responses: {
-                        200: createResponseSchema('tagWithVersionSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'delete',
-            path: '/:type/:value',
-            handler: this.deleteTag,
-            acceptAnyContentType: true,
-            permission: UPDATE_FEATURE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Tags'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'deleteTag',
-                    summary: 'Delete a tag.',
-                    description:
-                        'Delete a tag by type and value. When a tag is deleted all references to the tag are removed.',
-                    responses: {
-                        200: emptyResponse,
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getTags(_req: Request, res: Response<TagsSchema>): Promise<void> {
-        const tags = await this.tagService.getTags();
-        this.openApiService.respondWithValidation<TagsSchema>(
-            200,
-            res,
-            tagsSchema.$id,
-            { version, tags },
-        );
+        throw new Error("STUB");
     }
 
     async getTagsByType(
         req: Request,
         res: Response<TagsSchema>,
     ): Promise<void> {
-        const tags = await this.tagService.getTagsByType(req.params.type);
-        this.openApiService.respondWithValidation<TagsSchema>(
-            200,
-            res,
-            tagsSchema.$id,
-            { version, tags },
-        );
+        throw new Error("STUB");
     }
 
     async getTag(
@@ -205,10 +87,7 @@ class TagController extends Controller {
         req: IAuthRequest<TagSchema>,
         res: Response,
     ): Promise<void> {
-        const { type, value } = req.params;
-        const _userName = extractUsername(req);
-        await this.tagService.deleteTag({ type, value }, req.audit);
-        res.status(200).end();
+        throw new Error("STUB");
     }
 }
 export default TagController;

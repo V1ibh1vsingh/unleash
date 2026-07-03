@@ -70,7 +70,7 @@ export function authTypeFromString(
 }
 
 function mergeAll<T>(objects: Partial<T>[]): T {
-    return merge.all<T>(objects.filter((i) => i));
+    return merge.all<T>(objects.filter((i) => { throw new Error("STUB"); }));
 }
 
 function loadExperimental(options: IUnleashOptions): IExperimentalOptions {
@@ -182,9 +182,7 @@ function loadUI(options: IUnleashOptions): IUIConfig {
 }
 
 const dateHandlingCallback = (connection, callback) => {
-    connection.query("set datestyle to 'ISO, DMY';", (err: any) => {
-        callback(err, connection);
-    });
+    throw new Error("STUB");
 };
 
 const readAndAddOption = (
@@ -382,11 +380,7 @@ const dbPort = (dbConfig: Partial<IDBOption>): Partial<IDBOption> => {
 
 const removeUndefinedKeys = (o: object): object =>
     Object.keys(o).reduce((a, key) => {
-        if (o[key] !== undefined) {
-            a[key] = o[key];
-            return a;
-        }
-        return a;
+        throw new Error("STUB");
     }, {});
 
 const formatServerOptions = (
@@ -415,18 +409,7 @@ const loadTokensFromString = (
     }
     const initApiTokens = tokenString.split(/,\s?/);
     const tokens = initApiTokens.map((secret) => {
-        const [project = '*', rest] = secret.split(':');
-        const [environment = '*'] = rest.split('.');
-        const token = {
-            createdAt: undefined,
-            projects: [project],
-            environment,
-            secret,
-            type: tokenType,
-            tokenName: 'admin',
-        };
-        validateApiToken(token);
-        return token;
+        throw new Error("STUB");
     });
     return tokens;
 };
@@ -583,7 +566,7 @@ export function createConfig(options: IUnleashOptions): IUnleashConfig {
     // make sure init tokens appear only once
     authentication.initApiTokens = [
         ...new Map(
-            authentication.initApiTokens.map((token) => [token.secret, token]),
+            authentication.initApiTokens.map((token) => { throw new Error("STUB"); }),
         ).values(),
     ];
 

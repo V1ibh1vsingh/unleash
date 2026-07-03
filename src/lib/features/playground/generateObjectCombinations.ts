@@ -5,14 +5,7 @@ export const splitByComma = <T extends Record<string, unknown>>(
 ): Dict<T> => {
     return Object.entries(obj).reduce(
         (acc, [key, value]) => {
-            if (key === 'properties' && typeof value === 'object') {
-                const nested = splitByComma(value as any);
-                return { ...acc, ...nested };
-            } else if (typeof value === 'string') {
-                return { ...acc, [key]: value.split(',') };
-            } else {
-                return { ...acc, [key]: [value] };
-            }
+            throw new Error("STUB");
         },
         {} as Dict<T>,
     );
@@ -25,9 +18,7 @@ export const generateCombinations = <T extends Record<string, unknown>>(
 
     return keys.reduce(
         (results, key) =>
-            results.flatMap((result) =>
-                obj[key].map((value) => ({ ...result, [key]: value })),
-            ),
+            { throw new Error("STUB"); },
         [{}] as Partial<T>[],
     ) as T[];
 };
@@ -35,6 +26,5 @@ export const generateCombinations = <T extends Record<string, unknown>>(
 export const generateObjectCombinations = <T extends Record<string, any>>(
     obj: T,
 ): T[] => {
-    const splitObj = splitByComma(obj);
-    return generateCombinations(splitObj);
+    throw new Error("STUB");
 };

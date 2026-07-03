@@ -67,20 +67,11 @@ export default class ClientInstanceStore implements IClientInstanceStore {
         this.eventBus = eventBus;
         this.logger = getLogger('client-instance-store.ts');
         this.metricTimer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'instance',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async removeOldInstances(): Promise<void> {
-        const rows = await this.db(TABLE)
-            .whereRaw("last_seen < now() - interval '1 days'")
-            .del();
-
-        if (rows > 0) {
-            this.logger.debug(`Deleted ${rows} instances`);
-        }
+        throw new Error("STUB");
     }
 
     async bulkUpsert(instances: INewClientInstance[]): Promise<void> {
@@ -108,7 +99,7 @@ export default class ClientInstanceStore implements IClientInstanceStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     async get({
@@ -166,86 +157,33 @@ export default class ClientInstanceStore implements IClientInstanceStore {
     }
 
     async getByAppName(appName: string): Promise<IClientInstance[]> {
-        const rows = await this.db
-            .select()
-            .from(TABLE)
-            .where('app_name', appName)
-            .orderBy('last_seen', 'desc');
-
-        return rows.map(mapRow);
+        throw new Error("STUB");
     }
 
     async getRecentByAppNameAndEnvironment(
         appName: string,
         environment: string,
     ): Promise<IClientInstance[]> {
-        const rows = await this.db
-            .select()
-            .from(TABLE)
-            .where('app_name', appName)
-            .where('environment', environment)
-            .whereRaw("last_seen >= NOW() - INTERVAL '24 hours'")
-            .orderBy('last_seen', 'desc')
-            .limit(1000);
-
-        return rows.map(mapRow);
+        throw new Error("STUB");
     }
 
     async getBySdkName(sdkName: string): Promise<IClientInstance[]> {
-        const sdkPrefix = `${sdkName}%`;
-        const rows = await this.db
-            .select()
-            .from(TABLE)
-            .whereLike('sdk_version', sdkPrefix)
-            .orderBy('last_seen', 'desc');
-        return rows.map(mapRow);
+        throw new Error("STUB");
     }
 
     async groupApplicationsBySdk(): Promise<
         { sdkVersion: string; applications: string[] }[]
     > {
-        const rows = await this.db
-            .select([
-                'sdk_version as sdkVersion',
-                this.db.raw('ARRAY_AGG(DISTINCT app_name) as applications'),
-            ])
-            .from(TABLE)
-            .groupBy('sdk_version');
-
-        return rows;
+        throw new Error("STUB");
     }
     async groupApplicationsBySdkAndProject(
         projectId: string,
     ): Promise<{ sdkVersion: string; applications: string[] }[]> {
-        const rows = await this.db
-            .with(
-                'instances',
-                this.db
-                    .select('app_name', 'sdk_version')
-                    .distinct()
-                    .from('client_instances'),
-            )
-            .select([
-                'i.sdk_version as sdkVersion',
-                this.db.raw('ARRAY_AGG(DISTINCT cme.app_name) as applications'),
-            ])
-            .from('client_metrics_env as cme')
-            .leftJoin('features as f', 'f.name', 'cme.feature_name')
-            .leftJoin('instances as i', 'i.app_name', 'cme.app_name')
-            .where('f.project', projectId)
-            .groupBy('i.sdk_version');
-
-        return rows;
+        throw new Error("STUB");
     }
 
     async getDistinctApplications(): Promise<string[]> {
-        const rows = await this.db
-            .distinct('app_name')
-            .select(['app_name'])
-            .from(TABLE)
-            .orderBy('app_name', 'desc');
-
-        return rows.map((r) => r.app_name);
+        throw new Error("STUB");
     }
 
     async getDistinctApplicationsCount(daysBefore?: number): Promise<number> {
@@ -253,20 +191,18 @@ export default class ClientInstanceStore implements IClientInstanceStore {
             .select('app_name')
             .from(TABLE)
             .modify((qb) => {
-                if (daysBefore) {
-                    qb.where('last_seen', '>', subDays(new Date(), daysBefore));
-                }
+                throw new Error("STUB");
             })
             .groupBy('app_name')
             .as('subquery');
 
         const query = this.db.from(distinctApplications).count('* as count');
 
-        return query.then((res) => Number(res[0].count));
+        return query.then((res) => { throw new Error("STUB"); });
     }
 
     async deleteForApplication(appName: string): Promise<void> {
-        return this.db(TABLE).where('app_name', appName).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

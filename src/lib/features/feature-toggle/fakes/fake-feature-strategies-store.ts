@@ -39,60 +39,44 @@ export default class FakeFeatureStrategiesStore
     async getStrategiesByContextField(
         contextFieldName: string,
     ): Promise<IFeatureStrategy[]> {
-        const strategies = this.featureStrategies.filter((strategy) =>
-            strategy.constraints.some(
-                (constraint) => constraint.contextName === contextFieldName,
-            ),
-        );
-        return Promise.resolve(strategies);
+        throw new Error("STUB");
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async createFeature(feature: any): Promise<void> {
-        this.featureToggles.push({
-            project: feature.project || 'default',
-            createdAt: new Date(),
-            archived: false,
-            ...feature,
-        });
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async deleteFeatureStrategies(): Promise<void> {
-        this.featureStrategies = [];
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async hasStrategy(id: string): Promise<boolean> {
-        return this.featureStrategies.some((s) => s.id === id);
+        throw new Error("STUB");
     }
 
     async get(id: string): Promise<IFeatureStrategy | undefined> {
-        return this.featureStrategies.find((s) => s.id === id);
+        return this.featureStrategies.find((s) => { throw new Error("STUB"); });
     }
 
     async exists(key: string): Promise<boolean> {
-        return this.featureStrategies.some((s) => s.id === key);
+        return this.featureStrategies.some((s) => { throw new Error("STUB"); });
     }
 
     async delete(key: string): Promise<void> {
         this.featureStrategies.splice(
-            this.featureStrategies.findIndex((s) => s.id === key),
+            this.featureStrategies.findIndex((s) => { throw new Error("STUB"); }),
             1,
         );
     }
 
     async deleteAll(): Promise<void> {
-        this.featureStrategies = [];
+        throw new Error("STUB");
     }
 
     // FIXME: implement
     async updateSortOrder(id: string, sortOrder: number): Promise<void> {
-        const found = this.featureStrategies.find((item) => item.id === id);
-
-        if (found) {
-            found.sortOrder = sortOrder;
-        }
+        throw new Error("STUB");
     }
 
     destroy(): void {
@@ -103,20 +87,7 @@ export default class FakeFeatureStrategiesStore
         feature_name: string,
         environment: string,
     ): Promise<void> {
-        const toRemove = this.featureStrategies.filter(
-            (fS) =>
-                fS.featureName === feature_name &&
-                fS.environment === environment,
-        );
-        this.featureStrategies = this.featureStrategies.filter(
-            (f) =>
-                !toRemove.some(
-                    (r) =>
-                        r.featureName === f.featureName &&
-                        r.environment === f.environment,
-                ),
-        );
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async getAll(): Promise<IFeatureStrategy[]> {
@@ -130,9 +101,7 @@ export default class FakeFeatureStrategiesStore
     ): Promise<IFeatureStrategy[]> {
         const rows = this.featureStrategies.filter(
             (fS) =>
-                fS.projectId === project_name &&
-                fS.featureName === feature_name &&
-                fS.environment === environment,
+                { throw new Error("STUB"); },
         );
         return Promise.resolve(rows);
     }
@@ -142,13 +111,7 @@ export default class FakeFeatureStrategiesStore
         // eslint-disable-next-line
         _environment: string,
     ): Promise<FeatureToggleWithEnvironment> {
-        const toggle = this.featureToggles.find((f) => f.name === featureName);
-        if (toggle) {
-            return { ...toggle, environments: [] };
-        }
-        throw new NotFoundError(
-            `Could not find feature with name ${featureName}`,
-        );
+        throw new Error("STUB");
     }
 
     async getFeatureToggleWithEnvs(
@@ -156,15 +119,7 @@ export default class FakeFeatureStrategiesStore
         _userId?: number,
         archived: boolean = false,
     ): Promise<FeatureToggleWithEnvironment> {
-        const toggle = this.featureToggles.find(
-            (f) => f.name === featureName && f.archived === archived,
-        );
-        if (toggle) {
-            return { ...toggle, environments: [] };
-        }
-        throw new NotFoundError(
-            `Could not find feature with name ${featureName}`,
-        );
+        throw new Error("STUB");
     }
 
     getFeatureToggleWithVariantEnvs(
@@ -172,7 +127,7 @@ export default class FakeFeatureStrategiesStore
         userId?: number,
         archived?: boolean,
     ): Promise<FeatureToggleWithEnvironment> {
-        return this.getFeatureToggleWithEnvs(featureName, userId, archived);
+        throw new Error("STUB");
     }
 
     async getFeatures(
@@ -180,42 +135,14 @@ export default class FakeFeatureStrategiesStore
         archived: boolean = false,
     ): Promise<IFeatureToggleClient[]> {
         const rows = this.featureToggles.filter((toggle) => {
-            if (featureQuery?.namePrefix) {
-                if (featureQuery?.project) {
-                    return (
-                        (toggle.name.startsWith(featureQuery.namePrefix) &&
-                            featureQuery.project.some((project) =>
-                                project.includes(toggle.project),
-                            )) ||
-                        featureQuery.project.includes(ALL_PROJECTS)
-                    );
-                }
-                return toggle.name.startsWith(featureQuery.namePrefix);
-            }
-            if (featureQuery?.project) {
-                return (
-                    featureQuery.project.some((project) =>
-                        project.includes(toggle.project),
-                    ) || featureQuery.project.includes(ALL_PROJECTS)
-                );
-            }
-            return toggle.archived === archived;
+            throw new Error("STUB");
         });
-        const clientRows: IFeatureToggleClient[] = rows.map((t) => ({
-            ...t,
-            enabled: true,
-            strategies: [],
-            description: t.description || undefined,
-            type: t.type || 'Release',
-            stale: t.stale || false,
-            variants: [],
-            tags: [],
-        }));
+        const clientRows: IFeatureToggleClient[] = rows.map((t) => { throw new Error("STUB"); });
         return Promise.resolve(clientRows);
     }
 
     async getStrategyById(id: string): Promise<IFeatureStrategy> {
-        const strat = this.featureStrategies.find((fS) => fS.id === id);
+        const strat = this.featureStrategies.find((fS) => { throw new Error("STUB"); });
         if (strat) {
             return Promise.resolve(strat);
         }
@@ -229,36 +156,21 @@ export default class FakeFeatureStrategiesStore
         environment: string,
         enabled: boolean = false,
     ): Promise<void> {
-        if (!this.environmentAndFeature.has(environment)) {
-            this.environmentAndFeature.set(environment, []);
-        }
-        this.environmentAndFeature
-            .get(environment)!
-            .push({ feature: feature_name, enabled });
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async removeEnvironmentForFeature(
         feature_name: string,
         environment: string,
     ): Promise<void> {
-        this.environmentAndFeature.set(
-            environment,
-            this.environmentAndFeature
-                .get(environment)!
-                .filter((e) => e.featureName !== feature_name),
-        );
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async disconnectEnvironmentFromProject(
         environment: string,
         project: string,
     ): Promise<void> {
-        this.projectToEnvironment = this.projectToEnvironment.filter(
-            (f) => f.projectName !== project && f.environment !== environment,
-        );
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async updateStrategy(
@@ -266,13 +178,10 @@ export default class FakeFeatureStrategiesStore
         updates: Partial<IFeatureStrategy>,
     ): Promise<IFeatureStrategy> {
         this.featureStrategies = this.featureStrategies.map((f) => {
-            if (f.id === id) {
-                return { ...f, ...updates };
-            }
-            return f;
+            throw new Error("STUB");
         });
         return Promise.resolve(
-            this.featureStrategies.find((f) => f.id === id)!,
+            this.featureStrategies.find((f) => { throw new Error("STUB"); })!,
         );
     }
 
@@ -282,31 +191,21 @@ export default class FakeFeatureStrategiesStore
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _environment: String,
     ): Promise<void> {
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async isEnvironmentEnabled(
         featureName: string,
         environment: string,
     ): Promise<boolean> {
-        const enabled =
-            this.environmentAndFeature
-                .get(environment)
-                ?.find((f) => f.featureName === featureName)?.enabled || false;
-        return Promise.resolve(enabled);
+        throw new Error("STUB");
     }
 
     async setProjectForStrategiesBelongingToFeature(
         featureName: string,
         newProjectId: string,
     ): Promise<void> {
-        this.featureStrategies = this.featureStrategies.map((f) => {
-            if (f.featureName === featureName) {
-                f.projectId = newProjectId;
-            }
-            return f;
-        });
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 
     async setEnvironmentEnabledStatus(
@@ -334,9 +233,7 @@ export default class FakeFeatureStrategiesStore
         return Promise.resolve(
             this.featureStrategies.filter(
                 (strategy) =>
-                    features.includes(strategy.featureName) &&
-                    strategy.environment === environment &&
-                    !strategy.milestoneId,
+                    { throw new Error("STUB"); },
             ),
         );
     }
@@ -352,7 +249,6 @@ export default class FakeFeatureStrategiesStore
     async insertStrategy(
         strategy: IFeatureStrategy,
     ): Promise<IFeatureStrategy> {
-        this.featureStrategies.push(strategy);
-        return Promise.resolve(strategy);
+        throw new Error("STUB");
     }
 }

@@ -86,80 +86,13 @@ export default class FeatureController extends Controller {
         >,
         config: IUnleashConfig,
     ) {
-        super(config);
-        const { clientFeatureCaching } = config;
-        this.clientFeatureToggleService = clientFeatureToggleService;
-        this.clientSpecService = clientSpecService;
-        this.openApiService = openApiService;
-        this.configurationRevisionService = configurationRevisionService;
-        this.featureToggleService = featureToggleService;
-        this.eventBus = config.eventBus;
-        this.logger = config.getLogger('client-api/feature.js');
-
-        this.route({
-            method: 'get',
-            path: '/:featureName',
-            handler: this.getFeatureToggle,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    release: { stable: '4.14.0' },
-                    operationId: 'getClientFeature',
-                    summary: 'Get a single feature flag',
-                    description:
-                        'Gets all the client data for a single flag. Contains the exact same information about a flag as the `/api/client/features` endpoint does, but only contains data about the specified flag. All SDKs should use `/api/client/features`',
-                    tags: ['Client'],
-                    responses: {
-                        200: createResponseSchema('clientFeatureSchema'),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getAll,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    summary: 'Get all flags (SDK)',
-                    description:
-                        'Returns the SDK configuration for all feature flags that are available to the provided API key. Used by SDKs to configure local evaluation',
-                    release: { stable: '4.14.0' },
-                    operationId: 'getAllClientFeatures',
-                    tags: ['Client'],
-                    responses: {
-                        200: createResponseSchema('clientFeaturesSchema'),
-                    },
-                }),
-            ],
-        });
-
-        if (clientFeatureCaching.enabled) {
-            this.featuresAndSegments = memoizee(
-                (query: IFeatureToggleQuery, _etag: string) =>
-                    this.resolveFeaturesAndSegments(query),
-                {
-                    promise: true,
-                    maxAge: clientFeatureCaching.maxAge,
-                    normalizer([_query, etag]) {
-                        return etag;
-                    },
-                },
-            );
-        } else {
-            this.featuresAndSegments = this.resolveFeaturesAndSegments;
-        }
+        throw new Error("STUB");
     }
 
     private async resolveFeaturesAndSegments(
         query?: IFeatureToggleQuery,
     ): Promise<[FeatureConfigurationClient[], IClientSegment[]]> {
-        return Promise.all([
-            this.clientFeatureToggleService.getClientFeatures(query),
-            this.clientFeatureToggleService.getActiveSegmentsForClient(),
-        ]);
+        throw new Error("STUB");
     }
 
     private async resolveQuery(
@@ -239,7 +172,7 @@ export default class FeatureController extends Controller {
         });
 
         if (query.tag) {
-            query.tag = query.tag.map((q) => q.split(':'));
+            query.tag = query.tag.map((q) => { throw new Error("STUB"); });
         }
 
         return query;
@@ -260,7 +193,7 @@ export default class FeatureController extends Controller {
         if (userVersion !== undefined && etag === userVersion) {
             res.status(304);
             res.getHeaderNames().forEach((header) => {
-                res.removeHeader(header);
+                throw new Error("STUB");
             });
             res.end();
             return;
@@ -308,24 +241,6 @@ export default class FeatureController extends Controller {
         req: IAuthRequest<{ featureName: string }, ClientFeaturesQuerySchema>,
         res: Response<ClientFeatureSchema>,
     ): Promise<void> {
-        const name = req.params.featureName;
-        const featureQuery = await this.resolveQuery(req);
-        const q = { ...featureQuery, namePrefix: name };
-
-        const toggles =
-            await this.clientFeatureToggleService.getClientFeatures(q);
-
-        const toggle = toggles.find((t) => t.name === name);
-        if (!toggle) {
-            throw new NotFoundError(`Could not find feature flag ${name}`);
-        }
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            clientFeatureSchema.$id,
-            {
-                ...toggle,
-            },
-        );
+        throw new Error("STUB");
     }
 }

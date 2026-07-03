@@ -43,35 +43,7 @@ export default class EventSearchController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'eventService' | 'openApiService'>,
     ) {
-        super(config);
-        this.eventService = eventService;
-        this.flagResolver = config.flagResolver;
-        this.openApiService = openApiService;
-        this.msgFormatter = new FeatureEventFormatterMd({
-            unleashUrl: config.server.unleashUrl,
-            formatStyle: 'markdown',
-        });
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.searchEvents,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    release: { stable: '4.14.3' },
-                    operationId: 'searchEvents',
-                    tags: ['Events'],
-                    summary: 'Search for events',
-                    description:
-                        'Allows searching for events that match the query parameter criteria.',
-                    parameters: [...eventSearchQueryParameters],
-                    responses: {
-                        200: createResponseSchema('eventSearchResponseSchema'),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async searchEvents(
@@ -113,13 +85,7 @@ export default class EventSearchController extends Controller {
 
     enrichEvents(events: IEvent[]): IEvent[] | IEnrichedEvent[] {
         return events.map((event) => {
-            const { label, text: summary } = this.msgFormatter.format(event);
-
-            return {
-                ...event,
-                label,
-                summary,
-            };
+            throw new Error("STUB");
         });
     }
 

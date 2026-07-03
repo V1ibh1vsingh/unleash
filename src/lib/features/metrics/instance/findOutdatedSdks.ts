@@ -25,18 +25,9 @@ const config: SDKConfig = {
 };
 
 export const isOutdatedSdk = (sdkVersion: string | null): boolean => {
-    if (!sdkVersion) return false;
-
-    const [sdkName, version] = sdkVersion.split(':');
-    const minVersion = config[sdkName];
-
-    return Boolean(
-        minVersion && semver.valid(version) && semver.lt(version, minVersion),
-    );
+    throw new Error("STUB");
 };
 
 export function findOutdatedSDKs(sdkVersions: (string | null)[]): string[] {
-    const uniqueSdkVersions = Array.from(new Set(sdkVersions));
-
-    return uniqueSdkVersions.filter(isOutdatedSdk) as string[];
+    throw new Error("STUB");
 }

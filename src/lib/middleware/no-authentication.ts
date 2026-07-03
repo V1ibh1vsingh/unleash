@@ -8,43 +8,15 @@ import * as permissions from '../types/permissions.js';
 
 // eslint-disable-next-line
 function noneAuthentication(baseUriPath: string, app: Application): void {
-    app.use(
-        `${baseUriPath || ''}/api/admin/`,
-        (req: IAuthRequest, _res, next) => {
-            if (!req.user) {
-                req.user = new NoAuthUser();
-            }
-            next();
-        },
-    );
+    throw new Error("STUB");
 }
 
 export function noApiToken(baseUriPath: string, app: Application) {
     app.use(`${baseUriPath}/api/frontend`, (req: IApiRequest, _res, next) => {
-        if (!req.headers.authorization && !req.user) {
-            req.user = new ApiUser({
-                tokenName: 'unknown',
-                permissions: [permissions.FRONTEND],
-                projects: ['*'],
-                environment: DEFAULT_ENV,
-                type: ApiTokenType.FRONTEND,
-                secret: 'unknown',
-            });
-        }
-        next();
+        throw new Error("STUB");
     });
     app.use(`${baseUriPath}/api/client`, (req: IApiRequest, _res, next) => {
-        if (!req.headers.authorization && !req.user) {
-            req.user = new ApiUser({
-                tokenName: 'unknown',
-                permissions: [permissions.CLIENT],
-                projects: ['*'],
-                environment: DEFAULT_ENV,
-                type: ApiTokenType.CLIENT,
-                secret: 'unknown',
-            });
-        }
-        next();
+        throw new Error("STUB");
     });
 }
 export default noneAuthentication;

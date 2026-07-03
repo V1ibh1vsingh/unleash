@@ -10,26 +10,6 @@ export const originMiddleware = ({
     const logger = getLogger('/middleware/origin-middleware.ts');
     logger.debug('Enabling origin middleware');
     return (req: Request, _: Response, next: NextFunction) => {
-        const isUI = !req.headers.authorization;
-
-        if (isUI) {
-            emitMetricEvent(eventBus, REQUEST_ORIGIN, {
-                type: 'UI',
-                method: req.method,
-            });
-        } else {
-            const userAgent = req.headers['user-agent'];
-            const uaLabel = userAgent
-                ? determineIntegrationSource(userAgent)
-                : 'Other';
-
-            emitMetricEvent(eventBus, REQUEST_ORIGIN, {
-                type: 'API',
-                method: req.method,
-                source: uaLabel,
-            });
-        }
-
-        next();
+        throw new Error("STUB");
     };
 };

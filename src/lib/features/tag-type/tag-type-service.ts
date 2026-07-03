@@ -38,11 +38,7 @@ export default class TagTypeService {
     }
 
     async getTagType(name: string): Promise<ITagType> {
-        const tagType = await this.tagTypeStore.get(name);
-        if (tagType === undefined) {
-            throw new NotFoundError(`Tagtype ${name} could not be found`);
-        }
-        return tagType;
+        throw new Error("STUB");
     }
 
     async createTagType(
@@ -81,28 +77,13 @@ export default class TagTypeService {
     }
 
     async deleteTagType(name: string, auditUser: IAuditUser): Promise<void> {
-        const tagType = await this.tagTypeStore.get(name);
-        await this.tagTypeStore.delete(name);
-        await this.eventService.storeEvent(
-            new TagTypeDeletedEvent({
-                preData: tagType,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async updateTagType(
         updatedTagType: ITagType,
         auditUser: IAuditUser,
     ): Promise<ITagType> {
-        const data = await tagTypeSchema.validateAsync(updatedTagType);
-        await this.tagTypeStore.updateTagType(data);
-        await this.eventService.storeEvent(
-            new TagTypeUpdatedEvent({
-                data,
-                auditUser,
-            }),
-        );
-        return data;
+        throw new Error("STUB");
     }
 }

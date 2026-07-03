@@ -53,48 +53,6 @@ export class ProjectStatusService {
     }
 
     async getProjectStatus(projectId: string): Promise<ProjectStatusSchema> {
-        const [
-            members,
-            apiTokens,
-            segments,
-            activityCountByDate,
-            currentHealth,
-            lifecycleSummary,
-            staleFlagCount,
-        ] = await Promise.all([
-            this.projectStore.getMembersCountByProject(projectId),
-            this.apiTokenStore.countProjectTokens(projectId),
-            this.segmentStore.getProjectSegmentCount(projectId),
-            this.eventStore.getProjectRecentEventActivity(projectId),
-            calculateProjectHealthRating(
-                this.featureTypeStore,
-                this.featureToggleStore,
-            )({ id: projectId }),
-            this.projectLifecycleSummaryReadModel.getProjectLifecycleSummary(
-                projectId,
-            ),
-            this.projectStaleFlagsReadModel.getStaleFlagCountForProject(
-                projectId,
-            ),
-        ]);
-
-        return {
-            resources: {
-                members,
-                apiTokens,
-                segments,
-            },
-            activityCountByDate,
-            health: {
-                current: currentHealth,
-            },
-            technicalDebt: {
-                current: 100 - currentHealth,
-            },
-            lifecycleSummary,
-            staleFlags: {
-                total: staleFlagCount,
-            },
-        };
+        throw new Error("STUB");
     }
 }

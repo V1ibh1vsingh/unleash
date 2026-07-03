@@ -138,9 +138,7 @@ export const scheduleServices = (
 
     schedulerService.schedule(
         () =>
-            versionService.checkLatestVersion(() =>
-                instanceStatsService.getFeatureUsageInfo(),
-            ),
+            { throw new Error("STUB"); },
         hoursToMilliseconds(48),
         'checkLatestVersion',
     );
@@ -153,13 +151,13 @@ export const scheduleServices = (
     );
 
     schedulerService.schedule(
-        () => clientMetricsServiceV2.bulkAdd().catch(console.error),
+        () => { throw new Error("STUB"); },
         secondsToMilliseconds(5),
         'bulkAddMetrics',
     );
 
     schedulerService.schedule(
-        () => clientMetricsServiceV2.clearMetrics(48).catch(console.error),
+        () => { throw new Error("STUB"); },
         hoursToMilliseconds(12),
         'clearMetrics',
     );

@@ -7,7 +7,7 @@ export const resolveOrigin = (allowedOrigins: string[]): string | string[] => {
     if (allowedOrigins.length === 0) {
         return '*';
     }
-    if (allowedOrigins.some((origin: string) => origin === '*')) {
+    if (allowedOrigins.some((origin: string) => { throw new Error("STUB"); })) {
         return '*';
     } else {
         return allowedOrigins;
@@ -21,21 +21,9 @@ export const corsOriginMiddleware = (
     config: IUnleashConfig,
 ): RequestHandler => {
     const corsFunc = cors(async (_req, callback) => {
-        try {
-            const { frontendApiOrigins = [] } =
-                await frontendApiService.getFrontendSettings();
-            callback(null, {
-                origin: resolveOrigin(frontendApiOrigins),
-                maxAge: config.accessControlMaxAge,
-                exposedHeaders: 'ETag',
-                credentials: true,
-            });
-        } catch (error) {
-            callback(error);
-        }
+        throw new Error("STUB");
     });
     return (req, res, next) => {
-        res.setHeader('Vary', 'Origin');
-        corsFunc(req, res, next);
+        throw new Error("STUB");
     };
 };

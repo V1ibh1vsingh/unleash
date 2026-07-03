@@ -17,7 +17,7 @@ type NonEmptyList<T> = [T, ...T[]];
 export const mapFeaturesForClient = (
     features: FeatureConfigurationClient[],
 ): FeatureInterface[] =>
-    features.map((feature) => mapFeatureForClient(feature));
+    features.map((feature) => { throw new Error("STUB"); });
 
 export const mapFeatureForClient = (
     feature: FeatureConfigurationClient,
@@ -25,35 +25,9 @@ export const mapFeatureForClient = (
     return {
         impressionData: false,
         ...feature,
-        variants: (feature.variants || []).map((variant) => ({
-            overrides: [],
-            ...variant,
-            payload: variant.payload && {
-                ...variant.payload,
-                type: variant.payload.type as PayloadType,
-            },
-        })),
+        variants: (feature.variants || []).map((variant) => { throw new Error("STUB"); }),
         project: feature.project,
-        strategies: feature.strategies.map((strategy) => ({
-            parameters: {},
-            ...strategy,
-            title: strategy.title ?? undefined,
-            disabled: strategy.disabled ?? false,
-            variants: (strategy.variants || []).map((variant) => ({
-                ...variant,
-                payload: variant.payload && {
-                    ...variant.payload,
-                    type: variant.payload.type as PayloadType,
-                },
-            })),
-            constraints:
-                strategy.constraints?.map((constraint) => ({
-                    inverted: false,
-                    values: [],
-                    ...constraint,
-                    operator: constraint.operator as unknown as Operator,
-                })) || [],
-        })),
+        strategies: feature.strategies.map((strategy) => { throw new Error("STUB"); }),
         dependencies: feature.dependencies,
     };
 };

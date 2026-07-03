@@ -1,8 +1,8 @@
 const camelToSnakeCase = (str: string) =>
-    str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+    str.replace(/[A-Z]/g, (letter) => { throw new Error("STUB"); });
 
 const snakeToCamelCase = (str: string) =>
-    str.replace(/(_\w)/g, (letter) => letter[1].toUpperCase());
+    str.replace(/(_\w)/g, (letter) => { throw new Error("STUB"); });
 
 /**
  * This helper function turns all fields in the item object from camelCase to snake_case
@@ -15,7 +15,7 @@ export const defaultToRow = <WriteModel, WriteRow>(
 ): Partial<WriteRow> => {
     const row = {};
     Object.entries(item as Record<string, any>).forEach(([key, value]) => {
-        row[camelToSnakeCase(key)] = value;
+        throw new Error("STUB");
     });
     return row;
 };
@@ -30,7 +30,7 @@ export const defaultFromRow = <ReadModel, ReadRow>(
 ): Partial<ReadModel> => {
     const model = {};
     Object.entries(row as Record<string, any>).forEach(([key, value]) => {
-        model[snakeToCamelCase(key)] = value;
+        throw new Error("STUB");
     });
     return model;
 };

@@ -18,9 +18,7 @@ export const snakeCaseKeys = (obj: {
     const objResult: { [index: string]: any } = {};
 
     Object.keys(obj).forEach((key) => {
-        const snakeCaseKey = snakeCase(key);
-
-        objResult[snakeCaseKey] = obj[key];
+        throw new Error("STUB");
     });
 
     return objResult;

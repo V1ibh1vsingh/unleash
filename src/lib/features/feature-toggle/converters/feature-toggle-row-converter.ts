@@ -22,7 +22,7 @@ export class FeatureToggleRowConverter {
         return (
             row.strategy_id &&
             !feature.strategies?.find(
-                (strategy) => strategy?.id === row.strategy_id,
+                (strategy) => { throw new Error("STUB"); },
             )
         );
     };
@@ -36,7 +36,7 @@ export class FeatureToggleRowConverter {
             row.tag_value &&
             !feature.tags?.some(
                 (tag) =>
-                    tag?.type === row.tag_type && tag?.value === row.tag_value,
+                    { throw new Error("STUB"); },
             )
         );
     };
@@ -46,7 +46,7 @@ export class FeatureToggleRowConverter {
         row: Record<string, any>,
     ) => {
         feature.strategies
-            ?.find((strategy) => strategy?.id === row.strategy_id)
+            ?.find((strategy) => { throw new Error("STUB"); })
             ?.constraints?.push(...row.segment_constraints);
     };
 
@@ -55,7 +55,7 @@ export class FeatureToggleRowConverter {
         row: Record<string, any>,
     ) => {
         const strategy = feature.strategies?.find(
-            (strategy) => strategy?.id === row.strategy_id,
+            (strategy) => { throw new Error("STUB"); },
         );
         if (!strategy) {
             return;
@@ -70,29 +70,7 @@ export class FeatureToggleRowConverter {
         feature: PartialDeep<IFeatureToggleListItem>,
         row: Record<string, any>,
     ) => {
-        if (!feature.environments) {
-            feature.environments = [];
-        }
-
-        const found = feature.environments.find(
-            (environment) => environment?.name === row.last_seen_at_env,
-        );
-
-        if (found) {
-            return;
-        }
-
-        const newEnvironment = {
-            name: row.last_seen_at_env,
-            lastSeenAt: row.env_last_seen_at,
-            enabled: row.enabled || false,
-        };
-
-        if (!newEnvironment.name || !newEnvironment.lastSeenAt) {
-            return;
-        }
-
-        feature.environments.push(newEnvironment);
+        throw new Error("STUB");
     };
 
     rowToStrategy = (row: Record<string, any>): IStrategyConfig => {
@@ -123,44 +101,14 @@ export class FeatureToggleRowConverter {
     };
 
     formatToggles = (result: IFeatureToggleQuery) =>
-        Object.values(result).map(({ strategies, ...rest }) => ({
-            ...rest,
-            strategies: strategies
-                ?.sort(sortStrategies)
-                .map(({ title, sortOrder, milestoneId, ...strategy }) => ({
-                    ...strategy,
-                    ...(title ? { title } : {}),
-                })),
-        }));
+        { throw new Error("STUB"); };
 
     createBaseFeature = (
         row: any,
         feature: PartialDeep<IFeatureToggleClient>,
         featureQuery?: IFeatureToggleQuery,
     ) => {
-        feature.impressionData = row.impression_data;
-        feature.enabled = !!row.enabled;
-        feature.name = row.name;
-        feature.description = row.description;
-        feature.project = row.project;
-        feature.stale = row.stale || false;
-        feature.type = row.type;
-        feature.variants = row.variants || [];
-        feature.project = row.project;
-
-        if (this.isUnseenStrategyRow(feature, row)) {
-            feature.strategies?.push(this.rowToStrategy(row));
-        }
-        if (this.isNewTag(feature, row)) {
-            this.addTag(feature, row);
-        }
-        if (featureQuery?.inlineSegmentConstraints && row.segment_id) {
-            this.addSegmentToStrategy(feature, row);
-        } else if (!featureQuery?.inlineSegmentConstraints && row.segment_id) {
-            this.addSegmentIdsToStrategy(feature, row);
-        }
-
-        return feature;
+        throw new Error("STUB");
     };
 
     buildFeatureToggleListFromRows = (
@@ -168,51 +116,13 @@ export class FeatureToggleRowConverter {
         featureQuery?: IFeatureToggleQuery,
         _includeDisabledStrategies?: boolean,
     ): IFeatureToggleListItem[] => {
-        const result = rows.reduce((acc, r) => {
-            let feature: PartialDeep<IFeatureToggleListItem> = acc[r.name] ?? {
-                strategies: [],
-                stale: r.stale || false,
-            };
-
-            feature = this.createBaseFeature(r, feature, featureQuery);
-
-            feature.createdAt = r.created_at;
-            feature.favorite = r.favorite;
-            this.addLastSeenByEnvironment(feature, r);
-
-            acc[r.name] = feature;
-            return acc;
-        }, {});
-
-        return this.formatToggles(result);
+        throw new Error("STUB");
     };
 
     buildPlaygroundFeaturesFromRows = (
         rows: any[],
         featureQuery?: IFeatureToggleQuery,
     ): FeatureConfigurationClient[] => {
-        const result = rows.reduce((acc, r) => {
-            let feature: PartialDeep<IFeatureToggleClient> = acc[r.name] ?? {
-                strategies: [],
-            };
-
-            feature = this.createBaseFeature(r, feature, featureQuery);
-
-            if (r.parent) {
-                feature.dependencies = feature.dependencies || [];
-                feature.dependencies.push({
-                    feature: r.parent,
-                    enabled: r.parent_enabled,
-                    ...(r.parent_enabled
-                        ? { variants: r.parent_variants }
-                        : {}),
-                });
-            }
-
-            acc[r.name] = feature;
-            return acc;
-        }, {});
-
-        return this.formatToggles(result);
+        throw new Error("STUB");
     };
 }

@@ -25,39 +25,6 @@ export class JobService {
         fn: (range?: { from: Date; to: Date }) => Promise<unknown>,
         bucketSizeInMinutes = 5,
     ): () => Promise<unknown> {
-        return async () => {
-            const acquired = await this.jobStore.acquireBucket(
-                key,
-                bucketSizeInMinutes,
-            );
-
-            if (acquired) {
-                const { name, bucket } = acquired;
-                this.logger.debug(
-                    `Acquired job lock for ${name} from >= ${subMinutes(
-                        bucket,
-                        bucketSizeInMinutes,
-                    )} to < ${bucket}`,
-                );
-                try {
-                    const range = {
-                        from: subMinutes(bucket, bucketSizeInMinutes),
-                        to: bucket,
-                    };
-                    const response = await fn(range);
-                    await this.jobStore.update(name, bucket, {
-                        stage: 'completed',
-                        finishedAt: new Date(),
-                    });
-                    return response;
-                } catch (err) {
-                    this.logger.error(`Failed to execute job ${name}`, err);
-                    await this.jobStore.update(name, bucket, {
-                        stage: 'failed',
-                        finishedAt: new Date(),
-                    });
-                }
-            }
-        };
+        throw new Error("STUB");
     }
 }

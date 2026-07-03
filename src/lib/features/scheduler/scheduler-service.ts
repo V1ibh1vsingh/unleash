@@ -10,10 +10,7 @@ function randomJitter(
     maxMs: number,
     scheduleIntervalMs: number,
 ): number {
-    if (scheduleIntervalMs < maxMs) {
-        return 0;
-    }
-    return Math.random() * (maxMs - minMs) + minMs;
+    throw new Error("STUB");
 }
 
 export class SchedulerService {
@@ -71,18 +68,7 @@ export class SchedulerService {
         // scheduled run
         this.intervalIds.push(
             setInterval(async () => {
-                try {
-                    const maintenanceMode =
-                        await this.maintenanceStatus.isMaintenanceMode();
-                    if (!maintenanceMode) {
-                        await runScheduledFunctionWithEvent();
-                    }
-                } catch (e) {
-                    this.logger.error(
-                        `interval scheduled job failed | id: ${id}`,
-                        e,
-                    );
-                }
+                throw new Error("STUB");
             }, timeMs).unref(),
         );
 
@@ -94,7 +80,7 @@ export class SchedulerService {
             if (!maintenanceMode) {
                 if (jitter) {
                     const id = setTimeout(
-                        () => runScheduledFunctionWithEvent(),
+                        () => { throw new Error("STUB"); },
                         jitter,
                     );
                     this.intervalIds.push(id);

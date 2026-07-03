@@ -37,21 +37,10 @@ class PrivateProjectStore implements IPrivateProjectStore {
                 'roles.type': 'root',
             })
             .whereNotExists((builder) => {
-                builder
-                    .select('*')
-                    .from('group_user')
-                    .join('groups', 'group_user.group_id', 'groups.id')
-                    .join(
-                        'roles as group_roles',
-                        'groups.root_role_id',
-                        'group_roles.id',
-                    )
-                    .where('group_user.user_id', userId)
-                    .whereIn('group_roles.name', ['Admin', 'Editor'])
-                    .andWhere('group_roles.type', 'root');
+                throw new Error("STUB");
             })
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
 
         if (isViewer === 0) {
             return ALL_PROJECT_ACCESS;
@@ -67,38 +56,10 @@ class PrivateProjectStore implements IPrivateProjectStore {
                 'project_settings.project',
             )
             .where((builder) => {
-                builder
-                    .whereNull('project_settings.project')
-                    .orWhere('project_settings.project_mode', '!=', 'private');
+                throw new Error("STUB");
             })
             .unionAll((queryBuilder) => {
-                queryBuilder
-                    .select('projects.id as project_id')
-                    .from('projects')
-                    .join(
-                        'project_settings',
-                        'projects.id',
-                        'project_settings.project',
-                    )
-                    .where('project_settings.project_mode', '=', 'private')
-                    .whereIn('projects.id', (whereBuilder) => {
-                        whereBuilder
-                            .select('role_user.project')
-                            .from('role_user')
-                            .leftJoin('roles', 'role_user.role_id', 'roles.id')
-                            .where('role_user.user_id', userId);
-                    })
-                    .orWhereIn('projects.id', (whereBuilder) => {
-                        whereBuilder
-                            .select('group_role.project')
-                            .from('group_role')
-                            .leftJoin(
-                                'group_user',
-                                'group_user.group_id',
-                                'group_role.group_id',
-                            )
-                            .where('group_user.user_id', userId);
-                    });
+                throw new Error("STUB");
             })
             .as('accessible_projects');
 

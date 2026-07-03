@@ -27,10 +27,7 @@ export class UnknownFlagsService {
     }
 
     register(unknownFlags: UnknownFlagReport[]) {
-        for (const flag of unknownFlags) {
-            const key = this.getKey(flag);
-            this.unknownFlagsCache.set(key, flag);
-        }
+        throw new Error("STUB");
     }
 
     async flush(): Promise<void> {
@@ -38,7 +35,7 @@ export class UnknownFlagsService {
 
         const cached = Array.from(this.unknownFlagsCache.values());
 
-        cached.sort((a, b) => this.getKey(a).localeCompare(this.getKey(b)));
+        cached.sort((a, b) => { throw new Error("STUB"); });
 
         await this.unknownFlagsStore.insert(cached);
         this.unknownFlagsCache.clear();

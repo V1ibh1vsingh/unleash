@@ -3,7 +3,7 @@ import type { Context } from '../context.js';
 
 export default class GradualRolloutRandomStrategy extends Strategy {
     private randomGenerator: Function = () =>
-        Math.floor(Math.random() * 100) + 1;
+        { throw new Error("STUB"); };
 
     constructor(randomGenerator?: Function) {
         super('gradualRolloutRandom');

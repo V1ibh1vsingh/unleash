@@ -43,41 +43,7 @@ export const advancedPlaygroundViewModel = (
     invalidContextProperties?: string[],
 ): AdvancedPlaygroundResponseSchema => {
     const features = playgroundResult.map(({ environments, ...rest }) => {
-        const transformedEnvironments = Object.entries(environments).map(
-            ([envName, envFeatures]) => {
-                const transformedFeatures = envFeatures.map(
-                    ({
-                        name,
-                        strategies,
-                        environment,
-                        projectId,
-                        ...featRest
-                    }) => ({
-                        ...featRest,
-                        name,
-                        environment,
-                        projectId,
-                        strategies: {
-                            ...strategies,
-                            data: strategies.data.map((strategy) =>
-                                addStrategyEditLink(
-                                    environment,
-                                    projectId,
-                                    name,
-                                    strategy,
-                                ),
-                            ),
-                        },
-                    }),
-                );
-                return [envName, transformedFeatures];
-            },
-        );
-
-        return {
-            ...rest,
-            environments: Object.fromEntries(transformedEnvironments),
-        };
+        throw new Error("STUB");
     });
 
     if (invalidContextProperties?.length) {
@@ -91,24 +57,5 @@ export const playgroundViewModel = (
     input: PlaygroundRequestSchema,
     playgroundResult: PlaygroundFeatureEvaluationResult[],
 ): PlaygroundResponseSchema => {
-    const features = playgroundResult.map(
-        ({ name, strategies, projectId, ...rest }) => ({
-            ...rest,
-            name,
-            projectId,
-            strategies: {
-                ...strategies,
-                data: strategies.data.map((strategy) =>
-                    addStrategyEditLink(
-                        input.environment,
-                        projectId,
-                        name,
-                        strategy,
-                    ),
-                ),
-            },
-        }),
-    );
-
-    return { input, features };
+    throw new Error("STUB");
 };

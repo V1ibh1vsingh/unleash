@@ -9,6 +9,6 @@ export class FakeFeatureCollaboratorsReadModel
     async getFeatureCollaborators(
         _feature: string,
     ): Promise<Array<Collaborator>> {
-        return [];
+        throw new Error("STUB");
     }
 }

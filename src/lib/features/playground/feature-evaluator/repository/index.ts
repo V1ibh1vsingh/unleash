@@ -49,14 +49,14 @@ export default class Repository extends EventEmitter {
 
     async start(): Promise<void> {
         await this.loadBootstrap();
-        process.nextTick(() => this.emit(UnleashEvents.Ready));
+        process.nextTick(() => { throw new Error("STUB"); });
     }
 
     createSegmentLookup(segments: Segment[] | undefined): Map<number, Segment> {
         if (!segments) {
             return new Map();
         }
-        return new Map(segments.map((segment) => [segment.id, segment]));
+        return new Map(segments.map((segment) => { throw new Error("STUB"); }));
     }
 
     async save(response: ClientFeaturesResponse): Promise<void> {
@@ -88,9 +88,7 @@ export default class Repository extends EventEmitter {
                 o: { [s: string]: FeatureInterface },
                 feature: FeatureInterface,
             ) => {
-                const a = { ...o };
-                a[feature.name] = feature;
-                return a;
+                throw new Error("STUB");
             },
             {} as { [s: string]: FeatureInterface },
         );
@@ -113,6 +111,6 @@ export default class Repository extends EventEmitter {
     }
 
     getToggles(): FeatureInterface[] {
-        return Object.keys(this.data).map((key) => this.data[key]);
+        return Object.keys(this.data).map((key) => { throw new Error("STUB"); });
     }
 }

@@ -36,6 +36,6 @@ export class UniqueConnectionStore implements IUniqueConnectionStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db('unique_connections').delete();
+        throw new Error("STUB");
     }
 }

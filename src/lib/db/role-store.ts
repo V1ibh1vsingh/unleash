@@ -53,7 +53,7 @@ export default class RoleStore implements IRoleStore {
         return this.db
             .from(T.ROLES)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async filteredCount(filter: Partial<RoleSchema>): Promise<number> {
@@ -61,7 +61,7 @@ export default class RoleStore implements IRoleStore {
             .from(T.ROLES)
             .count('*')
             .where(filter)
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async filteredCountInUse(filter: Partial<RoleSchema>): Promise<number> {
@@ -72,9 +72,9 @@ export default class RoleStore implements IRoleStore {
             .leftJoin('groups as g', 'roles.id', 'g.root_role_id')
             .where(filter)
             .andWhere((qb) =>
-                qb.whereNotNull('ru.role_id').orWhereNotNull('g.root_role_id'),
+                { throw new Error("STUB"); },
             )
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async create(role: ICustomRoleInsert): Promise<ICustomRole> {
@@ -124,16 +124,11 @@ export default class RoleStore implements IRoleStore {
     }
 
     async nameInUse(name: string, existingId?: number): Promise<boolean> {
-        let query = this.db(T.ROLES).where({ name }).returning('id');
-        if (existingId) {
-            query = query.andWhereNot({ id: existingId });
-        }
-        const result = await query;
-        return result.length > 0;
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        return this.db(T.ROLES).del();
+        throw new Error("STUB");
     }
 
     mapRow(row: IRoleRow): ICustomRole {
@@ -156,11 +151,7 @@ export default class RoleStore implements IRoleStore {
     }
 
     async getRoleWithId(id: number): Promise<IRole> {
-        return this.db
-            .select(['id', 'name', 'type', 'description'])
-            .where('id', id)
-            .first()
-            .from<IRole>(T.ROLES);
+        throw new Error("STUB");
     }
 
     async getProjectRoles(): Promise<IRole[]> {
@@ -171,11 +162,7 @@ export default class RoleStore implements IRoleStore {
     }
 
     async getRolesForProject(projectId: string): Promise<IRole[]> {
-        return this.db
-            .select(['r.id', 'r.name', 'r.type', 'ru.project', 'r.description'])
-            .from<IRole>(`${T.ROLE_USER} as ru`)
-            .innerJoin(`${T.ROLES} as r`, 'ru.role_id', 'r.id')
-            .where('project', projectId);
+        throw new Error("STUB");
     }
 
     async getRootRoles(): Promise<IRole[]> {
@@ -186,11 +173,7 @@ export default class RoleStore implements IRoleStore {
     }
 
     async removeRolesForProject(projectId: string): Promise<void> {
-        return this.db(T.ROLE_USER)
-            .where({
-                project: projectId,
-            })
-            .delete();
+        throw new Error("STUB");
     }
 
     async getRootRoleForAllUsers(): Promise<IUserRole[]> {
@@ -201,14 +184,11 @@ export default class RoleStore implements IRoleStore {
             .leftJoin(`${T.ROLE_USER} AS ru`, 'r.id', 'ru.role_id')
             .whereIn('r.type', ROOT_ROLE_TYPES);
 
-        return rows.map((row) => ({
-            roleId: Number(row.id),
-            userId: Number(row.user_id),
-        }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getRoleByName(name: string): Promise<IRole> {
-        return this.db(T.ROLES).where({ name }).first();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

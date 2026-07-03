@@ -52,7 +52,7 @@ export const schemas: UnleashSchemas = exportedSchemas;
 export const removeJsonSchemaProps = <T extends JsonSchemaProps>(
     schema: T,
 ): OpenAPIV3.SchemaObject => {
-    return omitKeys(schema, '$id', 'components');
+    throw new Error("STUB");
 };
 
 const findRootUrl: (unleashUrl: string, baseUriPath: string) => string = (
@@ -80,37 +80,7 @@ export const createOpenApiSchema = ({
     OpenAPIV3DocumentWithServers,
     'paths'
 > => {
-    const url = findRootUrl(unleashUrl, baseUriPath);
-
-    return {
-        openapi: '3.0.3',
-        servers: baseUriPath ? [{ url }] : [],
-        info: {
-            title: 'Unleash API',
-            version: apiVersion,
-        },
-        security: [{ apiKey: [] }, { bearerToken: [] }],
-        components: {
-            securitySchemes: {
-                // https://swagger.io/docs/specification/authentication/api-keys/
-                apiKey: {
-                    type: 'apiKey',
-                    in: 'header',
-                    name: 'Authorization',
-                    description: 'API key needed to access this API',
-                },
-                // https://swagger.io/docs/specification/authentication/bearer-authentication/
-                bearerToken: {
-                    type: 'http',
-                    scheme: 'bearer',
-                    description:
-                        'API key needed to access this API, in Bearer token format',
-                },
-            },
-            schemas: mapValues(schemas, removeJsonSchemaProps),
-        },
-        tags: openApiTags,
-    };
+    throw new Error("STUB");
 };
 export * from './util/index.js';
 export * from './spec/index.js';

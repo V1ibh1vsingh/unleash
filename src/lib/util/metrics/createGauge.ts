@@ -55,38 +55,7 @@ export const createGauge = <T extends string>(
         (gaugeOptions as GaugeConfiguration<T>).collect = async function (
             this: PromGauge<T>,
         ) {
-            const now = Date.now();
-            const fresh = ttl > 0 && now - last.ts < ttl && last.value !== null;
-
-            if (fresh) {
-                // Serve cached value
-                this.set(last.value as number);
-            } else {
-                try {
-                    const v = await fetchValue();
-                    last.ts = now;
-                    last.value = v;
-                    if (v === null) {
-                        // Indicate unknown; Prometheus won’t treat it as zero.
-                        this.set(Number.NaN);
-                    } else {
-                        this.set(v);
-                    }
-                } catch {
-                    last.ts = now;
-                    last.value = null;
-                    this.set(Number.NaN);
-                }
-            }
-
-            // Call any original collect afterwards, allowing additional instrumentation if present
-            if (typeof originalCollect === 'function') {
-                try {
-                    await originalCollect.call(this);
-                } catch {
-                    // ignore errors from original collect to avoid breaking the scrape
-                }
-            }
+            throw new Error("STUB");
         } as unknown as GaugeConfiguration<T>['collect'];
     }
 

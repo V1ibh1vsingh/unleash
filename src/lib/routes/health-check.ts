@@ -12,34 +12,13 @@ export class HealthCheckController extends Controller {
         config: IUnleashConfig,
         { openApiService }: Pick<IUnleashServices, 'openApiService'>,
     ) {
-        super(config);
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getHealth,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Operational'],
-                    release: { stable: '4.14.0' },
-                    operationId: 'getHealth',
-                    summary: 'Get instance operational status',
-                    description:
-                        'This operation returns information about whether this Unleash instance is healthy and ready to serve requests or not. Typically used by your deployment orchestrator (e.g. Kubernetes, Docker Swarm, Mesos, et al.).',
-                    responses: {
-                        200: createResponseSchema('healthCheckSchema'),
-                        500: createResponseSchema('healthCheckSchema'),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getHealth(
         _: Request,
         res: Response<HealthCheckSchema>,
     ): Promise<void> {
-        res.status(200).json({ health: 'GOOD' });
+        throw new Error("STUB");
     }
 }

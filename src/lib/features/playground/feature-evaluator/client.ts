@@ -37,23 +37,12 @@ export default class UnleashClient {
     private strategies: Strategy[];
 
     constructor(repository: RepositoryInterface, strategies: Strategy[]) {
-        this.repository = repository;
-        this.strategies = strategies || [];
-
-        this.strategies.forEach((strategy: Strategy) => {
-            if (
-                !strategy?.name ||
-                typeof strategy.name !== 'string' ||
-                typeof strategy.isEnabled !== 'function'
-            ) {
-                throw new Error('Invalid strategy data / interface');
-            }
-        });
+        throw new Error("STUB");
     }
 
     private getStrategy(name: string): Strategy | undefined {
         return this.strategies.find(
-            (strategy: Strategy): boolean => strategy.name === name,
+            (strategy: Strategy): boolean => { throw new Error("STUB"); },
         );
     }
 
@@ -66,34 +55,7 @@ export default class UnleashClient {
         }
 
         return feature.dependencies.every((parent) => {
-            const parentToggle = this.repository.getToggle(parent.feature);
-
-            if (!parentToggle) {
-                return false;
-            }
-            if (parentToggle.dependencies?.length) {
-                return false;
-            }
-            if (Boolean(parent.enabled) !== Boolean(parentToggle.enabled)) {
-                return false;
-            }
-
-            if (parent.enabled !== false) {
-                if (parent.variants?.length) {
-                    return parent.variants.includes(
-                        this.getVariant(parent.feature, context).name,
-                    );
-                }
-                return (
-                    this.isEnabled(parent.feature, context, () => false)
-                        .result === true
-                );
-            }
-
-            return !(
-                this.isEnabled(parent.feature, context, () => false).result ===
-                true
-            );
+            throw new Error("STUB");
         });
     }
 
@@ -141,50 +103,7 @@ export default class UnleashClient {
 
         const strategies = feature.strategies.map(
             (strategySelector): EvaluatedPlaygroundStrategy => {
-                const getStrategy = (): Strategy => {
-                    // assume that 'unknown' strategy is always present
-                    const unknownStrategy = this.getStrategy(
-                        'unknown',
-                    ) as Strategy;
-
-                    // the application hostname strategy relies on external
-                    // variables to calculate its result. As such, we can't
-                    // evaluate it in a way that makes sense. So we'll
-                    // use the 'unknown' strategy instead.
-                    if (strategySelector.name === 'applicationHostname') {
-                        return unknownStrategy;
-                    }
-
-                    return (
-                        this.getStrategy(strategySelector.name) ??
-                        unknownStrategy
-                    );
-                };
-
-                const strategy = getStrategy();
-
-                const segments =
-                    (strategySelector.segments
-                        ?.map(this.getSegment(this.repository))
-                        .filter(Boolean) as SegmentForEvaluation[]) ?? [];
-
-                const evaluationResult = strategy.isEnabledWithConstraints(
-                    strategySelector.parameters,
-                    context,
-                    strategySelector.constraints,
-                    segments,
-                    strategySelector.disabled,
-                    strategySelector.variants,
-                );
-
-                return {
-                    name: strategySelector.name,
-                    id: strategySelector.id || randomId(),
-                    title: strategySelector.title,
-                    disabled: strategySelector.disabled || false,
-                    parameters: strategySelector.parameters,
-                    ...evaluationResult,
-                };
+                throw new Error("STUB");
             },
         );
 
@@ -196,7 +115,7 @@ export default class UnleashClient {
         ] => {
             // if at least one strategy is enabled, then the feature is enabled
             const enabledStrategy = strategies.find(
-                (strategy) => strategy.result.enabled === true,
+                (strategy) => { throw new Error("STUB"); },
             );
             if (
                 enabledStrategy &&
@@ -212,7 +131,7 @@ export default class UnleashClient {
             // if at least one strategy is unknown, then the feature _may_ be enabled
             if (
                 strategies.some(
-                    (strategy) => strategy.result.enabled === 'unknown',
+                    (strategy) => { throw new Error("STUB"); },
                 )
             ) {
                 return [
@@ -238,15 +157,7 @@ export default class UnleashClient {
 
     getSegment(repo: RepositoryInterface) {
         return (segmentId: number): SegmentForEvaluation | undefined => {
-            const segment = repo.getSegment(segmentId);
-            if (!segment) {
-                return undefined;
-            }
-            return {
-                name: segment.name,
-                id: segmentId,
-                constraints: segment.constraints,
-            };
+            throw new Error("STUB");
         };
     }
 
@@ -304,7 +215,7 @@ export default class UnleashClient {
         const result =
             forcedResult ??
             this.isFeatureEnabled(feature, context, () =>
-                fallbackVariant ? fallbackVariant.enabled : false,
+                { throw new Error("STUB"); },
             );
         const enabled = result.result === true;
         fallback.feature_enabled = fallbackVariant?.feature_enabled ?? enabled;

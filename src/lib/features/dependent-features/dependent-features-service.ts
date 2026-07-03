@@ -58,21 +58,7 @@ export class DependentFeaturesService {
         }: { featureName: string; newFeatureName: string; projectId: string },
         auditUser: IAuditUser,
     ) {
-        const parents =
-            await this.dependentFeaturesReadModel.getParents(featureName);
-        await Promise.all(
-            parents.map((parent) =>
-                this.unprotectedUpsertFeatureDependency(
-                    { child: newFeatureName, projectId },
-                    {
-                        feature: parent.feature,
-                        enabled: parent.enabled,
-                        variants: parent.variants,
-                    },
-                    auditUser,
-                ),
-            ),
-        );
+        throw new Error("STUB");
     }
 
     async upsertFeatureDependency(
@@ -169,13 +155,7 @@ export class DependentFeaturesService {
         user: IUser,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.stopWhenChangeRequestsEnabled(projectId, user);
-
-        return this.unprotectedDeleteFeatureDependency(
-            dependency,
-            projectId,
-            auditUser,
-        );
+        throw new Error("STUB");
     }
 
     async unprotectedDeleteFeatureDependency(
@@ -183,15 +163,7 @@ export class DependentFeaturesService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.dependentFeaturesStore.delete(dependency);
-        await this.eventService.storeEvent(
-            new FeatureDependencyRemovedEvent({
-                project: projectId,
-                featureName: dependency.child,
-                auditUser,
-                data: { feature: dependency.parent },
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async deleteFeaturesDependencies(
@@ -200,13 +172,7 @@ export class DependentFeaturesService {
         user: IUser,
         auditUser: IAuditUser,
     ): Promise<void> {
-        await this.stopWhenChangeRequestsEnabled(projectId, user);
-
-        return this.unprotectedDeleteFeaturesDependencies(
-            features,
-            projectId,
-            auditUser,
-        );
+        throw new Error("STUB");
     }
 
     async unprotectedDeleteFeaturesDependencies(
@@ -214,42 +180,19 @@ export class DependentFeaturesService {
         projectId: string,
         auditUser: IAuditUser,
     ): Promise<void> {
-        const dependencies =
-            await this.dependentFeaturesReadModel.getDependencies(features);
-        const featuresWithDependencies = dependencies.map(
-            (dependency) => dependency.feature,
-        );
-        if (featuresWithDependencies.length > 0) {
-            await this.dependentFeaturesStore.deleteAll(
-                featuresWithDependencies,
-            );
-            await this.eventService.storeEvents(
-                featuresWithDependencies.map(
-                    (feature) =>
-                        new FeatureDependenciesRemovedEvent({
-                            project: projectId,
-                            featureName: feature,
-                            auditUser,
-                        }),
-                ),
-            );
-        }
+        throw new Error("STUB");
     }
 
     async getPossibleParentFeatures(feature: string): Promise<string[]> {
-        return this.dependentFeaturesReadModel.getPossibleParentFeatures(
-            feature,
-        );
+        throw new Error("STUB");
     }
 
     async getPossibleParentVariants(parentFeature: string): Promise<string[]> {
-        return this.dependentFeaturesReadModel.getPossibleParentVariants(
-            parentFeature,
-        );
+        throw new Error("STUB");
     }
 
     async checkDependenciesExist(): Promise<boolean> {
-        return this.dependentFeaturesReadModel.hasAnyDependencies();
+        throw new Error("STUB");
     }
 
     private async stopWhenChangeRequestsEnabled(project: string, user?: IUser) {

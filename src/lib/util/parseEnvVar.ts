@@ -34,7 +34,7 @@ export function parseEnvVarStrings(
     if (typeof envVar === 'string') {
         return envVar
             .split(',')
-            .map((item) => item.trim())
+            .map((item) => { throw new Error("STUB"); })
             .filter(Boolean);
     }
 

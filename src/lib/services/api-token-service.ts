@@ -89,39 +89,18 @@ export class ApiTokenService {
         eventService: EventService,
         resourceLimitsService: ResourceLimitsService,
     ) {
-        this.store = apiTokenStore;
-        this.eventService = eventService;
-        this.resourceLimitsService = resourceLimitsService;
-        this.environmentStore = environmentStore;
-        this.flagResolver = config.flagResolver;
-        this.logger = config.getLogger('/services/api-token-service.ts');
-        if (!this.flagResolver.isEnabled('useMemoizedActiveTokens')) {
-            // This is probably not needed because the scheduler will run it
-            this.fetchActiveTokens();
-        }
-        this.updateLastSeen();
-        this.timer = (functionName: string) =>
-            metricsHelper.wrapTimer(config.eventBus, FUNCTION_TIME, {
-                className: 'ApiTokenService',
-                functionName,
-            });
-
-        this.eventBus = config.eventBus;
+        throw new Error("STUB");
     }
 
     /**
      * Called by a scheduler without jitter to refresh all active tokens
      */
     async fetchActiveTokens(): Promise<void> {
-        try {
-            this.activeTokens = await this.store.getAllActive();
-        } catch (e) {
-            this.logger.warn('Failed to fetch active tokens', e);
-        }
+        throw new Error("STUB");
     }
 
     async getToken(secret: string): Promise<IApiToken | undefined> {
-        return this.store.get(secret);
+        throw new Error("STUB");
     }
     async getTokenWithCache(secret: string): Promise<IApiToken | undefined> {
         if (!secret) {
@@ -130,8 +109,7 @@ export class ApiTokenService {
 
         let token = this.activeTokens.find(
             (activeToken) =>
-                Boolean(activeToken.secret) &&
-                constantTimeCompare(activeToken.secret, secret),
+                { throw new Error("STUB"); },
         );
 
         // If the token is not found, try to find it in the legacy format with alias.
@@ -139,8 +117,7 @@ export class ApiTokenService {
         if (!token) {
             token = this.activeTokens.find(
                 (activeToken) =>
-                    Boolean(activeToken.alias) &&
-                    constantTimeCompare(activeToken.alias!, secret),
+                    { throw new Error("STUB"); },
             );
         }
 
@@ -183,19 +160,15 @@ export class ApiTokenService {
     }
 
     async updateLastSeen(): Promise<void> {
-        if (this.lastSeenSecrets.size > 0) {
-            const toStore = [...this.lastSeenSecrets];
-            this.lastSeenSecrets = new Set<string>();
-            await this.store.markSeenAt(toStore);
-        }
+        throw new Error("STUB");
     }
 
     public async getAllTokens(): Promise<IApiToken[]> {
-        return this.store.getAll();
+        throw new Error("STUB");
     }
 
     public async getUserDefinedTokens(): Promise<IApiToken[]> {
-        return this.store.getUserDefinedTokens();
+        throw new Error("STUB");
     }
 
     async initApiTokens(tokens: IApiTokenCreate[]) {
@@ -208,15 +181,15 @@ export class ApiTokenService {
         }
         try {
             const createAll = tokens.map((t) =>
-                this.insertNewApiToken(t, SYSTEM_USER_AUDIT),
+                { throw new Error("STUB"); },
             );
             await Promise.all(createAll);
             this.logger.info(
-                `Created initial API tokens: ${tokens.map((t) => `(name: ${t.tokenName}, type: ${t.type})`).join(', ')}`,
+                `Created initial API tokens: ${tokens.map((t) => { throw new Error("STUB"); }).join(', ')}`,
             );
         } catch (e) {
             this.logger.warn(
-                `Unable to create initial API tokens from: ${tokens.map((t) => `(name: ${t.tokenName}, type: ${t.type})`).join(', ')}`,
+                `Unable to create initial API tokens from: ${tokens.map((t) => { throw new Error("STUB"); }).join(', ')}`,
                 e,
             );
         }
@@ -252,16 +225,7 @@ export class ApiTokenService {
         expiresAt: Date,
         auditUser: IAuditUser,
     ): Promise<IApiToken> {
-        const previous = (await this.store.get(secret))!;
-        const token = (await this.store.setExpiry(secret, expiresAt))!;
-        await this.eventService.storeEvent(
-            new ApiTokenUpdatedEvent({
-                auditUser,
-                previousToken: omitKeys(previous, 'secret'),
-                apiToken: omitKeys(token, 'secret'),
-            }),
-        );
-        return token;
+        throw new Error("STUB");
     }
 
     public async delete(secret: string, auditUser: IAuditUser): Promise<void> {
@@ -285,51 +249,24 @@ export class ApiTokenService {
         newToken: Omit<IApiTokenCreate, 'secret'>,
         auditUser: IAuditUser = SYSTEM_USER_AUDIT,
     ): Promise<IApiToken> {
-        return this.internalCreateApiTokenWithProjects(
-            {
-                ...newToken,
-                projects: resolveValidProjects(newToken.projects),
-            },
-            auditUser,
-        );
+        throw new Error("STUB");
     }
 
     private async internalCreateApiTokenWithProjects(
         newToken: Omit<IApiTokenCreate, 'secret'>,
         auditUser: IAuditUser,
     ): Promise<IApiToken> {
-        validateApiToken(newToken);
-        await this.validateApiTokenEnvironment(newToken);
-        await this.validateApiTokenLimit();
-
-        const secret = this.generateSecretKey(newToken);
-        const createNewToken = { ...newToken, secret };
-        return this.insertNewApiToken(createNewToken, auditUser);
+        throw new Error("STUB");
     }
 
     private async validateApiTokenEnvironment({
         environment,
     }: Pick<IApiTokenCreate, 'environment'>): Promise<void> {
-        if (environment === ALL) {
-            return;
-        }
-
-        const exists = await this.environmentStore.exists(environment);
-        if (!exists) {
-            throw new BadDataError(`Environment=${environment} does not exist`);
-        }
+        throw new Error("STUB");
     }
 
     private async validateApiTokenLimit() {
-        const currentTokenCount = await this.store.count();
-        const { apiTokens: limit } =
-            await this.resourceLimitsService.getResourceLimits();
-        if (currentTokenCount >= limit) {
-            throwExceedsLimitError(this.eventBus, {
-                resource: 'api token',
-                limit,
-            });
-        }
+        throw new Error("STUB");
     }
 
     // TODO: Remove this service method after embedded proxy has been released in
@@ -337,11 +274,7 @@ export class ApiTokenService {
     public async createMigratedProxyApiToken(
         newToken: Omit<IApiTokenCreate, 'secret'>,
     ): Promise<IApiToken> {
-        validateApiToken(newToken);
-
-        const secret = this.generateSecretKey(newToken);
-        const createNewToken = { ...newToken, secret };
-        return this.insertNewApiToken(createNewToken, SYSTEM_USER_AUDIT);
+        throw new Error("STUB");
     }
 
     private normalizeTokenType(token: IApiTokenCreate): IApiTokenCreate {
@@ -391,17 +324,12 @@ export class ApiTokenService {
             return 'invalid';
         }
         const invalidProject = projects.find((project) => {
-            return errorDetails.includes(`=(${project})`);
+            throw new Error("STUB");
         });
         return invalidProject || 'invalid';
     }
 
     private generateSecretKey({ projects, environment }) {
-        const randomStr = crypto.randomBytes(28).toString('hex');
-        if (projects.length > 1) {
-            return `[]:${environment}.${randomStr}`;
-        } else {
-            return `${projects[0]}:${environment}.${randomStr}`;
-        }
+        throw new Error("STUB");
     }
 }

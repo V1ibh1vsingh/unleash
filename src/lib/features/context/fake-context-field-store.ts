@@ -12,7 +12,7 @@ export default class FakeContextFieldStore implements IContextFieldStore {
 
     countProjectFields(): Promise<number> {
         return Promise.resolve(
-            this.contextFields.filter((field) => field.project).length,
+            this.contextFields.filter((field) => { throw new Error("STUB"); }).length,
         );
     }
 
@@ -50,23 +50,23 @@ export default class FakeContextFieldStore implements IContextFieldStore {
 
     async delete(key: string): Promise<void> {
         this.contextFields.splice(
-            this.contextFields.findIndex((cF) => cF.name === key),
+            this.contextFields.findIndex((cF) => { throw new Error("STUB"); }),
             1,
         );
     }
 
     async deleteAll(): Promise<void> {
-        this.contextFields = this.defaultContextFields;
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async exists(key: string): Promise<boolean> {
-        return this.contextFields.some((cF) => cF.name === key);
+        return this.contextFields.some((cF) => { throw new Error("STUB"); });
     }
 
     async get(key: string): Promise<IContextField> {
-        const contextField = this.contextFields.find((cF) => cF.name === key);
+        const contextField = this.contextFields.find((cF) => { throw new Error("STUB"); });
         if (contextField) {
             return contextField;
         }

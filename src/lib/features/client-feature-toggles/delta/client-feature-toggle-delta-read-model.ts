@@ -33,10 +33,7 @@ export default class ClientFeatureToggleDeltaReadModel
     constructor(db: Db, eventBus: EventEmitter) {
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'client-feature-toggle-delta-read-model',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     public async getAll(
@@ -134,65 +131,14 @@ export default class ClientFeatureToggleDeltaReadModel
         stopTimer();
 
         const featureToggles = rows.reduce((acc, r) => {
-            const feature: PartialDeep<FeatureConfigurationDeltaClient> = acc[
-                r.name
-            ] ?? {
-                strategies: [],
-            };
-            if (this.isUnseenStrategyRow(feature, r) && !r.strategy_disabled) {
-                feature.strategies?.push(this.rowToStrategy(r));
-            }
-            if (featureQuery?.inlineSegmentConstraints && r.segment_id) {
-                this.addSegmentToStrategy(feature, r);
-            } else if (
-                !featureQuery?.inlineSegmentConstraints &&
-                r.segment_id
-            ) {
-                this.addSegmentIdsToStrategy(feature, r);
-            }
-            if (r.parent) {
-                feature.dependencies = feature.dependencies || [];
-                feature.dependencies.push({
-                    feature: r.parent,
-                    enabled: r.parent_enabled,
-                    ...(r.parent_enabled
-                        ? { variants: r.parent_variants }
-                        : {}),
-                });
-            }
-            feature.impressionData = r.impression_data;
-            feature.enabled = !!r.enabled;
-            feature.name = r.name;
-            feature.description = r.description;
-            feature.project = r.project;
-            feature.stale = r.stale;
-            feature.type = r.type;
-            feature.variants = r.variants || [];
-            feature.project = r.project;
-
-            acc[r.name] = feature;
-            return acc;
+            throw new Error("STUB");
         }, {});
 
         const features: FeatureConfigurationDeltaClient[] =
             Object.values(featureToggles);
 
         // strip away unwanted properties
-        const cleanedFeatures = features.map(({ strategies, ...rest }) => ({
-            ...rest,
-            strategies: strategies
-                ?.sort(sortStrategies)
-                .map(({ id, title, sortOrder, milestoneId, ...strategy }) => ({
-                    ...strategy,
-                    ...(strategy.segments
-                        ? {
-                              segments: [...strategy.segments].sort(
-                                  (a, b) => a - b,
-                              ),
-                          }
-                        : {}),
-                })),
-        }));
+        const cleanedFeatures = features.map(({ strategies, ...rest }) => { throw new Error("STUB"); });
 
         return cleanedFeatures;
     }
@@ -202,7 +148,7 @@ export default class ClientFeatureToggleDeltaReadModel
         row: Record<string, any>,
     ) {
         const strategy = feature.strategies?.find(
-            (s) => s?.id === row.strategy_id,
+            (s) => { throw new Error("STUB"); },
         );
         if (!strategy) {
             return;
@@ -233,7 +179,7 @@ export default class ClientFeatureToggleDeltaReadModel
     ): boolean {
         return (
             row.strategy_id &&
-            !feature.strategies?.find((s) => s?.id === row.strategy_id)
+            !feature.strategies?.find((s) => { throw new Error("STUB"); })
         );
     }
 
@@ -242,7 +188,7 @@ export default class ClientFeatureToggleDeltaReadModel
         row: Record<string, any>,
     ) {
         feature.strategies
-            ?.find((s) => s?.id === row.strategy_id)
+            ?.find((s) => { throw new Error("STUB"); })
             ?.constraints?.push(...row.segment_constraints);
     }
 }

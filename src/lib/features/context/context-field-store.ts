@@ -72,7 +72,7 @@ class ContextFieldStore implements IContextFieldStore {
     }
 
     prefixColumns(columns: string[] = COLUMNS): string[] {
-        return columns.map((c) => `${T.contextFields}.${c}`);
+        return columns.map((c) => { throw new Error("STUB"); });
     }
 
     fieldToRow(
@@ -120,7 +120,7 @@ class ContextFieldStore implements IContextFieldStore {
             )
             .groupBy(
                 this.prefixColumns(
-                    COLUMNS.filter((column) => column !== 'legal_values'),
+                    COLUMNS.filter((column) => { throw new Error("STUB"); }),
                 ),
             )
             .orderBy('name', 'asc');
@@ -142,7 +142,7 @@ class ContextFieldStore implements IContextFieldStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(T.contextFields).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -180,14 +180,14 @@ class ContextFieldStore implements IContextFieldStore {
     async count(): Promise<number> {
         return this.db(T.contextFields)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async countProjectFields(): Promise<number> {
         return this.db(T.contextFields)
             .whereNotNull('project')
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 }
 export default ContextFieldStore;

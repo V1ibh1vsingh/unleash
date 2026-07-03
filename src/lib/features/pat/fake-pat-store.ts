@@ -25,40 +25,36 @@ export default class FakePatStore implements IPatStore {
     }
 
     async delete(key: number): Promise<void> {
-        this.pats = this.pats.filter((p) => p.id !== key);
+        this.pats = this.pats.filter((p) => { throw new Error("STUB"); });
     }
 
     async deleteForUser(id: number, userId: number): Promise<void> {
-        this.pats = this.pats.filter(
-            (p) => !(p.id === id && p.userId === userId),
-        );
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        this.pats = [];
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async exists(key: number): Promise<boolean> {
-        return this.pats.some((p) => p.id === key);
+        return this.pats.some((p) => { throw new Error("STUB"); });
     }
 
     async existsWithDescriptionByUser(
         description: string,
         userId: number,
     ): Promise<boolean> {
-        return this.pats.some(
-            (pat) => pat.description === description && pat.userId === userId,
-        );
+        throw new Error("STUB");
     }
 
     async countByUser(userId: number): Promise<number> {
-        return this.pats.filter((p) => p.userId === userId).length;
+        throw new Error("STUB");
     }
 
     async get(key: number): Promise<PatSchema> {
-        const pat = this.pats.find((p) => p.id === key);
+        const pat = this.pats.find((p) => { throw new Error("STUB"); });
         if (!pat) {
             throw new NotFoundError('No PAT found.');
         }
@@ -70,6 +66,6 @@ export default class FakePatStore implements IPatStore {
     }
 
     async getAllByUser(userId: number): Promise<PatSchema[]> {
-        return this.pats.filter((p) => p.userId === userId);
+        return this.pats.filter((p) => { throw new Error("STUB"); });
     }
 }

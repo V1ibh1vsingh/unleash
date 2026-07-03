@@ -26,32 +26,7 @@ export default class ConstraintsController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'constraintsReadModel' | 'openApiService'>,
     ) {
-        super(config);
-        this.constraintsReadModel = constraintsReadModel;
-        this.openApiService = openApiService;
-        this.logger = config.getLogger('/admin-api/validation.ts');
-
-        this.route({
-            method: 'post',
-            path: '/validate',
-            handler: this.validateConstraint,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Features'],
-                    release: { stable: '4.13.0' },
-                    operationId: 'validateConstraint',
-                    requestBody: createRequestSchema('constraintSchema'),
-                    summary: 'Validate constraint',
-                    description:
-                        'Validates a constraint definition. Checks whether the context field exists and whether the applied configuration is valid. Additional properties are not allowed on data objects that you send to this endpoint.',
-                    responses: {
-                        204: { description: 'The constraint is valid' },
-                        ...getStandardResponses(400, 401, 403, 415),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async validateConstraint(

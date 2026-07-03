@@ -107,17 +107,12 @@ export interface AccessWithRoles {
     users: IUserWithProjectRoles[];
 }
 
-const isProjectPermission = (permission) => PROJECT_ADMIN.includes(permission);
+const isProjectPermission = (permission) => { throw new Error("STUB"); };
 
 export const cleanPermissionEnvironment = (
     permissions: PermissionRef[] | undefined,
 ) => {
-    return permissions?.map((permission) => {
-        if (permission.environment === '') {
-            return { ...permission, environment: null };
-        }
-        return permission;
-    });
+    throw new Error("STUB");
 };
 
 export class AccessService {
@@ -167,20 +162,15 @@ export class AccessService {
         return userP
             .filter(
                 (p) =>
-                    !p.project ||
-                    p.project === projectId ||
-                    p.project === ALL_PROJECTS,
+                    { throw new Error("STUB"); },
             )
             .filter(
                 (p) =>
-                    !p.environment ||
-                    p.environment === environment ||
-                    p.environment === ALL_ENVS,
+                    { throw new Error("STUB"); },
             )
             .some(
                 (p) =>
-                    permissionsArray.includes(p.permission) ||
-                    p.permission === ADMIN,
+                    { throw new Error("STUB"); },
             );
     }
 
@@ -254,42 +244,17 @@ export class AccessService {
         const userP = await this.getPermissionsForUser(user);
         const groups = await this.groupService.getGroupsForUser(user.id);
         const overview: AccessOverview = {
-            root: permissions.root.map((p) => ({
-                ...p,
-                hasPermission: this.meetsAllPermissions(userP, [p.name]),
-            })),
-            project: permissions.project.map((p) => ({
-                ...p,
-                hasPermission: this.meetsAllPermissions(
-                    userP,
-                    [p.name],
-                    projectId,
-                ),
-            })),
+            root: permissions.root.map((p) => { throw new Error("STUB"); }),
+            project: permissions.project.map((p) => { throw new Error("STUB"); }),
             groups: groups.map(
                 ({ id, name, description, mappingsSSO, rootRole, scimId }) => {
-                    return {
-                        id,
-                        name,
-                        description,
-                        mappingsSSO,
-                        rootRole,
-                        scimId,
-                    };
+                    throw new Error("STUB");
                 },
             ),
             environment:
                 permissions.environments
-                    .find((ep) => ep.name === environment)
-                    ?.permissions.map((p) => ({
-                        ...p,
-                        hasPermission: this.meetsAllPermissions(
-                            userP,
-                            [p.name],
-                            projectId,
-                            environment,
-                        ),
-                    })) ?? [],
+                    .find((ep) => { throw new Error("STUB"); })
+                    ?.permissions.map((p) => { throw new Error("STUB"); }) ?? [],
         };
 
         return overview;
@@ -299,9 +264,7 @@ export class AccessService {
         user: APIUser | NonAPIUser,
     ): Promise<IUserPermission[]> {
         if (user.isAPI) {
-            return user.permissions?.map((p) => ({
-                permission: p,
-            }));
+            return user.permissions?.map((p) => { throw new Error("STUB"); });
         }
         return this.store.getPermissionsForUser(user.id);
     }
@@ -311,24 +274,19 @@ export class AccessService {
         const environments = await this.environmentStore.getAll();
 
         const rootPermissions = bindablePermissions.filter(
-            ({ type }) => type === 'root',
+            ({ type }) => { throw new Error("STUB"); },
         );
 
         const projectPermissions = bindablePermissions.filter((x) => {
-            return x.type === 'project';
+            throw new Error("STUB");
         });
 
         const environmentPermissions = bindablePermissions.filter((perm) => {
-            return perm.type === 'environment';
+            throw new Error("STUB");
         });
 
         const allEnvironmentPermissions = environments.map((env) => {
-            return {
-                name: env.name,
-                permissions: environmentPermissions.map((permission) => {
-                    return { environment: env.name, ...permission };
-                }),
-            };
+            throw new Error("STUB");
         });
 
         return {
@@ -352,7 +310,7 @@ export class AccessService {
         createdBy: string,
         projectId: string,
     ): Promise<void> {
-        return this.store.addGroupToRole(groupId, roleId, createdBy, projectId);
+        throw new Error("STUB");
     }
 
     async addAccessToProject(
@@ -362,18 +320,7 @@ export class AccessService {
         projectId: string,
         createdBy: string,
     ): Promise<void> {
-        if (roles.length === 0) {
-            throw new BadDataError(
-                "You can't grant access without any roles. The roles array you sent was empty.",
-            );
-        }
-        return this.store.addAccessToProject(
-            roles,
-            groups,
-            users,
-            projectId,
-            createdBy,
-        );
+        throw new Error("STUB");
     }
 
     async setProjectRolesForUser(
@@ -381,7 +328,7 @@ export class AccessService {
         userId: number,
         roles: number[],
     ): Promise<void> {
-        await this.store.setProjectRolesForUser(projectId, userId, roles);
+        throw new Error("STUB");
     }
 
     async getProjectRolesForUser(
@@ -397,31 +344,26 @@ export class AccessService {
         roles: number[],
         createdBy: string,
     ): Promise<void> {
-        await this.store.setProjectRolesForGroup(
-            projectId,
-            groupId,
-            roles,
-            createdBy,
-        );
+        throw new Error("STUB");
     }
 
     async getProjectRolesForGroup(
         projectId: string,
         groupId: number,
     ): Promise<number[]> {
-        return this.store.getProjectRolesForGroup(projectId, groupId);
+        throw new Error("STUB");
     }
 
     async getRoleByName(roleName: string): Promise<IRole> {
-        return this.roleStore.getRoleByName(roleName);
+        throw new Error("STUB");
     }
 
     async removeUserAccess(projectId: string, userId: number): Promise<void> {
-        await this.store.removeUserAccess(projectId, userId);
+        throw new Error("STUB");
     }
 
     async removeGroupAccess(projectId: string, groupId: number): Promise<void> {
-        await this.store.removeGroupAccess(projectId, groupId);
+        throw new Error("STUB");
     }
 
     async setUserRootRole(
@@ -466,7 +408,7 @@ export class AccessService {
         roleId: number,
         projectId: string,
     ): Promise<void> {
-        return this.store.removeUserFromRole(userId, roleId, projectId);
+        throw new Error("STUB");
     }
 
     async updateUserProjectRole(
@@ -474,7 +416,7 @@ export class AccessService {
         roleId: number,
         projectId: string,
     ): Promise<void> {
-        return this.store.updateUserProjectRole(userId, roleId, projectId);
+        throw new Error("STUB");
     }
 
     //This actually only exists for testing purposes
@@ -483,16 +425,7 @@ export class AccessService {
         permission: string,
         environment?: string,
     ): Promise<void> {
-        if (isProjectPermission(permission) && !environment) {
-            throw new Error(
-                `ProjectId cannot be empty for permission=${permission}`,
-            );
-        }
-        return this.store.addPermissionsToRole(
-            roleId,
-            [{ name: permission }],
-            environment,
-        );
+        throw new Error("STUB");
     }
 
     //This actually only exists for testing purposes
@@ -501,16 +434,7 @@ export class AccessService {
         permission: string,
         environment?: string,
     ): Promise<void> {
-        if (isProjectPermission(permission) && !environment) {
-            throw new Error(
-                `ProjectId cannot be empty for permission=${permission}`,
-            );
-        }
-        return this.store.removePermissionFromRole(
-            roleId,
-            permission,
-            environment,
-        );
+        throw new Error("STUB");
     }
 
     async getRoles(): Promise<IRole[]> {
@@ -546,20 +470,15 @@ export class AccessService {
     }
 
     async getRolesForProject(projectId: string): Promise<IRole[]> {
-        return this.roleStore.getRolesForProject(projectId);
+        throw new Error("STUB");
     }
 
     async getRolesForUser(userId: number): Promise<IRole[]> {
-        return this.store.getRolesForUserId(userId);
+        throw new Error("STUB");
     }
 
     async wipeUserPermissions(userId: number): Promise<Array<void>> {
-        return Promise.all([
-            this.store.unlinkUserRoles(userId),
-            this.store.unlinkUserGroups(userId),
-            this.store.clearUserPersonalAccessTokens(userId),
-            this.store.clearPublicSignupUserTokens(userId),
-        ]);
+        throw new Error("STUB");
     }
 
     async getUsersForRole(roleId: number): Promise<IUser[]> {
@@ -571,98 +490,40 @@ export class AccessService {
     }
 
     async getGroupsForRole(roleId: number): Promise<IGroup[]> {
-        const groupdIdList = await this.store.getGroupIdsForRole(roleId);
-        if (groupdIdList.length > 0) {
-            return this.groupService.getAllWithId(groupdIdList);
-        }
-        return [];
+        throw new Error("STUB");
     }
 
     async getProjectUsersForRole(
         roleId: number,
         projectId?: string,
     ): Promise<IUserWithRole[]> {
-        const userRoleList = await this.store.getProjectUsersForRole(
-            roleId,
-            projectId,
-        );
-        if (userRoleList.length > 0) {
-            const userIdList = userRoleList.map((u) => u.userId);
-            const users = await this.accountStore.getAllWithId(userIdList);
-            return users.map((user) => {
-                const role = userRoleList.find((r) => r.userId === user.id)!;
-                return {
-                    ...user,
-                    addedAt: role.addedAt!,
-                    roleId,
-                };
-            });
-        }
-        return [];
+        throw new Error("STUB");
     }
 
     async getProjectUsers(projectId: string): Promise<IUserWithProjectRoles[]> {
-        const projectUsers = await this.store.getProjectUsers(projectId);
-
-        if (projectUsers.length > 0) {
-            const users = await this.accountStore.getAllWithId(
-                projectUsers.map((u) => u.id),
-            );
-            return users.flatMap((user) => {
-                return projectUsers
-                    .filter((u) => u.id === user.id)
-                    .map((groupUser) => ({
-                        ...user,
-                        ...groupUser,
-                    }));
-            });
-        }
-        return [];
+        throw new Error("STUB");
     }
 
     async getProjectRoleAccess(projectId: string): Promise<AccessWithRoles> {
-        const roles = await this.roleStore.getProjectRoles();
-
-        const users = await this.getProjectUsers(projectId);
-
-        const groups = await this.groupService.getProjectGroups(projectId);
-
-        return {
-            roles,
-            groups,
-            users,
-        };
+        throw new Error("STUB");
     }
 
     async getProjectRoleUsage(roleId: number): Promise<IProjectRoleUsage[]> {
-        return this.store.getProjectUserAndGroupCountsForRole(roleId);
+        throw new Error("STUB");
     }
 
     async createDefaultProjectRoles(
         owner: IUser,
         projectId: string,
     ): Promise<void> {
-        if (!projectId) {
-            throw new Error('ProjectId cannot be empty');
-        }
-
-        const ownerRole = await this.roleStore.getRoleByName(RoleName.OWNER);
-
-        // TODO: remove this when all users is guaranteed to have a unique id.
-        if (owner.id) {
-            this.logger.info(
-                `Making ${owner.id} admin of ${projectId} via roleId=${ownerRole.id}`,
-            );
-            await this.store.addUserToRole(owner.id, ownerRole.id, projectId);
-        }
+        throw new Error("STUB");
     }
 
     async removeDefaultProjectRoles(
         _owner: IUser,
         projectId: string,
     ): Promise<void> {
-        this.logger.info(`Removing project roles for ${projectId}`);
-        return this.roleStore.removeRolesForProject(projectId);
+        throw new Error("STUB");
     }
 
     async getRootRoleForAllUsers(): Promise<IUserRole[]> {
@@ -679,9 +540,9 @@ export class AccessService {
         const rootRoles = await this.getRootRoles();
         let role: IRole | undefined;
         if (typeof rootRole === 'number') {
-            role = rootRoles.find((r) => r.id === rootRole);
+            role = rootRoles.find((r) => { throw new Error("STUB"); });
         } else {
-            role = rootRoles.find((r) => r.name === rootRole);
+            role = rootRoles.find((r) => { throw new Error("STUB"); });
         }
         return role;
     }
@@ -693,7 +554,7 @@ export class AccessService {
     */
     async getPredefinedRole(roleName: RoleName): Promise<IRole> {
         const roles = await this.roleStore.getRoles();
-        const role = roles.find((r) => r.name === roleName);
+        const role = roles.find((r) => { throw new Error("STUB"); });
         if (!role) {
             throw new BadDataError(
                 `Could not find predefined role with name ${RoleName}`,
@@ -703,226 +564,56 @@ export class AccessService {
     }
 
     async getAllRoles(): Promise<ICustomRole[]> {
-        return this.roleStore.getAll();
+        throw new Error("STUB");
     }
 
     async createRole(
         role: IRoleCreation,
         auditUser: IAuditUser,
     ): Promise<ICustomRole> {
-        // CUSTOM_PROJECT_ROLE_TYPE is assumed by default for backward compatibility
-        const roleType =
-            role.type === CUSTOM_ROOT_ROLE_TYPE
-                ? CUSTOM_ROOT_ROLE_TYPE
-                : CUSTOM_PROJECT_ROLE_TYPE;
-
-        const baseRole = {
-            ...(await this.validateRole(role)),
-            roleType,
-        };
-
-        await this.validatePermissions(role.permissions);
-
-        const rolePermissions = cleanPermissionEnvironment(role.permissions);
-        const newRole = await this.roleStore.create(baseRole);
-        if (rolePermissions) {
-            if (roleType === CUSTOM_ROOT_ROLE_TYPE) {
-                // this branch uses named permissions
-                await this.store.addPermissionsToRole(
-                    newRole.id,
-                    rolePermissions,
-                );
-            } else {
-                // this branch uses id permissions
-                await this.store.addEnvironmentPermissionsToRole(
-                    newRole.id,
-                    rolePermissions,
-                );
-            }
-        }
-        const addedPermissions = await this.store.getPermissionsForRole(
-            newRole.id,
-        );
-        await this.eventService.storeEvent(
-            new RoleCreatedEvent({
-                data: {
-                    ...newRole,
-                    permissions: this.sanitizePermissions(addedPermissions),
-                },
-                auditUser,
-            }),
-        );
-        return newRole;
+        throw new Error("STUB");
     }
 
     async updateRole(
         role: IRoleUpdate,
         auditUser: IAuditUser,
     ): Promise<ICustomRole> {
-        const roleType =
-            role.type === CUSTOM_ROOT_ROLE_TYPE
-                ? CUSTOM_ROOT_ROLE_TYPE
-                : CUSTOM_PROJECT_ROLE_TYPE;
-
-        await this.validateRole(role, role.id);
-        const existingRole = await this.roleStore.get(role.id);
-        const baseRole = {
-            id: role.id,
-            name: role.name,
-            description: role.description,
-            roleType,
-        };
-
-        await this.validatePermissions(role.permissions);
-        const rolePermissions = cleanPermissionEnvironment(role.permissions);
-        const updatedRole = await this.roleStore.update(baseRole);
-        const existingPermissions = await this.store.getPermissionsForRole(
-            role.id,
-        );
-        if (rolePermissions) {
-            await this.store.wipePermissionsFromRole(updatedRole.id);
-            if (roleType === CUSTOM_ROOT_ROLE_TYPE) {
-                await this.store.addPermissionsToRole(
-                    updatedRole.id,
-                    rolePermissions,
-                );
-            } else {
-                await this.store.addEnvironmentPermissionsToRole(
-                    updatedRole.id,
-                    rolePermissions,
-                );
-            }
-        }
-        const updatedPermissions = await this.store.getPermissionsForRole(
-            role.id,
-        );
-        await this.eventService.storeEvent(
-            new RoleUpdatedEvent({
-                data: {
-                    ...updatedRole,
-                    permissions: this.sanitizePermissions(updatedPermissions),
-                },
-                preData: {
-                    ...existingRole,
-                    permissions: this.sanitizePermissions(existingPermissions),
-                },
-                auditUser,
-            }),
-        );
-        return updatedRole;
+        throw new Error("STUB");
     }
 
     sanitizePermissions(
         permissions: IPermission[],
     ): { name: string; environment?: string }[] {
-        return permissions.map(({ name, environment }) => {
-            const sanitizedEnvironment =
-                environment && environment !== null && environment !== ''
-                    ? environment
-                    : undefined;
-            return { name, environment: sanitizedEnvironment };
-        });
+        throw new Error("STUB");
     }
 
     async deleteRole(id: number, deletedBy: IAuditUser): Promise<void> {
-        await this.validateRoleIsNotBuiltIn(id);
-
-        const roleUsers = await this.getUsersForRole(id);
-        const roleGroups = await this.getGroupsForRole(id);
-
-        if (roleUsers.length > 0 || roleGroups.length > 0) {
-            throw new RoleInUseError(
-                `Role is in use by users(${roleUsers.length}) or groups(${roleGroups.length}). You cannot delete a role that is in use without first removing the role from the users and groups.`,
-            );
-        }
-
-        const existingRole = await this.roleStore.get(id);
-        const existingPermissions = await this.store.getPermissionsForRole(id);
-        await this.roleStore.delete(id);
-        await this.eventService.storeEvent(
-            new RoleDeletedEvent({
-                preData: {
-                    ...existingRole,
-                    permissions: this.sanitizePermissions(existingPermissions),
-                },
-                auditUser: deletedBy,
-            }),
-        );
-        return;
+        throw new Error("STUB");
     }
 
     async validateRoleIsUnique(
         roleName: string,
         existingId?: number,
     ): Promise<void> {
-        const exists = await this.roleStore.nameInUse(roleName, existingId);
-        if (exists) {
-            throw new NameExistsError(
-                `There already exists a role with the name ${roleName}`,
-            );
-        }
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async validateRoleIsNotBuiltIn(roleId: number): Promise<void> {
-        const role = await this.store.get(roleId);
-        if (role === undefined) {
-            throw new InvalidOperationError(
-                'You cannot change a non-existing role',
-            );
-        }
-        if (
-            role.type !== CUSTOM_PROJECT_ROLE_TYPE &&
-            role.type !== CUSTOM_ROOT_ROLE_TYPE
-        ) {
-            throw new InvalidOperationError(
-                'You cannot change built in roles.',
-            );
-        }
+        throw new Error("STUB");
     }
 
     async validateRole(
         role: IRoleValidation,
         existingId?: number,
     ): Promise<IRoleCreation> {
-        const cleanedRole = await roleSchema.validateAsync(role);
-        if (existingId) {
-            await this.validateRoleIsNotBuiltIn(existingId);
-        }
-        await this.validateRoleIsUnique(role.name, existingId);
-        return cleanedRole;
+        throw new Error("STUB");
     }
 
     async getUserAccessOverview(): Promise<IUserAccessOverview[]> {
-        return this.store.getUserAccessOverview();
+        throw new Error("STUB");
     }
 
     async validatePermissions(permissions?: PermissionRef[]): Promise<void> {
-        if (!permissions?.length) {
-            return;
-        }
-        const availablePermissions = await this.store.getAvailablePermissions();
-        const invalidPermissions = permissions.filter(
-            (permission) =>
-                !availablePermissions.some((availablePermission) =>
-                    'id' in permission
-                        ? availablePermission.id === permission.id
-                        : availablePermission.name === permission.name,
-                ),
-        );
-
-        if (invalidPermissions.length > 0) {
-            const invalidPermissionList = invalidPermissions
-                .map((permission) =>
-                    'id' in permission
-                        ? `permission with ID: ${permission.id}`
-                        : permission.name,
-                )
-                .join(', ');
-
-            throw new BadDataError(
-                `Invalid permissions supplied. The following permissions don't exist: ${invalidPermissionList}.`,
-            );
-        }
+        throw new Error("STUB");
     }
 }

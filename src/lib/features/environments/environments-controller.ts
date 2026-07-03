@@ -45,176 +45,35 @@ export class EnvironmentsController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'environmentService' | 'openApiService'>,
     ) {
-        super(config);
-        this.openApiService = openApiService;
-        this.service = environmentService;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getAllEnvironments,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Environments'],
-                    summary: 'Get all environments',
-                    description:
-                        'Retrieves all environments that exist in this Unleash instance.',
-                    release: { stable: '4.13.0' },
-                    operationId: 'getAllEnvironments',
-                    responses: {
-                        200: createResponseSchema('environmentsSchema'),
-                        ...getStandardResponses(401, 403),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/:name',
-            handler: this.getEnvironment,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Environments'],
-                    release: { stable: '4.12.0' },
-                    operationId: 'getEnvironment',
-                    summary: 'Get the environment with `name`',
-                    description:
-                        'Retrieves the environment with `name` if it exists in this Unleash instance',
-                    responses: {
-                        200: createResponseSchema('environmentSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'get',
-            path: '/project/:projectId',
-            handler: this.getProjectEnvironments,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Environments'],
-                    release: { stable: '4.18.0' },
-                    operationId: 'getProjectEnvironments',
-                    summary: 'Get the environments available to a project',
-                    description:
-                        'Gets the environments that are available for this project. An environment is available for a project if enabled in the [project configuration](https://docs.getunleash.io/concepts/environments#enable-an-environment)',
-                    responses: {
-                        200: createResponseSchema('environmentsProjectSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'put',
-            path: '/sort-order',
-            handler: this.updateSortOrder,
-            permission: ADMIN,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Environments'],
-                    summary: 'Update environment sort orders',
-                    description:
-                        'Updates sort orders for the named environments. Environments not specified are unaffected.',
-                    release: { stable: '4.13.0' },
-                    operationId: 'updateSortOrder',
-                    requestBody: createRequestSchema('sortOrderSchema'),
-                    responses: {
-                        200: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/:name/on',
-            acceptAnyContentType: true,
-            handler: this.toggleEnvironmentOn,
-            permission: ADMIN,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Environments'],
-                    summary: 'Toggle the environment with `name` on',
-                    description:
-                        'Makes it possible to enable this environment for a project. An environment must first be globally enabled using this endpoint before it can be enabled for a project',
-                    release: { stable: '4.12.0' },
-                    operationId: 'toggleEnvironmentOn',
-                    responses: {
-                        204: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/:name/off',
-            acceptAnyContentType: true,
-            handler: this.toggleEnvironmentOff,
-            permission: ADMIN,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Environments'],
-                    summary: 'Toggle the environment with `name` off',
-                    description:
-                        'Removes this environment from the list of available environments for projects to use',
-                    release: { stable: '4.12.0' },
-                    operationId: 'toggleEnvironmentOff',
-                    responses: {
-                        204: emptyResponse,
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getAllEnvironments(
         _req: Request,
         res: Response<EnvironmentsSchema>,
     ): Promise<void> {
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            environmentsSchema.$id,
-            { version: 1, environments: await this.service.getAll() },
-        );
+        throw new Error("STUB");
     }
 
     async updateSortOrder(
         req: Request<unknown, unknown, SortOrderSchema>,
         res: Response,
     ): Promise<void> {
-        await this.service.updateSortOrder(req.body);
-        res.status(200).end();
+        throw new Error("STUB");
     }
 
     async toggleEnvironmentOn(
         req: Request<EnvironmentParam>,
         res: Response,
     ): Promise<void> {
-        const { name } = req.params;
-        await this.service.toggleEnvironment(name, true);
-        res.status(204).end();
+        throw new Error("STUB");
     }
 
     async toggleEnvironmentOff(
         req: Request<EnvironmentParam>,
         res: Response,
     ): Promise<void> {
-        const { name } = req.params;
-        await this.service.toggleEnvironment(name, false);
-        res.status(204).end();
+        throw new Error("STUB");
     }
 
     async getEnvironment(
@@ -233,17 +92,6 @@ export class EnvironmentsController extends Controller {
         req: Request<ProjectParam>,
         res: Response<EnvironmentsProjectSchema>,
     ): Promise<void> {
-        const environments = await this.service.getProjectEnvironments(
-            req.params.projectId,
-        );
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            environmentsProjectSchema.$id,
-            {
-                version: 1,
-                environments,
-            },
-        );
+        throw new Error("STUB");
     }
 }

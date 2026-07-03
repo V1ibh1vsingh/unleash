@@ -36,11 +36,7 @@ export const variantValueSchema = joi
     .when('type', {
         is: 'json',
         then: joi.custom((val, helper) => {
-            const isValidJsonString = validateJsonString(val);
-            if (isValidJsonString === false) {
-                return helper.error('invalidJsonString');
-            }
-            return val;
+            throw new Error("STUB");
         }),
     })
     .messages({
@@ -81,7 +77,7 @@ export const variantsArraySchema = joi
     .array()
     .min(0)
     .items(variantsSchema)
-    .unique((a, b) => a.name === b.name);
+    .unique((a, b) => { throw new Error("STUB"); });
 
 export const featureMetadataSchema = joi
     .object()
@@ -101,7 +97,7 @@ export const featureMetadataSchema = joi
         variants: joi
             .array()
             .allow(null)
-            .unique((a, b) => a.name === b.name)
+            .unique((a, b) => { throw new Error("STUB"); })
             .optional()
             .items(variantsSchema),
         tags: joi
@@ -142,7 +138,7 @@ export const featureSchema = joi
         variants: joi
             .array()
             .allow(null)
-            .unique((a, b) => a.name === b.name)
+            .unique((a, b) => { throw new Error("STUB"); })
             .optional()
             .items(variantsSchema),
     })

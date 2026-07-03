@@ -25,50 +25,13 @@ export default class UnknownFlagsController extends Controller {
             openApiService,
         }: Pick<IUnleashServices, 'unknownFlagsService' | 'openApiService'>,
     ) {
-        super(config);
-        this.unknownFlagsService = unknownFlagsService;
-        this.openApiService = openApiService;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getUnknownFlags,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    release: { stable: '7.0.0' },
-                    operationId: 'getUnknownFlags',
-                    tags: ['Unknown Flags'],
-                    summary: 'Get unknown flags',
-                    description:
-                        'Returns a list of unknown flag reports from the last 24 hours, if any. Maximum of 1000.',
-                    responses: {
-                        200: createResponseSchema('unknownFlagsResponseSchema'),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getUnknownFlags(
         _: IAuthRequest,
         res: Response<UnknownFlagsResponseSchema>,
     ): Promise<void> {
-        const unknownFlags = await this.unknownFlagsService.getAll({
-            limit: 1000,
-            orderBy: [
-                {
-                    column: 'name',
-                    order: 'asc',
-                },
-            ],
-        });
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            unknownFlagsResponseSchema.$id,
-            serializeDates({ unknownFlags }),
-        );
+        throw new Error("STUB");
     }
 }

@@ -14,10 +14,7 @@ const htmlInputExtension: joi.Extension = {
     rules: {
         allowedTags: {
             method(options: HtmlInputOptions) {
-                return this.$_addRule({
-                    name: 'allowedTags',
-                    args: { options },
-                });
+                throw new Error("STUB");
             },
             args: [
                 {

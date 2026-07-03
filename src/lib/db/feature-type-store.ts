@@ -42,8 +42,7 @@ class FeatureTypeStore implements IFeatureTypeStore {
     }
 
     async getByName(name: string): Promise<IFeatureType> {
-        const row = await this.db(TABLE).where({ name }).first();
-        return this.rowToFeatureType(row);
+        throw new Error("STUB");
     }
 
     async delete(key: string): Promise<void> {
@@ -51,7 +50,7 @@ class FeatureTypeStore implements IFeatureTypeStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -69,16 +68,7 @@ class FeatureTypeStore implements IFeatureTypeStore {
         id: string,
         newLifetimeDays: number | null,
     ): Promise<IFeatureType | undefined> {
-        const [updatedType] = await this.db(TABLE)
-            .update({ lifetime_days: newLifetimeDays })
-            .where({ id })
-            .returning(['*']);
-
-        if (updatedType) {
-            return this.rowToFeatureType(updatedType);
-        } else {
-            return undefined;
-        }
+        throw new Error("STUB");
     }
 }
 export default FeatureTypeStore;

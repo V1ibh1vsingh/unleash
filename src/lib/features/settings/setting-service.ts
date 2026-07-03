@@ -94,6 +94,6 @@ export default class SettingService {
     }
 
     async deleteAll(): Promise<void> {
-        await this.settingStore.deleteAll();
+        throw new Error("STUB");
     }
 }

@@ -62,11 +62,11 @@ export default class PatStore implements IPatStore {
     }
 
     async deleteForUser(id: number, userId: number): Promise<void> {
-        return this.db(TABLE).where({ id: id, user_id: userId }).del();
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -84,21 +84,11 @@ export default class PatStore implements IPatStore {
         description: string,
         userId: number,
     ): Promise<boolean> {
-        const result = await this.db.raw(
-            `SELECT EXISTS(SELECT 1 FROM ${TABLE} WHERE description = ? AND user_id = ?) AS present`,
-            [description, userId],
-        );
-        const { present } = result.rows[0];
-        return present;
+        throw new Error("STUB");
     }
 
     async countByUser(userId: number): Promise<number> {
-        const result = await this.db.raw(
-            `SELECT COUNT(*) AS count FROM ${TABLE} WHERE user_id = ?`,
-            [userId],
-        );
-        const { count } = result.rows[0];
-        return count;
+        throw new Error("STUB");
     }
 
     async get(id: number): Promise<PatSchema> {

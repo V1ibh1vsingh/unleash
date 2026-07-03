@@ -9,6 +9,6 @@ export class FakeFeatureLinksReadModel implements IFeatureLinksReadModel {
     }
 
     async getLinks(..._features: string[]): Promise<IFeatureLink[]> {
-        return [];
+        throw new Error("STUB");
     }
 }

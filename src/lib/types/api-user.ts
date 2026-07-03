@@ -48,19 +48,7 @@ export class ApiUser implements IApiUser {
         secret,
         tokenName,
     }: IApiUserData) {
-        if (!tokenName) {
-            throw new ValidationError('tokenName is required', [], undefined);
-        }
-        this.username = tokenName;
-        this.permissions = permissions;
-        this.environment = environment;
-        this.type = type;
-        this.secret = secret;
-        if (projects && projects.length > 0) {
-            this.projects = projects;
-        } else {
-            this.projects = project ? [project] : [];
-        }
+        throw new Error("STUB");
     }
 }
 

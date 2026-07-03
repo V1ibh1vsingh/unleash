@@ -45,137 +45,30 @@ export type OperatorImpl = (
 ) => boolean;
 
 const cleanValues = (values: string[]) =>
-    values.filter((v) => !!v).map((v) => v.trim());
+    values.filter((v) => { throw new Error("STUB"); }).map((v) => { throw new Error("STUB"); });
 
 const InOperator = (constraint: Constraint, context: Context) => {
-    const field = constraint.contextName;
-    const caseInsensitive = Boolean(constraint.caseInsensitive);
-    const values = cleanValues(constraint.values);
-    const contextValue = resolveContextValue(context, field);
-
-    const isIn = values.some((val) =>
-        caseInsensitive
-            ? val.toLowerCase() === contextValue?.toLowerCase()
-            : val === contextValue,
-    );
-    return constraint.operator === Operator.IN ? isIn : !isIn;
+    throw new Error("STUB");
 };
 
 const StringOperator = (constraint: Constraint, context: Context) => {
-    const { contextName, operator, caseInsensitive } = constraint;
-    let values = cleanValues(constraint.values);
-    let contextValue = resolveContextValue(context, contextName);
-
-    if (caseInsensitive) {
-        values = values.map((v) => v.toLocaleLowerCase());
-        contextValue = contextValue?.toLocaleLowerCase();
-    }
-
-    if (operator === Operator.STR_STARTS_WITH) {
-        return values.some((val) => contextValue?.startsWith(val));
-    }
-    if (operator === Operator.STR_ENDS_WITH) {
-        return values.some((val) => contextValue?.endsWith(val));
-    }
-    if (operator === Operator.STR_CONTAINS) {
-        return values.some((val) => contextValue?.includes(val));
-    }
-    return false;
+    throw new Error("STUB");
 };
 
 const SemverOperator = (constraint: Constraint, context: Context) => {
-    const { contextName, operator } = constraint;
-    const value = constraint.value as string;
-    const contextValue = resolveContextValue(context, contextName);
-    if (!contextValue) {
-        return false;
-    }
-
-    try {
-        if (operator === Operator.SEMVER_EQ) {
-            return semverEq(contextValue, value);
-        }
-        if (operator === Operator.SEMVER_LT) {
-            return semverLt(contextValue, value);
-        }
-        if (operator === Operator.SEMVER_GT) {
-            return semverGt(contextValue, value);
-        }
-        if (operator === Operator.SEMVER_GTE) {
-            return semverGte(contextValue, value);
-        }
-        if (operator === Operator.SEMVER_LTE) {
-            return semverLte(contextValue, value);
-        }
-    } catch (_e) {
-        return false;
-    }
-    return false;
+    throw new Error("STUB");
 };
 
 const DateOperator = (constraint: Constraint, context: Context) => {
-    const { operator } = constraint;
-    const value = new Date(constraint.value as string);
-    const currentTime = context.currentTime
-        ? new Date(context.currentTime)
-        : new Date();
-
-    if (operator === Operator.DATE_AFTER) {
-        return currentTime > value;
-    }
-    if (operator === Operator.DATE_BEFORE) {
-        return currentTime < value;
-    }
-    return false;
+    throw new Error("STUB");
 };
 
 const NumberOperator = (constraint: Constraint, context: Context) => {
-    const field = constraint.contextName;
-    const { operator } = constraint;
-    const value = Number(constraint.value);
-    const contextValue = Number(resolveContextValue(context, field));
-
-    if (Number.isNaN(value) || Number.isNaN(contextValue)) {
-        return false;
-    }
-
-    if (operator === Operator.NUM_EQ) {
-        return contextValue === value;
-    }
-    if (operator === Operator.NUM_GT) {
-        return contextValue > value;
-    }
-    if (operator === Operator.NUM_GTE) {
-        return contextValue >= value;
-    }
-    if (operator === Operator.NUM_LT) {
-        return contextValue < value;
-    }
-    if (operator === Operator.NUM_LTE) {
-        return contextValue <= value;
-    }
-    return false;
+    throw new Error("STUB");
 };
 
 const RegexOperator = (constraint: Constraint, context: Context) => {
-    const field = constraint.contextName;
-    const value = constraint.value as string;
-    const contextValue = resolveContextValue(context, field);
-
-    if (typeof contextValue !== 'string') {
-        return false;
-    }
-
-    try {
-        const regex = RE2JS.compile(
-            value,
-            constraint.caseInsensitive ? RE2JS.CASE_INSENSITIVE : undefined,
-        );
-
-        return regex.matcher(contextValue).find() as boolean;
-    } catch (_e) {
-        return false;
-    }
+    throw new Error("STUB");
 };
 
 export const operators = new Map<Operator, OperatorImpl>();

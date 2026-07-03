@@ -113,17 +113,7 @@ function mapInput(input: IFeatureStrategy): IFeatureStrategiesTable {
 }
 
 const sortEnvironments = (overview: Record<string, IFeatureOverview>) => {
-    return Object.values(overview).map((data: IFeatureOverview) => ({
-        ...data,
-        environments: data.environments
-            .filter((f) => f.name)
-            .sort((a, b) => {
-                if (a.sortOrder === b.sortOrder) {
-                    return a.name.localeCompare(b.name);
-                }
-                return a.sortOrder - b.sortOrder;
-            }),
-    }));
+    return Object.values(overview).map((data: IFeatureOverview) => { throw new Error("STUB"); });
 };
 
 interface StrategyUpdate {
@@ -169,10 +159,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
     ) {
         this.db = db;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'feature-toggle-strategies',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async delete(key: string): Promise<void> {
@@ -180,7 +167,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(T.featureStrategies).delete();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -246,12 +233,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
         featureName: string,
         environment: string,
     ): Promise<void> {
-        await this.db('feature_strategies')
-            .where({
-                feature_name: featureName,
-                environment,
-            })
-            .del();
+        throw new Error("STUB");
     }
 
     async getAll(): Promise<IFeatureStrategy[]> {
@@ -315,12 +297,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
         userId?: number,
         archived: boolean = false,
     ): Promise<FeatureToggleWithEnvironment> {
-        return this.loadFeatureToggleWithEnvs({
-            featureName,
-            archived,
-            withEnvironmentVariants: false,
-            userId,
-        });
+        throw new Error("STUB");
     }
 
     async getFeatureToggleWithVariantEnvs(
@@ -328,12 +305,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
         userId?: number,
         archived: boolean = false,
     ): Promise<FeatureToggleWithEnvironment> {
-        return this.loadFeatureToggleWithEnvs({
-            featureName,
-            archived,
-            withEnvironmentVariants: true,
-            userId,
-        });
+        throw new Error("STUB");
     }
 
     async loadFeatureToggleWithEnvs({
@@ -342,162 +314,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
         withEnvironmentVariants,
         userId,
     }: ILoadFeatureToggleWithEnvsParams): Promise<FeatureToggleWithEnvironment> {
-        const stopTimer = this.timer('getFeatureAdmin');
-        const query = this.db.with('metrics', (queryBuilder) => {
-            queryBuilder
-                .sum('yes as yes')
-                .sum('no as no')
-                .select(['client_metrics_env.environment'])
-                .from('client_metrics_env')
-                .where(
-                    'client_metrics_env.timestamp',
-                    '>=',
-                    this.db.raw("NOW() - INTERVAL '1 hour'"),
-                )
-                .andWhere('client_metrics_env.feature_name', featureName)
-                .groupBy(['client_metrics_env.environment']);
-        });
-
-        query
-            .from('features_view')
-            .where('name', featureName)
-            .modify(FeatureToggleStore.filterByArchived, archived);
-
-        let selectColumns = ['features_view.*', 'yes', 'no'] as (
-            | string
-            | Raw<any>
-        )[];
-
-        // add metrics
-        query.leftJoin(
-            'metrics',
-            'metrics.environment',
-            'features_view.environment',
-        );
-
-        query.leftJoin('last_seen_at_metrics', function () {
-            this.on(
-                'last_seen_at_metrics.environment',
-                '=',
-                'features_view.environment_name',
-            ).andOn(
-                'last_seen_at_metrics.feature_name',
-                '=',
-                'features_view.name',
-            );
-        });
-
-        // Override feature view for now
-        selectColumns.push(
-            'last_seen_at_metrics.last_seen_at as env_last_seen_at',
-        );
-
-        if (userId) {
-            query.leftJoin(`favorite_features`, function () {
-                this.on(
-                    'favorite_features.feature',
-                    'features_view.name',
-                ).andOnVal('favorite_features.user_id', '=', userId);
-            });
-            selectColumns = [
-                ...selectColumns,
-                this.db.raw(
-                    'favorite_features.feature is not null as favorite',
-                ),
-            ];
-        }
-        const rows = await query.select(selectColumns);
-        stopTimer();
-
-        if (rows.length > 0) {
-            const featureToggle = rows.reduce((acc, r) => {
-                if (acc.environments === undefined) {
-                    acc.environments = {};
-                }
-
-                acc.name = r.name;
-                acc.favorite = r.favorite;
-                acc.impressionData = r.impression_data;
-                acc.description = r.description;
-                acc.project = r.project;
-                acc.stale = r.stale;
-
-                acc.createdAt = r.created_at;
-                if (r.user_id) {
-                    const name =
-                        r.user_name ||
-                        r.user_username ||
-                        r.user_email ||
-                        'unknown';
-                    acc.createdBy = {
-                        id: r.user_id,
-                        name,
-                        imageUrl: generateImageUrl({
-                            id: r.user_id,
-                            email: r.user_email,
-                            username: name,
-                        }),
-                    };
-                }
-                acc.type = r.type;
-                if (!acc.environments[r.environment]) {
-                    acc.environments[r.environment] = {
-                        name: r.environment,
-                        lastSeenAt: r.env_last_seen_at,
-                    };
-                }
-
-                const env = acc.environments[r.environment];
-
-                const variants = r.variants || [];
-                variants.sort((a, b) => a.name.localeCompare(b.name));
-                if (withEnvironmentVariants) {
-                    env.variants = variants;
-                }
-
-                env.enabled = r.enabled;
-                env.yes = Number(r.yes) || 0;
-                env.no = Number(r.no) || 0;
-                env.type = r.environment_type;
-                env.sortOrder = r.environment_sort_order;
-                if (!env.strategies) {
-                    env.strategies = [];
-                }
-                if (r.strategy_id) {
-                    const found = env.strategies.find(
-                        (strategy) => strategy.id === r.strategy_id,
-                    );
-                    if (!found) {
-                        env.strategies.push(
-                            FeatureStrategiesStore.getAdminStrategy(r),
-                        );
-                    }
-                }
-                if (r.segments) {
-                    this.addSegmentIdsToStrategy(env, r);
-                }
-                acc.environments[r.environment] = env;
-                return acc;
-            }, {});
-            featureToggle.environments = Object.values(
-                featureToggle.environments,
-            ).sort((a, b) => {
-                // @ts-expect-error
-                return a.sortOrder - b.sortOrder;
-            });
-            featureToggle.environments = featureToggle.environments.map((e) => {
-                e.strategies = e.strategies.sort(
-                    (a, b) => a.sortOrder - b.sortOrder,
-                );
-                return e;
-            });
-
-            featureToggle.archived = archived;
-            return featureToggle;
-        }
-        throw new NotFoundError(
-            `Could not find feature flag with name ${featureName}`,
-        );
+        throw new Error("STUB");
     }
 
     private addSegmentIdsToStrategy(
@@ -505,7 +322,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
         row: Record<string, any>,
     ) {
         const strategy = featureToggle.strategies?.find(
-            (s) => s?.id === row.strategy_id,
+            (s) => { throw new Error("STUB"); },
         );
         if (!strategy) {
             return;
@@ -547,7 +364,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
             row.tag_value &&
             !featureToggle.tags?.some(
                 (tag) =>
-                    tag.type === row.tag_type && tag.value === row.tag_value,
+                    { throw new Error("STUB"); },
             )
         );
     }
@@ -598,11 +415,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
             .leftJoin('feature_tag as ft', 'ft.feature_name', 'features.name');
 
         query.leftJoin('last_seen_at_metrics', function () {
-            this.on(
-                'last_seen_at_metrics.environment',
-                '=',
-                'environments.name',
-            ).andOn('last_seen_at_metrics.feature_name', '=', 'features.name');
+            throw new Error("STUB");
         });
 
         let selectColumns = [
@@ -627,11 +440,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
 
         if (userId) {
             query = query.leftJoin(`favorite_features`, function () {
-                this.on('favorite_features.feature', 'features.name').andOnVal(
-                    'favorite_features.user_id',
-                    '=',
-                    userId,
-                );
+                throw new Error("STUB");
             });
             selectColumns = [
                 ...selectColumns,
@@ -667,107 +476,12 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
     }
 
     getAggregatedSearchData(rows): IFeatureOverview {
-        return rows.reduce((acc, row) => {
-            if (acc[row.feature_name]) {
-                const environmentExists = acc[
-                    row.feature_name
-                ].environments.some(
-                    (existingEnvironment) =>
-                        existingEnvironment.name === row.environment,
-                );
-                if (!environmentExists) {
-                    acc[row.feature_name].environments.push(
-                        FeatureStrategiesStore.getEnvironment(row),
-                    );
-                }
-
-                const segmentExists = acc[row.feature_name].segments.includes(
-                    row.segment_name,
-                );
-
-                if (row.segment_name && !segmentExists) {
-                    acc[row.feature_name].segments.push(row.segment_name);
-                }
-
-                if (this.isNewTag(acc[row.feature_name], row)) {
-                    this.addTag(acc[row.feature_name], row);
-                }
-            } else {
-                acc[row.feature_name] = {
-                    type: row.type,
-                    description: row.description,
-                    project: row.project,
-                    favorite: row.favorite,
-                    name: row.feature_name,
-                    createdAt: row.created_at,
-                    stale: row.stale,
-                    impressionData: row.impression_data,
-                    lastSeenAt: row.last_seen_at,
-                    environments: [FeatureStrategiesStore.getEnvironment(row)],
-                    segments: row.segment_name ? [row.segment_name] : [],
-                };
-
-                if (this.isNewTag(acc[row.feature_name], row)) {
-                    this.addTag(acc[row.feature_name], row);
-                }
-            }
-            const featureRow = acc[row.feature_name];
-            if (
-                isAfter(
-                    new Date(row.env_last_seen_at),
-                    new Date(featureRow.lastSeenAt),
-                )
-            ) {
-                featureRow.lastSeenAt = row.env_last_seen_at;
-            }
-            return acc;
-        }, {});
+        throw new Error("STUB");
     }
 
     getFeatureOverviewData(rows): Record<string, IFeatureOverview> {
         return rows.reduce((acc, row) => {
-            if (acc[row.feature_name]) {
-                const environmentExists = acc[
-                    row.feature_name
-                ].environments.some(
-                    (existingEnvironment) =>
-                        existingEnvironment.name === row.environment,
-                );
-                if (!environmentExists) {
-                    acc[row.feature_name].environments.push(
-                        FeatureStrategiesStore.getEnvironment(row),
-                    );
-                }
-
-                if (this.isNewTag(acc[row.feature_name], row)) {
-                    this.addTag(acc[row.feature_name], row);
-                }
-            } else {
-                acc[row.feature_name] = {
-                    type: row.type,
-                    description: row.description,
-                    favorite: row.favorite,
-                    name: row.feature_name,
-                    createdAt: row.created_at,
-                    stale: row.stale,
-                    impressionData: row.impression_data,
-                    environments: [FeatureStrategiesStore.getEnvironment(row)],
-                };
-
-                if (this.isNewTag(acc[row.feature_name], row)) {
-                    this.addTag(acc[row.feature_name], row);
-                }
-            }
-            const featureRow = acc[row.feature_name];
-            if (
-                isAfter(
-                    new Date(row.env_last_seen_at),
-                    new Date(featureRow.lastSeenAt),
-                )
-            ) {
-                featureRow.lastSeenAt = row.env_last_seen_at;
-            }
-            return acc;
+            throw new Error("STUB");
         }, {});
     }
 
@@ -780,9 +494,7 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
     }
 
     async updateSortOrder(id: string, sortOrder: number): Promise<void> {
-        await this.db<IFeatureStrategiesTable>(T.featureStrategies)
-            .where({ id })
-            .update({ sort_order: sortOrder });
+        throw new Error("STUB");
     }
 
     async updateStrategy(
@@ -801,42 +513,21 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
         r: any,
         includeId: boolean = true,
     ): IStrategyConfig {
-        const strategy = {
-            name: r.strategy_name,
-            constraints: r.constraints || [],
-            variants: r.strategy_variants || [],
-            parameters: r.parameters,
-            segments: [],
-            sortOrder: r.sort_order,
-            id: r.strategy_id,
-            title: r.strategy_title,
-            disabled: r.strategy_disabled || false,
-        };
-        if (!includeId) {
-            delete strategy.id;
-        }
-        return strategy;
+        throw new Error("STUB");
     }
 
     async deleteConfigurationsForProjectAndEnvironment(
         projectId: String,
         environment: String,
     ): Promise<void> {
-        await this.db(T.featureStrategies)
-            .where({
-                project_name: projectId,
-                environment,
-            })
-            .del();
+        throw new Error("STUB");
     }
 
     async setProjectForStrategiesBelongingToFeature(
         featureName: string,
         newProjectId: string,
     ): Promise<void> {
-        await this.db(T.featureStrategies)
-            .where({ feature_name: featureName })
-            .update({ project_name: newProjectId });
+        throw new Error("STUB");
     }
 
     async getStrategiesBySegment(
@@ -866,28 +557,11 @@ class FeatureStrategiesStore implements IFeatureStrategiesStore {
     async getStrategiesByContextField(
         contextFieldName: string,
     ): Promise<IFeatureStrategy[]> {
-        const stopTimer = this.timer('getStrategiesByContextField');
-        const rows = await this.db
-            .select(this.prefixColumns())
-            .from<IFeatureStrategiesTable>(T.featureStrategies)
-            .join(
-                T.features,
-                `${T.features}.name`,
-                `${T.featureStrategies}.feature_name`,
-            )
-            .where(`${T.features}.archived_at`, 'IS', null)
-            .where(
-                this.db.raw(
-                    "EXISTS (SELECT 1 FROM jsonb_array_elements(constraints) AS elem WHERE elem ->> 'contextName' = ?)",
-                    contextFieldName,
-                ),
-            );
-        stopTimer();
-        return rows.map(mapRow);
+        throw new Error("STUB");
     }
 
     prefixColumns(): string[] {
-        return COLUMNS.map((c) => `${T.featureStrategies}.${c}`);
+        return COLUMNS.map((c) => { throw new Error("STUB"); });
     }
 
     async getCustomStrategiesInUseCount(): Promise<number> {

@@ -111,53 +111,13 @@ export default class FeatureLinkService {
         updatedLink: Omit<IFeatureLink, 'id' | 'domain'>,
         auditUser: IAuditUser,
     ): Promise<IFeatureLink> {
-        const normalizedUrl = this.normalize(updatedLink.url);
-        const { domainWithoutSuffix } = parse(normalizedUrl);
-
-        const preData = await this.featureLinkStore.get(linkId);
-
-        if (!preData) {
-            throw new NotFoundError(`Could not find link with id ${linkId}`);
-        }
-
-        const link = await this.featureLinkStore.update(linkId, {
-            ...updatedLink,
-            url: normalizedUrl,
-            domain: domainWithoutSuffix,
-        });
-
-        await this.eventService.storeEvent(
-            new FeatureLinkUpdatedEvent({
-                featureName: updatedLink.featureName,
-                project: projectId,
-                data: { url: normalizedUrl, title: link.title },
-                preData: { url: preData.url, title: preData.title },
-                auditUser,
-            }),
-        );
-
-        return link;
+        throw new Error("STUB");
     }
 
     async deleteLink(
         { projectId, linkId }: { projectId: string; linkId: string },
         auditUser: IAuditUser,
     ): Promise<void> {
-        const link = await this.featureLinkStore.get(linkId);
-
-        if (!link) {
-            throw new NotFoundError(`Could not find link with id ${linkId}`);
-        }
-
-        await this.featureLinkStore.delete(linkId);
-
-        await this.eventService.storeEvent(
-            new FeatureLinkRemovedEvent({
-                featureName: link.featureName,
-                project: projectId,
-                preData: { url: link.url, title: link.title },
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 }

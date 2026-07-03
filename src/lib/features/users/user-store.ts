@@ -78,10 +78,7 @@ export class UserStore implements IUserStore {
     }
 
     async getPasswordsPreviouslyUsed(userId: number): Promise<string[]> {
-        const previouslyUsedPasswords = await this.db(PASSWORD_HASH_TABLE)
-            .select('password_hash')
-            .where({ user_id: userId });
-        return previouslyUsedPasswords.map((row) => row.password_hash);
+        throw new Error("STUB");
     }
 
     async deletePasswordsUsedMoreThanNTimesAgo(
@@ -187,12 +184,7 @@ export class UserStore implements IUserStore {
     }
 
     async search(query: string): Promise<User[]> {
-        const users = await this.activeUsers()
-            .select(USER_COLUMNS_PUBLIC)
-            .where('name', 'ILIKE', `%${query}%`)
-            .orWhere('username', 'ILIKE', `${query}%`)
-            .orWhere('email', 'ILIKE', `${query}%`);
-        return users.map(rowToUser);
+        throw new Error("STUB");
     }
 
     async getAllWithId(userIdList: number[]): Promise<User[]> {
@@ -223,15 +215,7 @@ export class UserStore implements IUserStore {
     }
 
     async getPasswordHash(userId: number): Promise<string> {
-        const item = await this.activeUsers()
-            .where('id', userId)
-            .first('password_hash');
-
-        if (!item) {
-            throw new NotFoundError('User not found');
-        }
-
-        return item.password_hash;
+        throw new Error("STUB");
     }
 
     async setPasswordHash(
@@ -257,7 +241,7 @@ export class UserStore implements IUserStore {
     }
 
     async incLoginAttempts(user: User): Promise<void> {
-        await this.buildSelectUser(user).increment('login_attempts', 1);
+        throw new Error("STUB");
     }
 
     async successfullyLogin(user: User): Promise<number> {
@@ -278,7 +262,7 @@ export class UserStore implements IUserStore {
                 .whereNotNull('first_seen_at')
                 .andWhere('first_seen_at', '<', currentDate)
                 .count('*')
-                .then((res) => Number(res[0].count));
+                .then((res) => { throw new Error("STUB"); });
 
             firstLoginOrder = countEarlierUsers;
 
@@ -293,21 +277,17 @@ export class UserStore implements IUserStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.activeUsers().del();
+        throw new Error("STUB");
     }
 
     async deleteScimUsers(): Promise<User[]> {
-        const rows = await this.db(TABLE)
-            .whereNotNull('scim_id')
-            .del()
-            .returning(USER_COLUMNS);
-        return rows.map(rowToUser);
+        throw new Error("STUB");
     }
 
     async count(): Promise<number> {
         return this.activeUsers()
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async countServiceAccounts(): Promise<number> {
@@ -317,20 +297,11 @@ export class UserStore implements IUserStore {
                 is_service: true,
             })
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async countRecentlyDeleted(): Promise<number> {
-        return this.db(TABLE)
-            .whereNotNull('deleted_at')
-            .andWhere(
-                'deleted_at',
-                '>=',
-                this.db.raw(`NOW() - INTERVAL '1 month'`),
-            )
-            .andWhere({ is_service: false, is_system: false })
-            .count('*')
-            .then((res) => Number(res[0].count));
+        throw new Error("STUB");
     }
 
     destroy(): void {}

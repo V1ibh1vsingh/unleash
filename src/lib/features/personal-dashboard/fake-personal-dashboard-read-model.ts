@@ -12,18 +12,18 @@ export class FakePersonalDashboardReadModel
         _project: string,
         _count: number,
     ): Promise<number[]> {
-        return [];
+        throw new Error("STUB");
     }
 
     async getPersonalFeatures(_userId: number): Promise<PersonalFeature[]> {
-        return [];
+        throw new Error("STUB");
     }
 
     async getPersonalProjects(_userId: number): Promise<BasePersonalProject[]> {
-        return [];
+        throw new Error("STUB");
     }
 
     async getAdmins(): Promise<IUser[]> {
-        return [];
+        throw new Error("STUB");
     }
 }

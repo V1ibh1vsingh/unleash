@@ -10,6 +10,6 @@ export default class FakeFeatureSearchStore implements IFeatureSearchStore {
         _params: IFeatureSearchParams,
         _queryParams: IQueryParam[],
     ): Promise<{ features: IFeatureSearchOverview[]; total: number }> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
 }

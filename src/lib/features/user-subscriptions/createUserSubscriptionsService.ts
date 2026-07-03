@@ -12,17 +12,7 @@ import { FakeUserSubscriptionsReadModel } from './fake-user-subscriptions-read-m
 export const createUserSubscriptionsService =
     (config: IUnleashConfig) =>
     (db: Db): UserSubscriptionsService => {
-        const userUnsubscribeStore = new UserUnsubscribeStore(db);
-        const userSubscriptionsReadModel = new UserSubscriptionsReadModel(db);
-        const eventService = createEventsService(db, config);
-
-        const userSubscriptionsService = new UserSubscriptionsService(
-            { userUnsubscribeStore, userSubscriptionsReadModel },
-            config,
-            eventService,
-        );
-
-        return userSubscriptionsService;
+        throw new Error("STUB");
     };
 
 export const createFakeUserSubscriptionsService = (

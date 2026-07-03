@@ -32,32 +32,7 @@ export class FeatureLifecycleReadModel implements IFeatureLifecycleReadModel {
     }
 
     async getStageCount(accessibleProjects?: string[]): Promise<StageCount[]> {
-        const hasProjectFilter = !!accessibleProjects?.length;
-
-        const query = this.db
-            .from(
-                this.db('feature_lifecycles as fl')
-                    .select('fl.feature', 'fl.stage', 'fl.created_at')
-                    .distinctOn('fl.feature')
-                    .orderBy('fl.feature')
-                    .orderBy('fl.created_at', 'desc')
-                    .as('latest_feature_lifecycle'),
-            )
-            .join('features as f', 'f.name', 'latest_feature_lifecycle.feature')
-            .groupBy('latest_feature_lifecycle.stage')
-            .select('latest_feature_lifecycle.stage')
-            .count('* as feature_count');
-
-        if (hasProjectFilter) {
-            query.whereIn('f.project', accessibleProjects);
-        }
-
-        const rows = await query;
-
-        return rows.map((row: any) => ({
-            stage: row.stage,
-            count: Number(row.feature_count),
-        }));
+        throw new Error("STUB");
     }
 
     async getStageCountByProject(): Promise<StageCountByProject[]> {
@@ -83,27 +58,13 @@ export class FeatureLifecycleReadModel implements IFeatureLifecycleReadModel {
                 ls.stage;
         `);
 
-        return rows.map((row) => ({
-            stage: row.stage,
-            count: Number(row.feature_count),
-            project: row.project,
-        }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async findCurrentStage(
         feature: string,
     ): Promise<IFeatureLifecycleStage | undefined> {
-        const results = await this.db('feature_lifecycles')
-            .where({ feature })
-            .orderBy('created_at', 'asc');
-
-        const stages = results.map(({ stage, status, created_at }: DBType) => ({
-            stage,
-            ...(status ? { status } : {}),
-            enteredStageAt: created_at,
-        }));
-
-        return getCurrentStage(stages);
+        throw new Error("STUB");
     }
 
     private async getAll(): Promise<FeatureLifecycleProjectItem[]> {
@@ -113,12 +74,7 @@ export class FeatureLifecycleReadModel implements IFeatureLifecycleReadModel {
             .orderBy('created_at', 'asc');
 
         return results.map(
-            ({ feature, stage, created_at, project }: DBProjectType) => ({
-                feature,
-                stage,
-                project,
-                enteredStageAt: new Date(created_at),
-            }),
+            ({ feature, stage, created_at, project }: DBProjectType) => { throw new Error("STUB"); },
         );
     }
 

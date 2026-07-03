@@ -14,25 +14,24 @@ export default class FakeClientMetricsStoreV2
     metrics: IClientMetricsEnv[] = [];
 
     constructor() {
-        super();
-        this.setMaxListeners(0);
+        throw new Error("STUB");
     }
 
     getFeatureFlagNames(): Promise<string[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
 
     getSeenTogglesForApp(
         _appName: string,
         _hoursBack?: number,
     ): Promise<string[]> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
     clearMetrics(_hoursBack: number): Promise<void> {
         return Promise.resolve();
     }
     clearDailyMetrics(_daysBack: number): Promise<void> {
-        return Promise.resolve();
+        throw new Error("STUB");
     }
     countPreviousDayHourlyMetricsBuckets(): Promise<{
         enabledCount: number;
@@ -44,32 +43,32 @@ export default class FakeClientMetricsStoreV2
         enabledCount: number;
         variantCount: number;
     }> {
-        return Promise.resolve({ enabledCount: 0, variantCount: 0 });
+        throw new Error("STUB");
     }
     aggregateDailyMetrics(): Promise<void> {
-        return Promise.resolve();
+        throw new Error("STUB");
     }
     getSeenAppsForFeatureToggle(
         _featureName: string,
         _hoursBack?: number,
     ): Promise<string[]> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
     getMetricsForFeatureToggle(
         _featureName: string,
         _hoursBack?: number,
     ): Promise<IClientMetricsEnv[]> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
     getMetricsForFeatureToggleV2(
         _featureName: string,
         _hoursBack?: number,
     ): Promise<IClientMetricsEnv[]> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
     batchInsertMetrics(metrics: IClientMetricsEnv[]): Promise<void> {
         metrics.forEach((m) => {
-            this.metrics.push(m);
+            throw new Error("STUB");
         });
         return Promise.resolve();
     }
@@ -87,7 +86,7 @@ export default class FakeClientMetricsStoreV2
     }
 
     async getMetricsLastHour(): Promise<[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
 
     async insert(): Promise<void> {
@@ -95,7 +94,7 @@ export default class FakeClientMetricsStoreV2
     }
 
     async deleteAll(): Promise<void> {
-        return Promise.resolve(undefined);
+        throw new Error("STUB");
     }
 
     destroy(): void {}

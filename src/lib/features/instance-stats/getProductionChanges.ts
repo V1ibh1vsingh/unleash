@@ -9,28 +9,7 @@ export type GetProductionChanges = () => Promise<{
 export const createGetProductionChanges =
     (db: Db): GetProductionChanges =>
     async () => {
-        const productionChanges =
-            await db.raw(`SELECT SUM(CASE WHEN seu.day > NOW() - INTERVAL '30 days' THEN seu.updates END) AS last_month,
-                         SUM(CASE WHEN seu.day > NOW() - INTERVAL '60 days' THEN seu.updates END) AS last_two_months,
-                         SUM(CASE WHEN seu.day > NOW() - INTERVAL '90 days' THEN seu.updates END) AS last_quarter
-                  FROM stat_environment_updates seu
-                  LEFT JOIN environments e
-                    ON e.name = seu.environment
-                  WHERE e.type = 'production';`);
-        return {
-            last30: Number.parseInt(
-                productionChanges.rows[0]?.last_month || '0',
-                10,
-            ),
-            last60: Number.parseInt(
-                productionChanges.rows[0]?.last_two_months || '0',
-                10,
-            ),
-            last90: Number.parseInt(
-                productionChanges.rows[0]?.last_quarter || '0',
-                10,
-            ),
-        };
+        throw new Error("STUB");
     };
 export const createFakeGetProductionChanges =
     (
@@ -41,4 +20,4 @@ export const createFakeGetProductionChanges =
         },
     ): GetProductionChanges =>
     () =>
-        Promise.resolve(changesInProduction);
+        { throw new Error("STUB"); };

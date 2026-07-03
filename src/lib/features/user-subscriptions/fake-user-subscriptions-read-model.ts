@@ -4,14 +4,14 @@ export class FakeUserSubscriptionsReadModel
     implements IUserSubscriptionsReadModel
 {
     async getSubscribedUsers(_subscription: string) {
-        return [];
+        throw new Error("STUB");
     }
 
     async getUnsubscribedUsers(_subscription: string) {
-        return [];
+        throw new Error("STUB");
     }
 
     async getUserSubscriptions() {
-        return ['productivity-report'];
+        throw new Error("STUB");
     }
 }

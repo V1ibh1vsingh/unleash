@@ -21,15 +21,7 @@ export default class UserFeedbackService {
     }
 
     async getAllUserFeedback(user: IUser): Promise<IUserFeedback[]> {
-        if (user.isAPI) {
-            return [];
-        }
-        try {
-            return await this.userFeedbackStore.getAllUserFeedback(user.id);
-        } catch (err) {
-            this.logger.error('Cannot read user feedback', err);
-            return [];
-        }
+        throw new Error("STUB");
     }
 
     async getFeedback(
@@ -40,6 +32,6 @@ export default class UserFeedbackService {
     }
 
     async updateFeedback(feedback: IUserFeedback): Promise<IUserFeedback> {
-        return this.userFeedbackStore.updateFeedback(feedback);
+        throw new Error("STUB");
     }
 }

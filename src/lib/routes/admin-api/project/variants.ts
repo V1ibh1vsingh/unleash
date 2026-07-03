@@ -53,99 +53,7 @@ export default class VariantsController extends Controller {
             'featureToggleService' | 'openApiService' | 'accessService'
         >,
     ) {
-        super(config);
-        this.logger = config.getLogger('admin-api/project/variants.ts');
-        this.featureService = featureToggleService;
-        this.accessService = accessService;
-        this.route({
-            method: 'get',
-            path: ENV_PREFIX,
-            permission: NONE,
-            handler: this.getVariantsOnEnv,
-            middleware: [
-                openApiService.validPath({
-                    summary: 'Get variants for a feature in an environment',
-                    description: `Returns the variants for a feature in a specific environment. If the feature has no variants it will return an empty array of variants`,
-                    tags: ['Features'],
-                    release: { stable: '4.18.0' },
-                    operationId: 'getEnvironmentFeatureVariants',
-                    responses: {
-                        200: createResponseSchema('featureVariantsSchema'),
-                        ...getStandardResponses(401, 403, 404),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'patch',
-            path: ENV_PREFIX,
-            permission: UPDATE_FEATURE_ENVIRONMENT_VARIANTS,
-            handler: this.patchVariantsOnEnv,
-            middleware: [
-                openApiService.validPath({
-                    summary: "Patch a feature's variants in an environment",
-                    description: `Apply a list of patches to the features environments in the specified environment. The patch objects should conform to the [JSON-patch format (RFC 6902)](https://www.rfc-editor.org/rfc/rfc6902).`,
-                    tags: ['Features'],
-                    release: { stable: '4.18.0' },
-                    operationId: 'patchEnvironmentsFeatureVariants',
-                    requestBody: createRequestSchema('patchesSchema'),
-                    responses: {
-                        200: createResponseSchema('featureVariantsSchema'),
-                        ...getStandardResponses(400, 401, 403, 404),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'put',
-            path: ENV_PREFIX,
-            permission: UPDATE_FEATURE_ENVIRONMENT_VARIANTS,
-            handler: this.overwriteVariantsOnEnv,
-            middleware: [
-                openApiService.validPath({
-                    summary:
-                        'Create (overwrite) variants for a feature in an environment',
-                    description: `This overwrites the current variants for the feature flag in the :featureName parameter for the :environment parameter.
-
-The backend will validate the input for the following invariants:
-
-* If there are variants, there needs to be at least one variant with \`weightType: variable\`
-* The sum of the weights of variants with \`weightType: fix\` must be strictly less than 1000 (< 1000)
-
-The backend will also distribute remaining weight up to 1000 after adding the variants with \`weightType: fix\` together amongst the variants of \`weightType: variable\``,
-                    tags: ['Features'],
-                    release: { stable: '4.18.0' },
-                    operationId: 'overwriteEnvironmentFeatureVariants',
-                    requestBody: createRequestSchema('variantsSchema'),
-                    responses: {
-                        200: createResponseSchema('featureVariantsSchema'),
-                        ...getStandardResponses(400, 401, 403),
-                    },
-                }),
-            ],
-        });
-        this.route({
-            method: 'put',
-            path: `${PREFIX}-batch`,
-            permission: NONE,
-            handler: this.pushVariantsToEnvironments,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Features'],
-                    release: { stable: '4.20.0' },
-                    operationId: 'overwriteFeatureVariantsOnEnvironments',
-                    summary:
-                        'Create (overwrite) variants for a feature flag in multiple environments',
-                    description:
-                        'This overwrites the current variants for the feature flag in the :featureName parameter for the :environment parameter.',
-                    requestBody: createRequestSchema('pushVariantsSchema'),
-                    responses: {
-                        200: createResponseSchema('featureVariantsSchema'),
-                        ...getStandardResponses(400, 401, 403),
-                    },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async pushVariantsToEnvironments(
@@ -157,38 +65,7 @@ The backend will also distribute remaining weight up to 1000 after adding the va
         >,
         res: Response<FeatureVariantsSchema>,
     ): Promise<void> {
-        const { projectId, featureName } = req.params;
-        const { environments, variants } = req.body;
-
-        if (environments === undefined || environments.length === 0) {
-            throw new BadDataError('No environments provided');
-        }
-
-        await this.checkAccess(
-            req.user,
-            projectId,
-            environments,
-            UPDATE_FEATURE_ENVIRONMENT_VARIANTS,
-        );
-
-        const variantsWithDefaults = (variants || []).map((variant) => ({
-            weightType: WeightType.VARIABLE,
-            stickiness: 'default',
-            ...variant,
-        }));
-
-        await this.featureService.crProtectedSetVariantsOnEnvs(
-            projectId,
-            featureName,
-            environments,
-            variantsWithDefaults,
-            req.user,
-            req.audit,
-        );
-        res.status(200).json({
-            version: 1,
-            variants: variantsWithDefaults,
-        });
+        throw new Error("STUB");
     }
 
     async checkAccess(
@@ -218,54 +95,20 @@ The backend will also distribute remaining weight up to 1000 after adding the va
         req: Request<FeatureEnvironmentParams, any, any, any>,
         res: Response<FeatureVariantsSchema>,
     ): Promise<void> {
-        const { projectId, featureName, environment } = req.params;
-        await this.featureService.validateFeatureBelongsToProject({
-            featureName,
-            projectId,
-        });
-        const variants = await this.featureService.getVariantsForEnv(
-            featureName,
-            environment,
-        );
-        res.status(200).json({ version: 1, variants: variants || [] });
+        throw new Error("STUB");
     }
 
     async patchVariantsOnEnv(
         req: IAuthRequest<FeatureEnvironmentParams, any, Operation[]>,
         res: Response<FeatureVariantsSchema>,
     ): Promise<void> {
-        const { projectId, featureName, environment } = req.params;
-
-        const variants = await this.featureService.updateVariantsOnEnv(
-            featureName,
-            projectId,
-            environment,
-            req.body,
-            req.user,
-            req.audit,
-        );
-        res.status(200).json({
-            version: 1,
-            variants,
-        });
+        throw new Error("STUB");
     }
 
     async overwriteVariantsOnEnv(
         req: IAuthRequest<FeatureEnvironmentParams, any, IVariant[], any>,
         res: Response<FeatureVariantsSchema>,
     ): Promise<void> {
-        const { featureName, environment, projectId } = req.params;
-        const variants = await this.featureService.crProtectedSaveVariantsOnEnv(
-            projectId,
-            featureName,
-            environment,
-            req.body,
-            req.user,
-            req.audit,
-        );
-        res.status(200).json({
-            version: 1,
-            variants: variants,
-        });
+        throw new Error("STUB");
     }
 }

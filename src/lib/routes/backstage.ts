@@ -20,49 +20,7 @@ class BackstageController extends Controller {
             customMetricsService,
         }: Pick<IUnleashServices, 'customMetricsService'>,
     ) {
-        super(config);
-
-        this.logger = config.getLogger('backstage.js');
-        this.flagResolver = config.flagResolver;
-        this.customMetricsService = customMetricsService;
-
-        if (config.server.serverMetrics) {
-            this.get('/prometheus', async (_req, res) => {
-                res.set('Content-Type', prometheusRegister.contentType);
-
-                let metricsOutput = await prometheusRegister.metrics();
-
-                if (this.flagResolver.isEnabled('customMetrics')) {
-                    const customMetrics =
-                        this.customMetricsService.getPrometheusMetrics();
-                    if (customMetrics) {
-                        metricsOutput = `${metricsOutput}\n${customMetrics}`;
-                    }
-                }
-
-                res.end(metricsOutput);
-            });
-
-            this.get('/impact/metrics', async (_req, res) => {
-                res.set('Content-Type', impactRegister.contentType);
-
-                const metricsOutput = await impactRegister.metrics();
-
-                res.end(metricsOutput);
-            });
-        }
-
-        if (config.server.enableHeapSnapshotEnpoint) {
-            this.get('/heap-snapshot', async (_req, res) => {
-                const fileName = join(
-                    tmpdir(),
-                    `unleash-${Date.now()}.heapsnapshot`,
-                );
-                writeHeapSnapshot(fileName);
-                res.status(200);
-                res.end('Snapshot written');
-            });
-        }
+        throw new Error("STUB");
     }
 }
 

@@ -25,14 +25,7 @@ class BadDataError extends UnleashError {
         message: string,
         errors?: [ValidationErrorDescription, ...ValidationErrorDescription[]],
     ) {
-        const topLevelMessage = `Request validation failed: your request body or params contain invalid data${
-            errors
-                ? '. Refer to the `details` list for more information.'
-                : `: ${message}`
-        }`;
-        super(topLevelMessage);
-
-        this.details = errors ?? [{ message: message }];
+        throw new Error("STUB");
     }
 
     toJSON(): ApiErrorSchema {
@@ -112,7 +105,7 @@ const enumMessage = (
     const fullMessage = `The \`${propertyName}\` property ${
         message ?? 'must match one of the allowed values'
     }: ${allowedValues
-        .map((value) => `"${value}"`)
+        .map((value) => { throw new Error("STUB"); })
         .join(
             ', ',
         )}. You provided "${suppliedValue}", which is not valid. Please use one of the allowed values instead..`;
@@ -126,41 +119,7 @@ const enumMessage = (
 export const fromOpenApiValidationError =
     (data: object) =>
     (validationError: ErrorObject): ValidationErrorDescription => {
-        const { instancePath, params, message } = validationError;
-
-        const propertyValue = getProp(
-            data,
-            instancePath.split('/').filter(Boolean),
-        );
-
-        switch (validationError.keyword) {
-            case 'required':
-                return missingRequiredPropertyMessage(
-                    instancePath,
-                    params.missingProperty,
-                );
-            case 'additionalProperties':
-                return additionalPropertiesMessage(
-                    instancePath,
-                    params.additionalProperty,
-                );
-            case 'enum':
-                return enumMessage(
-                    instancePath.substring(instancePath.lastIndexOf('/') + 1),
-                    message,
-                    params.allowedValues,
-                    propertyValue,
-                );
-
-            case 'oneOf':
-                return oneOfMessage(instancePath, validationError.message);
-            default:
-                return genericErrorMessage(
-                    instancePath,
-                    propertyValue,
-                    message,
-                );
-        }
+        throw new Error("STUB");
     };
 
 export const fromOpenApiValidationErrors = (
@@ -179,13 +138,7 @@ export const fromOpenApiValidationErrors = (
 
 export const fromJoiError = (err: ValidationError): BadDataError => {
     const details = err.details.map((detail) => {
-        const messageEnd = detail.context?.value
-            ? `. You provided ${safeStringify(detail.context.value)}.`
-            : '.';
-        const message = detail.message + messageEnd;
-        return {
-            message,
-        };
+        throw new Error("STUB");
     });
 
     const [first, ...rest] = details;

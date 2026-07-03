@@ -19,9 +19,9 @@ export function createDb({
         searchPath: db.schema,
         asyncStackTraces: true,
         log: {
-            debug: (msg) => logger.debug(msg),
-            warn: (msg) => logger.warn(msg),
-            error: (msg) => logger.error(msg),
+            debug: (msg) => { throw new Error("STUB"); },
+            warn: (msg) => { throw new Error("STUB"); },
+            error: (msg) => { throw new Error("STUB"); },
         },
     });
 }

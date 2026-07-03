@@ -27,11 +27,11 @@ export default class TagService {
     }
 
     async getTags(): Promise<ITag[]> {
-        return this.tagStore.getAll();
+        throw new Error("STUB");
     }
 
     async getTagsByType(type: string): Promise<ITag[]> {
-        return this.tagStore.getTagsByType(type);
+        throw new Error("STUB");
     }
 
     async getTag({ type, value }: ITag): Promise<ITag> {
@@ -69,12 +69,6 @@ export default class TagService {
     }
 
     async deleteTag(tag: ITag, auditUser: IAuditUser): Promise<void> {
-        await this.tagStore.delete(tag);
-        await this.eventService.storeEvent(
-            new TagDeletedEvent({
-                data: tag,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 }

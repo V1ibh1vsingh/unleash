@@ -17,10 +17,7 @@ const USER_COLUMNS = [
 const UNSUBSCRIPTION_TABLE = 'user_unsubscription';
 
 const mapRowToSubscriber = (row) =>
-    ({
-        name: row.name || row.username || '',
-        email: row.email,
-    }) as Subscriber;
+    { throw new Error("STUB"); };
 
 export class UserSubscriptionsReadModel implements IUserSubscriptionsReadModel {
     private db: Db;
@@ -30,47 +27,14 @@ export class UserSubscriptionsReadModel implements IUserSubscriptionsReadModel {
     }
 
     async getSubscribedUsers(subscription: string) {
-        const unsubscribedUserIdsQuery = this.db(UNSUBSCRIPTION_TABLE)
-            .select('user_id')
-            .where('subscription', subscription);
-
-        const users = await this.db(USERS_TABLE)
-            .select(USER_COLUMNS)
-            .whereNotIn('id', unsubscribedUserIdsQuery)
-            .andWhere('is_service', false)
-            .andWhere('deleted_at', null)
-            .andWhereNot('seen_at', null)
-            .andWhereNot('email', null);
-
-        return users.map(mapRowToSubscriber);
+        throw new Error("STUB");
     }
 
     async getUnsubscribedUsers(subscription: string) {
-        const unsubscribedUserIdsQuery = this.db(UNSUBSCRIPTION_TABLE)
-            .select('user_id')
-            .where('subscription', subscription);
-
-        const users = await this.db(USERS_TABLE)
-            .select(USER_COLUMNS)
-            .whereIn('id', unsubscribedUserIdsQuery)
-            .andWhere('is_service', false)
-            .andWhere('deleted_at', null)
-            .andWhereNot('email', null);
-
-        return users.map(mapRowToSubscriber);
+        throw new Error("STUB");
     }
 
     async getUserSubscriptions(userId: number) {
-        const unsubscriptionsList = await this.db(UNSUBSCRIPTION_TABLE)
-            .select('subscription')
-            .where('user_id', userId);
-
-        const unsubscriptions: string[] = unsubscriptionsList.map(
-            (item) => item.subscription,
-        );
-
-        return SUBSCRIPTION_TYPES.filter(
-            (subscription) => !unsubscriptions.includes(subscription),
-        );
+        throw new Error("STUB");
     }
 }

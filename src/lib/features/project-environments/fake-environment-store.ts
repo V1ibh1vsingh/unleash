@@ -7,15 +7,14 @@ import type { IEnvironmentStore } from './environment-store-type.js';
 
 export default class FakeEnvironmentStore implements IEnvironmentStore {
     importEnvironments(envs: IEnvironment[]): Promise<IEnvironment[]> {
-        this.environments = envs;
-        return Promise.resolve(envs);
+        throw new Error("STUB");
     }
 
     environments: IEnvironment[] = [];
 
     disable(environments: IEnvironment[]): Promise<void> {
         for (const env of this.environments) {
-            if (environments.map((e) => e.name).includes(env.name))
+            if (environments.map((e) => { throw new Error("STUB"); }).includes(env.name))
                 env.enabled = false;
         }
         return Promise.resolve();
@@ -23,7 +22,7 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
 
     enable(environments: IEnvironment[]): Promise<void> {
         for (const env of this.environments) {
-            if (environments.map((e) => e.name).includes(env.name))
+            if (environments.map((e) => { throw new Error("STUB"); }).includes(env.name))
                 env.enabled = true;
         }
         return Promise.resolve();
@@ -38,22 +37,16 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
     }
 
     async exists(name: string): Promise<boolean> {
-        return this.environments.some((e) => e.name === name);
+        return this.environments.some((e) => { throw new Error("STUB"); });
     }
 
     async getByName(name: string): Promise<IEnvironment> {
-        const env = this.environments.find((e) => e.name === name);
-        if (env) {
-            return Promise.resolve(env);
-        }
-        return Promise.reject(
-            new NotFoundError(`Could not find environment with name ${name}`),
-        );
+        throw new Error("STUB");
     }
 
     async create(env: IEnvironment): Promise<IEnvironment> {
         this.environments = this.environments.filter(
-            (e) => e.name !== env.name,
+            (e) => { throw new Error("STUB"); },
         );
         this.environments.push(env);
         return Promise.resolve(env);
@@ -64,10 +57,10 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
         name: string,
     ): Promise<IEnvironment> {
         const found = this.environments.find(
-            (en: IEnvironment) => en.name === name,
+            (en: IEnvironment) => { throw new Error("STUB"); },
         )!;
         const idx = this.environments.findIndex(
-            (en: IEnvironment) => en.name === name,
+            (en: IEnvironment) => { throw new Error("STUB"); },
         );
         const updated = { ...found, env };
 
@@ -76,11 +69,7 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
     }
 
     async updateSortOrder(id: string, value: number): Promise<void> {
-        const environment = this.environments.find(
-            (env: IEnvironment) => env.name === id,
-        )!;
-        environment.sortOrder = value;
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async updateProperty(
@@ -88,19 +77,11 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
         field: string,
         value: string | number,
     ): Promise<void> {
-        const environment = this.environments.find(
-            (env: IEnvironment) => env.name === id,
-        )!;
-        environment[field] = value;
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async toggle(name: string, enabled: boolean): Promise<void> {
-        const environment = this.environments.find(
-            (env: IEnvironment) => env.name === name,
-        );
-        if (environment) environment.enabled = enabled;
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async connectProject(
@@ -122,18 +103,18 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
     }
 
     async delete(name: string): Promise<void> {
-        this.environments = this.environments.filter((e) => e.name !== name);
+        this.environments = this.environments.filter((e) => { throw new Error("STUB"); });
         return Promise.resolve();
     }
 
     async deleteAll(): Promise<void> {
-        this.environments = [];
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async get(key: string): Promise<IEnvironment | undefined> {
-        return Promise.resolve(this.environments.find((e) => e.name === key));
+        return Promise.resolve(this.environments.find((e) => { throw new Error("STUB"); }));
     }
 
     async getAllWithCounts(): Promise<IEnvironment[]> {
@@ -143,28 +124,17 @@ export default class FakeEnvironmentStore implements IEnvironmentStore {
     async getChangeRequestEnvironments(
         environments: string[],
     ): Promise<{ name: string; requiredApprovals: number }[]> {
-        const filteredEnvironments = this.environments
-            .filter(
-                (env) =>
-                    environments.includes(env.name) &&
-                    env.requiredApprovals &&
-                    env.requiredApprovals > 0,
-            )
-            .map((env) => ({
-                name: env.name,
-                requiredApprovals: env.requiredApprovals || 1,
-            }));
-        return Promise.resolve(filteredEnvironments);
+        throw new Error("STUB");
     }
 
     async getProjectEnvironments(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         _projectId: string,
     ): Promise<IProjectsAvailableOnEnvironment[]> {
-        return Promise.reject(new Error('Not implemented'));
+        throw new Error("STUB");
     }
 
     getMaxSortOrder(): Promise<number> {
-        return Promise.resolve(0);
+        throw new Error("STUB");
     }
 }

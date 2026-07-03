@@ -100,10 +100,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
         );
         this.flagResolver = flagResolver;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'feature-toggle',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async count(
@@ -117,11 +114,11 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
             .count('*')
             .where(rest)
             .modify(FeatureToggleStore.filterByArchived, archived)
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -138,33 +135,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
     }
 
     private getBaseFeatureQuery = (archived: boolean, environment: string) => {
-        const builder = new FeatureToggleListBuilder(this.db, [
-            ...commonSelectColumns,
-            'fe.variants as variants',
-            'fe.enabled as enabled',
-            'fe.environment as environment',
-            'fs.id as strategy_id',
-            'fs.strategy_name as strategy_name',
-            'fs.title as strategy_title',
-            'fs.disabled as strategy_disabled',
-            'fs.parameters as parameters',
-            'fs.constraints as constraints',
-            'fs.sort_order as sort_order',
-            'fs.milestone_id as milestone_id',
-            'fs.variants as strategy_variants',
-            'segments.id as segment_id',
-            'segments.constraints as segment_constraints',
-        ]);
-
-        builder
-            .query('features')
-            .withArchived(archived)
-            .withStrategies(environment)
-            .withFeatureEnvironments(environment)
-            .withFeatureStrategySegments()
-            .withSegments();
-
-        return builder;
+        throw new Error("STUB");
     };
 
     async getFeatureToggleList(
@@ -173,70 +144,13 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
         archived: boolean = false,
         includeDisabledStrategies: boolean = false,
     ): Promise<FeatureToggle[]> {
-        const environment = featureQuery?.environment || DEFAULT_ENV;
-
-        const builder = this.getBaseFeatureQuery(
-            archived,
-            environment,
-        ).withFeatureTags();
-
-        builder.addSelectColumn('ft.tag_value as tag_value');
-        builder.addSelectColumn('ft.tag_type as tag_type');
-
-        builder.withLastSeenByEnvironment(archived);
-        builder.addSelectColumn(
-            'last_seen_at_metrics.last_seen_at as env_last_seen_at',
-        );
-        builder.addSelectColumn(
-            'last_seen_at_metrics.environment as last_seen_at_env',
-        );
-
-        if (userId) {
-            builder.withFavorites(userId);
-            builder.addSelectColumn(
-                this.db.raw(
-                    'favorite_features.feature is not null as favorite',
-                ),
-            );
-        }
-
-        const rows = await builder.internalQuery.select(
-            builder.getSelectColumns(),
-        );
-
-        return this.featureToggleRowConverter.buildFeatureToggleListFromRows(
-            rows,
-            featureQuery,
-            includeDisabledStrategies,
-        );
+        throw new Error("STUB");
     }
 
     async getPlaygroundFeatures(
         featureQuery: IFeatureToggleQuery,
     ): Promise<FeatureConfigurationClient[]> {
-        const environment = featureQuery?.environment || DEFAULT_ENV;
-
-        const archived = false;
-        const builder = this.getBaseFeatureQuery(archived, environment);
-
-        builder.withDependentFeatureToggles();
-
-        builder.addSelectColumn('df.parent as parent');
-        builder.addSelectColumn('df.variants as parent_variants');
-        builder.addSelectColumn('df.enabled as parent_enabled');
-
-        if (featureQuery?.project) {
-            builder.forProject(featureQuery.project);
-        }
-
-        const rows = await builder.internalQuery.select(
-            builder.getSelectColumns(),
-        );
-
-        return this.featureToggleRowConverter.buildPlaygroundFeaturesFromRows(
-            rows,
-            featureQuery,
-        );
+        throw new Error("STUB");
     }
 
     async getAll(
@@ -259,22 +173,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
         projectId,
         archived,
     }: IFeatureProjectUserParams): Promise<IFeatureTypeCount[]> {
-        const query = this.db<FeaturesTable>(TABLE)
-            .select('type')
-            .count('type')
-            .groupBy('type');
-
-        query
-            .where({
-                project: projectId,
-            })
-            .modify(FeatureToggleStore.filterByArchived, archived);
-
-        const result = await query;
-        return result.map((row) => ({
-            type: row.type!,
-            count: Number(row.count),
-        }));
+        throw new Error("STUB");
     }
 
     async getAllByNames(names: string[]): Promise<FeatureToggle[]> {
@@ -292,26 +191,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
         range?: string[];
         dateAccessor: string;
     }): Promise<number> {
-        const { project, archived, dateAccessor } = queryModifiers;
-        const query = this.db
-            .count()
-            .from(TABLE)
-            .where({ project })
-            .modify(FeatureToggleStore.filterByArchived, archived);
-
-        if (queryModifiers.date) {
-            query.andWhere(dateAccessor, '>=', queryModifiers.date);
-        }
-
-        if (queryModifiers.range && queryModifiers.range.length === 2) {
-            query.andWhereBetween(dateAccessor, [
-                queryModifiers.range[0],
-                queryModifiers.range[1],
-            ]);
-        }
-
-        const queryResult = await query.first();
-        return Number.parseInt(queryResult.count || 0, 10);
+        throw new Error("STUB");
     }
 
     /**
@@ -324,10 +204,9 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
             .first(['project'])
             .from(TABLE)
             .where({ name })
-            .then((r) => (r ? r.project : undefined))
+            .then((r) => { throw new Error("STUB"); })
             .catch((e) => {
-                this.logger.error(e);
-                return undefined;
+                throw new Error("STUB");
             });
     }
 
@@ -341,66 +220,20 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
     }
 
     async setLastSeen(data: LastSeenInput[]): Promise<void> {
-        const now = new Date();
-        const environmentArrays = this.mapMetricDataToEnvBuckets(data);
-        try {
-            for (const env of Object.keys(environmentArrays)) {
-                const toggleNames = environmentArrays[env].sort();
-                await this.db(FEATURE_ENVIRONMENTS_TABLE)
-                    .update({ last_seen_at: now })
-                    .where('environment', env)
-                    .whereIn(
-                        'feature_name',
-                        this.db(FEATURE_ENVIRONMENTS_TABLE)
-                            .select('feature_name')
-                            .whereIn('feature_name', toggleNames)
-                            .forUpdate()
-                            .skipLocked(),
-                    );
-
-                // Updating the toggle's last_seen_at also for backwards compatibility
-                await this.db(TABLE)
-                    .update({ last_seen_at: now })
-                    .whereIn(
-                        'name',
-                        this.db(TABLE)
-                            .select('name')
-                            .whereIn('name', toggleNames)
-                            .forUpdate()
-                            .skipLocked(),
-                    );
-            }
-        } catch (err) {
-            this.logger.error('Could not update lastSeen, error: ', err);
-        }
+        throw new Error("STUB");
     }
 
     private mapMetricDataToEnvBuckets(
         data: LastSeenInput[],
     ): EnvironmentFeatureNames {
-        return data.reduce(
-            (acc: EnvironmentFeatureNames, feature: LastSeenInput) => {
-                const { environment, featureName } = feature;
-
-                if (!acc[environment]) {
-                    acc[environment] = [];
-                }
-
-                acc[environment].push(featureName);
-
-                return acc;
-            },
-            {},
-        );
+        throw new Error("STUB");
     }
 
     static filterByArchived: Knex.QueryCallbackWithArgs = (
         queryBuilder: Knex.QueryBuilder,
         archived: boolean,
     ) => {
-        return archived
-            ? queryBuilder.whereNotNull('archived_at')
-            : queryBuilder.whereNull('archived_at');
+        throw new Error("STUB");
     };
 
     rowToFeature(row: FeaturesTable): FeatureToggle {
@@ -421,14 +254,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
     }
 
     rowToEnvVariants(variantRows: VariantDTO[]): IVariant[] {
-        if (!variantRows.length) {
-            return [];
-        }
-
-        const sortedVariants =
-            (variantRows[0].variants as unknown as IVariant[]) || [];
-        sortedVariants.sort((a, b) => a.name.localeCompare(b.name));
-        return sortedVariants;
+        throw new Error("STUB");
     }
 
     insertToRow(project: string, data: FeatureToggleInsert): FeaturesTable {
@@ -504,32 +330,18 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
     }
 
     async archive(name: string): Promise<FeatureToggle> {
-        const now = new Date();
-        const row = await this.db(TABLE)
-            .where({ name })
-            .update({ archived_at: now })
-            .returning(FEATURE_COLUMNS);
-        return this.rowToFeature(row[0]);
+        throw new Error("STUB");
     }
 
     async batchArchive(names: string[]): Promise<FeatureToggle[]> {
-        const now = new Date();
-        const rows = await this.db(TABLE)
-            .whereIn('name', names)
-            .update({ archived_at: now })
-            .returning(FEATURE_COLUMNS);
-        return rows.map((row) => this.rowToFeature(row));
+        throw new Error("STUB");
     }
 
     async batchStale(
         names: string[],
         stale: boolean,
     ): Promise<FeatureToggle[]> {
-        const rows = await this.db(TABLE)
-            .whereIn('name', names)
-            .update({ stale })
-            .returning(FEATURE_COLUMNS);
-        return rows.map((row) => this.rowToFeature(row));
+        throw new Error("STUB");
     }
 
     async delete(name: string): Promise<void> {
@@ -540,10 +352,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
     }
 
     async batchDelete(names: string[]): Promise<void> {
-        await this.db(TABLE)
-            .whereIn('name', names)
-            .whereNotNull('archived_at')
-            .del();
+        throw new Error("STUB");
     }
 
     async revive(name: string): Promise<FeatureToggle> {
@@ -556,52 +365,22 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
     }
 
     async batchRevive(names: string[]): Promise<FeatureToggle[]> {
-        const rows = await this.db(TABLE)
-            .whereIn('name', names)
-            .update({ archived_at: null })
-            .returning(FEATURE_COLUMNS);
-
-        return rows.map((row) => this.rowToFeature(row));
+        throw new Error("STUB");
     }
 
     async disableAllEnvironmentsForFeatures(names: string[]): Promise<void> {
-        await this.db(FEATURE_ENVIRONMENTS_TABLE)
-            .whereIn('feature_name', names)
-            .update({ enabled: false });
+        throw new Error("STUB");
     }
 
     async getVariants(featureName: string): Promise<IVariant[]> {
-        if (!(await this.exists(featureName))) {
-            throw new NotFoundError('No feature flag found');
-        }
-        const row = await this.db(`${TABLE} as f`)
-            .select('fe.variants')
-            .join(
-                `${FEATURE_ENVIRONMENTS_TABLE} as fe`,
-                'fe.feature_name',
-                'f.name',
-            )
-            .where({ name: featureName })
-            .limit(1);
-
-        return this.rowToEnvVariants(row);
+        throw new Error("STUB");
     }
 
     async getVariantsForEnv(
         featureName: string,
         environment: string,
     ): Promise<IVariant[]> {
-        const row = await this.db(`${TABLE} as f`)
-            .select('fev.variants')
-            .join(
-                `${FEATURE_ENVIRONMENTS_TABLE} as fev`,
-                'fev.feature_name',
-                'f.name',
-            )
-            .where({ name: featureName })
-            .andWhere({ environment });
-
-        return this.rowToEnvVariants(row);
+        throw new Error("STUB");
     }
 
     async saveVariants(
@@ -609,20 +388,7 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
         featureName: string,
         newVariants: IVariant[],
     ): Promise<FeatureToggle> {
-        const variantsString = JSON.stringify(newVariants);
-        await this.db('feature_environments')
-            .update('variants', variantsString)
-            .where('feature_name', featureName);
-
-        const row = await this.db(TABLE).select(FEATURE_COLUMNS).where({
-            project: project,
-            name: featureName,
-        });
-
-        const flag = this.rowToFeature(row[0]);
-        flag.variants = newVariants;
-
-        return flag;
+        throw new Error("STUB");
     }
 
     async updatePotentiallyStaleFeatures(currentTime?: string): Promise<
@@ -632,93 +398,14 @@ export default class FeatureToggleStore implements IFeatureToggleStore {
             project: string;
         }[]
     > {
-        const query = this.db.raw(
-            `SELECT name,
-                    project,
-                    potentially_stale,
-                    (? > (features.created_at + ((SELECT feature_types.lifetime_days
-                                                  FROM feature_types
-                                                  WHERE feature_types.id = features.type) *
-                                                 INTERVAL '1 day'))) as current_staleness
-             FROM features
-             WHERE NOT stale = true
-               AND archived_at IS NULL`,
-            [currentTime || this.db.fn.now()],
-        );
-
-        const featuresToUpdate = (await query).rows
-            .filter(
-                ({ potentially_stale, current_staleness }) =>
-                    (potentially_stale ?? false) !==
-                    (current_staleness ?? false),
-            )
-            .map(({ current_staleness, name, project }) => ({
-                potentiallyStale: current_staleness ?? false,
-                name,
-                project,
-            }));
-
-        await this.db(TABLE)
-            .update('potentially_stale', true)
-            .whereIn(
-                'name',
-                featuresToUpdate
-                    .filter((feature) => feature.potentiallyStale === true)
-                    .map((feature) => feature.name),
-            );
-
-        await this.db(TABLE)
-            .update('potentially_stale', false)
-            .whereIn(
-                'name',
-                featuresToUpdate
-                    .filter((feature) => feature.potentiallyStale !== true)
-                    .map((feature) => feature.name),
-            );
-
-        return featuresToUpdate;
+        throw new Error("STUB");
     }
 
     async isPotentiallyStale(featureName: string): Promise<boolean> {
-        const result = await this.db(TABLE)
-            .first(['potentially_stale'])
-            .from(TABLE)
-            .where({ name: featureName });
-
-        return result?.potentially_stale ?? false;
+        throw new Error("STUB");
     }
 
     async setCreatedByUserId(batchSize: number): Promise<number | undefined> {
-        const EVENTS_TABLE = 'events';
-        const USERS_TABLE = 'users';
-        const API_TOKEN_TABLE = 'api_tokens';
-
-        const toUpdate = await this.db(`${TABLE} as f`)
-            .joinRaw(`JOIN ${EVENTS_TABLE} AS ev ON ev.feature_name = f.name`)
-            .joinRaw(
-                `LEFT OUTER JOIN ${USERS_TABLE} AS u on ev.created_by = u.username OR ev.created_by = u.email`,
-            )
-            .joinRaw(
-                `LEFT OUTER JOIN ${API_TOKEN_TABLE} AS t on ev.created_by = t.username`,
-            )
-            .whereRaw(
-                `f.created_by_user_id IS null AND
-                ev.type = 'feature-created' AND
-                (u.id IS NOT null OR t.username IS NOT null)`,
-            )
-            .orderBy('f.created_at', 'desc')
-            .limit(batchSize)
-            .select(['f.*', 'ev.created_by', 'u.id', 't.username']);
-
-        const updatePromises = toUpdate.map((row) => {
-            const id = row.id || ADMIN_TOKEN_USER.id;
-
-            return this.db(TABLE)
-                .update({ created_by_user_id: id })
-                .where({ name: row.name });
-        });
-
-        await Promise.all(updatePromises);
-        return toUpdate.length;
+        throw new Error("STUB");
     }
 }

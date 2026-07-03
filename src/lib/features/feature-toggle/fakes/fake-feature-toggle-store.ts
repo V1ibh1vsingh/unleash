@@ -18,92 +18,52 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
     features: FeatureToggle[] = [];
 
     async archive(featureName: string): Promise<FeatureToggle> {
-        const feature = this.features.find((f) => f.name === featureName);
-        if (feature) {
-            feature.archived = true;
-            return feature;
-        }
-        throw new NotFoundError(
-            `Could not find feature flag with name ${featureName}`,
-        );
+        throw new Error("STUB");
     }
 
     async batchArchive(featureNames: string[]): Promise<FeatureToggle[]> {
-        const features = this.features.filter((feature) =>
-            featureNames.includes(feature.name),
-        );
-        for (const feature of features) {
-            feature.archived = true;
-        }
-        return features;
+        throw new Error("STUB");
     }
 
     async batchStale(
         featureNames: string[],
         stale: boolean,
     ): Promise<FeatureToggle[]> {
-        const features = this.features.filter((feature) =>
-            featureNames.includes(feature.name),
-        );
-        for (const feature of features) {
-            feature.stale = stale;
-        }
-        return features;
+        throw new Error("STUB");
     }
 
     async batchDelete(featureNames: string[]): Promise<void> {
-        this.features = this.features.filter(
-            (feature) => !featureNames.includes(feature.name),
-        );
-        return Promise.resolve();
+        throw new Error("STUB");
     }
 
     async batchRevive(featureNames: string[]): Promise<FeatureToggle[]> {
-        const features = this.features.filter((f) =>
-            featureNames.includes(f.name),
-        );
-        for (const feature of features) {
-            feature.archived = false;
-        }
-        return features;
+        throw new Error("STUB");
     }
 
     disableAllEnvironmentsForFeatures(_names: string[]): Promise<void> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
 
     async count(
         query: Partial<IFeatureToggleStoreQuery> = { archived: false },
     ): Promise<number> {
-        return this.getAll(query).then((features) => features.length);
+        return this.getAll(query).then((features) => { throw new Error("STUB"); });
     }
 
     async getAllByNames(names: string[]): Promise<FeatureToggle[]> {
-        return this.features.filter((f) => names.includes(f.name));
+        return this.features.filter((f) => { throw new Error("STUB"); });
     }
 
     async getProjectId(name: string | undefined): Promise<string | undefined> {
         if (name === undefined) {
             return Promise.resolve(undefined);
         }
-        return Promise.resolve(this.get(name).then((f) => f.project));
+        return Promise.resolve(this.get(name).then((f) => { throw new Error("STUB"); }));
     }
 
     private getFilterQuery(query: Partial<IFeatureToggleStoreQuery>) {
         return (f) => {
-            let projectMatch = true;
-            if ('project' in query) {
-                projectMatch = f.project === query.project;
-            }
-            let archiveMatch = true;
-            if ('archived' in query) {
-                archiveMatch = (f.archived ?? false) === query.archived;
-            }
-            let staleMatch = true;
-            if ('stale' in query) {
-                staleMatch = (f.stale ?? false) === query.stale;
-            }
-            return projectMatch && archiveMatch && staleMatch;
+            throw new Error("STUB");
         };
     }
 
@@ -118,23 +78,23 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
 
     async delete(key: string): Promise<void> {
         this.features.splice(
-            this.features.findIndex((f) => f.name === key),
+            this.features.findIndex((f) => { throw new Error("STUB"); }),
             1,
         );
     }
 
     async deleteAll(): Promise<void> {
-        this.features = [];
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async exists(key: string): Promise<boolean> {
-        return this.features.some((f) => f.name === key);
+        return this.features.some((f) => { throw new Error("STUB"); });
     }
 
     async get(key: string): Promise<FeatureToggle> {
-        const feature = this.features.find((f) => f.name === key);
+        const feature = this.features.find((f) => { throw new Error("STUB"); });
         if (feature) {
             return feature;
         }
@@ -148,17 +108,17 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
     }
 
     async getFeatureMetadata(name: string): Promise<FeatureToggle> {
-        return this.get(name);
+        throw new Error("STUB");
     }
 
     async getBy(
         query: Partial<IFeatureToggleStoreQuery>,
     ): Promise<FeatureToggle[]> {
-        return this.features.filter(this.getFilterQuery(query));
+        throw new Error("STUB");
     }
 
     async revive(featureName: string): Promise<FeatureToggle> {
-        const revive = this.features.find((f) => f.name === featureName);
+        const revive = this.features.find((f) => { throw new Error("STUB"); });
         if (revive) {
             revive.archived = false;
         }
@@ -170,15 +130,13 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
         _userId?: number,
         archived = false,
     ): Promise<FeatureToggle[]> {
-        return this.features.filter((feature) => feature.archived !== archived);
+        throw new Error("STUB");
     }
 
     async getPlaygroundFeatures(
         _query?: IFeatureToggleQuery,
     ): Promise<FeatureConfigurationClient[]> {
-        return this.features.filter(
-            (feature) => feature,
-        ) as FeatureConfigurationClient[];
+        throw new Error("STUB");
     }
 
     async update(
@@ -187,8 +145,8 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
     ): Promise<FeatureToggle> {
         const exists = await this.exists(data.name);
         if (exists) {
-            const id = this.features.findIndex((f) => f.name === data.name);
-            const old = this.features.find((f) => f.name === data.name);
+            const id = this.features.findIndex((f) => { throw new Error("STUB"); });
+            const old = this.features.find((f) => { throw new Error("STUB"); });
             const updated = { project, ...old, ...data };
             this.features.splice(id, 1);
             this.features.push(updated);
@@ -197,7 +155,9 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
         throw new NotFoundError('Could not find feature to update');
     }
 
-    async setLastSeen(data: LastSeenInput[]): Promise<void> {}
+    async setLastSeen(data: LastSeenInput[]): Promise<void> {
+        throw new Error("STUB");
+    }
 
     async countByDate(queryModifiers: {
         archived?: boolean;
@@ -206,67 +166,26 @@ export default class FakeFeatureToggleStore implements IFeatureToggleStore {
         range?: string[];
         dateAccessor: string;
     }): Promise<number> {
-        return this.features.filter((feature) => {
-            if (feature.archived === queryModifiers.archived) {
-                return true;
-            }
-
-            if (feature.project === queryModifiers.project) {
-                return true;
-            }
-
-            if (
-                queryModifiers.date &&
-                new Date(feature[queryModifiers.dateAccessor]).getTime() >=
-                    new Date(queryModifiers.date).getTime()
-            ) {
-                return true;
-            }
-
-            const featureDate = new Date(
-                feature[queryModifiers.dateAccessor],
-            ).getTime();
-            return !!(
-                queryModifiers.range &&
-                featureDate >= new Date(queryModifiers.range[0]).getTime() &&
-                featureDate <= new Date(queryModifiers.range[1]).getTime()
-            );
-        }).length;
+        throw new Error("STUB");
     }
 
     updatePotentiallyStaleFeatures(): Promise<
         { name: string; potentiallyStale: boolean; project: string }[]
     > {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
 
     isPotentiallyStale(): Promise<boolean> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
 
     async getFeatureTypeCounts(
         _params: IFeatureProjectUserParams,
     ): Promise<IFeatureTypeCount[]> {
-        const typeCounts = this.features.reduce(
-            (acc, feature) => {
-                if (!feature.type) {
-                    return acc;
-                }
-
-                if (!acc[feature.type]) {
-                    acc[feature.type] = { type: feature.type, count: 0 };
-                }
-                acc[feature.type].count += 1;
-
-                return acc;
-            },
-            {} as Record<string, IFeatureTypeCount>,
-        );
-
-        return Object.values(typeCounts);
+        throw new Error("STUB");
     }
 
     setCreatedByUserId(_batchSize: number): Promise<number | undefined> {
-        throw new Error('Method not implemented.');
+        throw new Error("STUB");
     }
 }

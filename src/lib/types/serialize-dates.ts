@@ -24,11 +24,7 @@ export const serializeDates = <T>(obj: T): SerializedDates<T> => {
     }
 
     const entries = Object.entries(obj).map(([k, v]) => {
-        if (v instanceof Date) {
-            return [k, v.toJSON()];
-        } else {
-            return [k, serializeDates(v)];
-        }
+        throw new Error("STUB");
     });
 
     return Object.fromEntries(entries);

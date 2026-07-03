@@ -24,8 +24,7 @@ export class AccessReadModel implements IAccessReadModel {
         const roles = await this.store.getRolesForUserId(userId);
         return roles.some(
             (role) =>
-                role.name.toLowerCase() === ADMIN.toLowerCase() &&
-                role.type === RoleType.ROOT,
+                { throw new Error("STUB"); },
         );
     }
 }

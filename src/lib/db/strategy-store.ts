@@ -74,14 +74,14 @@ export default class StrategyStore implements IStrategyStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     async count(): Promise<number> {
         return this.db
             .from(TABLE)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     destroy(): void {}
@@ -116,16 +116,7 @@ export default class StrategyStore implements IStrategyStore {
     }
 
     rowToEditableStrategy(row: IStrategyRow): IEditableStrategy {
-        if (!row) {
-            throw new NotFoundError('No strategy found');
-        }
-        return {
-            name: row.name,
-            description: row.description,
-            parameters: row.parameters,
-            deprecated: row.deprecated,
-            title: row.title,
-        };
+        throw new Error("STUB");
     }
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -151,34 +142,22 @@ export default class StrategyStore implements IStrategyStore {
     }
 
     async deprecateStrategy({ name }: Pick<IStrategy, 'name'>): Promise<void> {
-        await this.db(TABLE).where({ name }).update({ deprecated: true });
+        throw new Error("STUB");
     }
 
     async reactivateStrategy({ name }: Pick<IStrategy, 'name'>): Promise<void> {
-        await this.db(TABLE).where({ name }).update({ deprecated: false });
+        throw new Error("STUB");
     }
 
     async deleteStrategy({ name }: Pick<IStrategy, 'name'>): Promise<void> {
-        await this.db(TABLE).where({ name }).del();
+        throw new Error("STUB");
     }
 
     async importStrategy(data: IStrategyImport): Promise<void> {
-        const rowData = {
-            name: data.name,
-            description: data.description,
-            deprecated: data.deprecated || false,
-            parameters: JSON.stringify(data.parameters || []),
-            built_in: data.builtIn ? 1 : 0,
-            sort_order: data.sortOrder || 9999,
-            display_name: data.displayName,
-            title: data.title,
-        };
-        await this.db(TABLE).insert(rowData).onConflict(['name']).merge();
+        throw new Error("STUB");
     }
 
     async dropCustomStrategies(): Promise<void> {
-        await this.db(TABLE)
-            .where({ built_in: 0 }) // eslint-disable-line
-            .delete();
+        throw new Error("STUB");
     }
 }

@@ -27,11 +27,7 @@ export class LargestResourcesReadModel implements ILargestResourcesReadModel {
                 project_name: string;
                 environment: string;
                 total_size: string;
-            }) => ({
-                project: row.project_name,
-                environment: row.environment,
-                size: Number(row.total_size),
-            }),
+            }) => { throw new Error("STUB"); },
         );
     }
 
@@ -54,11 +50,7 @@ export class LargestResourcesReadModel implements ILargestResourcesReadModel {
                 feature_name: string;
                 environment: string;
                 total_size: string;
-            }) => ({
-                feature: row.feature_name,
-                environment: row.environment,
-                size: Number(row.total_size),
-            }),
+            }) => { throw new Error("STUB"); },
         );
     }
 }

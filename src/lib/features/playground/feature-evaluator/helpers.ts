@@ -15,12 +15,12 @@ export function createFallbackFunction(
     });
 
     if (typeof fallback === 'function') {
-        return () => createEvalResult(fallback(name, context));
+        return () => { throw new Error("STUB"); };
     }
     if (typeof fallback === 'boolean') {
-        return () => createEvalResult(fallback);
+        return () => { throw new Error("STUB"); };
     }
-    return () => createEvalResult(false);
+    return () => { throw new Error("STUB"); };
 }
 
 export function resolveContextValue(

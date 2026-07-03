@@ -107,7 +107,7 @@ export default class EventService {
         eventName: string | symbol,
         listener: (...args: any[]) => void,
     ): EventEmitter {
-        return this.eventStore.on(eventName, listener);
+        throw new Error("STUB");
     }
 
     off(
@@ -120,35 +120,11 @@ export default class EventService {
     private async enhanceEventsWithTags(
         events: IBaseEvent[],
     ): Promise<IBaseEvent[]> {
-        const featureNamesSet = new Set<string>();
-        for (const event of events) {
-            if (event.featureName && !event.tags) {
-                featureNamesSet.add(event.featureName);
-            }
-        }
-
-        const featureTagsMap: Map<string, ITag[]> = new Map();
-        const allTagsInFeatures = await this.featureTagStore.getAllByFeatures(
-            Array.from(featureNamesSet),
-        );
-
-        for (const tag of allTagsInFeatures) {
-            const featureTags = featureTagsMap.get(tag.featureName) || [];
-            featureTags.push({ value: tag.tagValue, type: tag.tagType });
-            featureTagsMap.set(tag.featureName, featureTags);
-        }
-
-        for (const event of events) {
-            if (event.featureName && !event.tags) {
-                event.tags = featureTagsMap.get(event.featureName);
-            }
-        }
-
-        return events;
+        throw new Error("STUB");
     }
 
     isAdminToken(user: IUser | IApiUser): boolean {
-        return (user as IApiUser)?.type === ApiTokenType.ADMIN;
+        throw new Error("STUB");
     }
 
     async storeEvent(event: IBaseEvent): Promise<void> {
@@ -159,9 +135,7 @@ export default class EventService {
         // if the event comes with both preData and data, we need to check if they are different before storing, otherwise we discard the event
         let enhancedEvents = events.filter(
             (event) =>
-                !event.preData ||
-                !event.data ||
-                !isEqual(event.preData, event.data),
+                { throw new Error("STUB"); },
         );
         if (enhancedEvents.length === 0) {
             return;
@@ -173,79 +147,15 @@ export default class EventService {
     }
 
     async setEventCreatedByUserId(): Promise<void> {
-        const updated = await this.eventStore.setCreatedByUserId(100);
-        if (updated !== undefined) {
-            this.eventBus.emit(EVENTS_CREATED_BY_PROCESSED, {
-                updated,
-            });
-        }
+        throw new Error("STUB");
     }
 
     convertToDbParams = (params: IEventSearchParams): IQueryParam[] => {
-        const queryParams: IQueryParam[] = [];
-
-        if (params.from) {
-            const parsed = parseSearchOperatorValue('created_at', params.from);
-            if (parsed) {
-                queryParams.push({
-                    field: parsed.field,
-                    operator: 'IS_ON_OR_AFTER',
-                    values: parsed.values,
-                });
-            }
-        }
-
-        if (params.to) {
-            const parsed = parseSearchOperatorValue('created_at', params.to);
-            if (parsed) {
-                const values = parsed.values
-                    .filter((v): v is string => v !== null)
-                    .map((date) =>
-                        formatISO(addDays(new Date(date), 1), {
-                            representation: 'date',
-                        }),
-                    );
-                queryParams.push({
-                    field: parsed.field,
-                    operator: 'IS_BEFORE',
-                    values,
-                });
-            }
-        }
-
-        if (params.createdBy) {
-            const parsed = parseSearchOperatorValue(
-                'created_by_user_id',
-                params.createdBy,
-            );
-            if (parsed) queryParams.push(parsed);
-        }
-
-        if (params.feature) {
-            const parsed = parseSearchOperatorValue(
-                'feature_name',
-                params.feature,
-            );
-            if (parsed) queryParams.push(parsed);
-        }
-
-        if (params.groupId) {
-            const parsed = parseSearchOperatorValue('group_id', params.groupId);
-            if (parsed) queryParams.push(parsed);
-        }
-
-        ['project', 'type', 'environment', 'id'].forEach((field) => {
-            if (params[field]) {
-                const parsed = parseSearchOperatorValue(field, params[field]);
-                if (parsed) queryParams.push(parsed);
-            }
-        });
-
-        return queryParams;
+        throw new Error("STUB");
     };
 
     async getEventCreators() {
-        return this.eventStore.getEventCreators();
+        throw new Error("STUB");
     }
 
     async getProjectFilterForNonAdmins(userId: number): Promise<IQueryParam[]> {
@@ -270,9 +180,7 @@ export const filterAccessibleProjects = (
             const searchProjectList = projectParam.split(',');
             const filteredProjects = searchProjectList
                 .filter((proj) =>
-                    allowedProjects.includes(
-                        proj.replace(/^(IS|IS_ANY_OF):/, ''),
-                    ),
+                    { throw new Error("STUB"); },
                 )
                 .join(',');
 

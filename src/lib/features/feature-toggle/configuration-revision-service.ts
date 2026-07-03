@@ -18,9 +18,9 @@ const revisionIdMetricName = 'environment_revision_id';
 
 const asGaugeWrapper = <T extends string>(gauge: PromGauge<T>): Gauge<T> => ({
     gauge,
-    labels: (labels: Record<T, string | number>) => gauge.labels(labels),
-    reset: () => gauge.reset(),
-    set: (value: number) => gauge.set(value),
+    labels: (labels: Record<T, string | number>) => { throw new Error("STUB"); },
+    reset: () => { throw new Error("STUB"); },
+    set: (value: number) => { throw new Error("STUB"); },
 });
 
 const getRevisionIdMetric = (): Gauge<'environment'> => {
@@ -131,7 +131,7 @@ export default class ConfigurationRevisionService extends EventEmitter {
             const knownEnvironments = [...this.maxRevisionId.keys()];
             await Promise.allSettled(
                 knownEnvironments.map((environment) =>
-                    this.updateMaxEnvironmentRevisionId(environment),
+                    { throw new Error("STUB"); },
                 ),
             );
             this.revisionId = revisionId;

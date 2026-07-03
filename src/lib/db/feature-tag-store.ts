@@ -33,10 +33,7 @@ class FeatureTagStore implements IFeatureTagStore {
         this.db = db;
         this.logger = getLogger('feature-tag-store.ts');
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'feature-tag-toggle',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async delete({
@@ -90,43 +87,15 @@ class FeatureTagStore implements IFeatureTagStore {
 
     async getAll(): Promise<IFeatureTag[]> {
         const rows = await this.db(TABLE).select(COLUMNS);
-        return rows.map((row) => ({
-            featureName: row.feature_name,
-            tagType: row.tag_type,
-            tagValue: row.tag_value,
-            createdByUserId: row.created_by_user_id,
-        }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async getAllTagsForFeature(featureName: string): Promise<ITag[]> {
-        const stopTimer = this.timer('getAllForFeature');
-        if (await this.featureExists(featureName)) {
-            const rows = await this.db
-                .select([...COLUMNS, 'tag_types.color as color'])
-                .from<FeatureTagTable>(TABLE)
-                .leftJoin('tag_types', 'tag_types.name', 'feature_tag.tag_type')
-                .where({ feature_name: featureName });
-
-            stopTimer();
-
-            return rows.map((row) => ({
-                type: row.tag_type,
-                value: row.tag_value,
-                color: row.color,
-            }));
-        } else {
-            throw new NotFoundError(
-                `Could not find feature with name ${featureName}`,
-            );
-        }
+        throw new Error("STUB");
     }
 
     async getAllFeaturesForTag(tagValue: string): Promise<string[]> {
-        const rows = await this.db
-            .select('feature_name')
-            .from<FeatureTagTable>(TABLE)
-            .where({ tag_value: tagValue });
-        return rows.map(({ feature_name }) => feature_name);
+        throw new Error("STUB");
     }
 
     async featureExists(featureName: string): Promise<boolean> {
@@ -145,12 +114,7 @@ class FeatureTagStore implements IFeatureTagStore {
             .whereIn('feature_name', features)
             .orderBy('feature_name', 'asc');
         const rows = await query;
-        return rows.map((row) => ({
-            featureName: row.feature_name,
-            tagType: row.tag_type,
-            tagValue: row.tag_value,
-            createdByUserId: row.created_by_user_id,
-        }));
+        return rows.map((row) => { throw new Error("STUB"); });
     }
 
     async tagFeature(
@@ -168,39 +132,18 @@ class FeatureTagStore implements IFeatureTagStore {
     }
 
     async untagFeatures(featureTags: IFeatureTag[]): Promise<void> {
-        const stopTimer = this.timer('untagFeatures');
-        try {
-            await this.db(TABLE)
-                .whereIn(COLUMNS, featureTags.map(this.featureTagArray))
-                .delete();
-        } catch (err) {
-            this.logger.error(err);
-        }
-        stopTimer();
+        throw new Error("STUB");
     }
 
     /**
      * Only gets tags for active feature flags.
      */
     async getAllFeatureTags(): Promise<IFeatureTag[]> {
-        const rows = await this.db(TABLE)
-            .select(COLUMNS)
-            .whereIn(
-                'feature_name',
-                this.db('features').where({ archived: false }).select(['name']),
-            );
-        return rows.map((row) => ({
-            featureName: row.feature_name,
-            tagType: row.tag_type,
-            tagValue: row.tag_value,
-            createdByUserId: row.created_by_user_id,
-        }));
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        const stopTimer = this.timer('deleteAll');
-        await this.db(TABLE).del();
-        stopTimer();
+        throw new Error("STUB");
     }
 
     async tagFeatures(
@@ -220,36 +163,15 @@ class FeatureTagStore implements IFeatureTagStore {
     }
 
     async untagFeature(featureName: string, tag: ITag): Promise<void> {
-        const stopTimer = this.timer('untagFeature');
-        try {
-            await this.db(TABLE)
-                .where({
-                    feature_name: featureName,
-                    tag_type: tag.type,
-                    tag_value: tag.value,
-                })
-                .delete();
-        } catch (err) {
-            this.logger.error(err);
-        }
-        stopTimer();
+        throw new Error("STUB");
     }
 
     featureTagRowToTag(row: FeatureTagTable): ITag {
-        return {
-            value: row.tag_value,
-            type: row.tag_type,
-        };
+        throw new Error("STUB");
     }
 
     rowToFeatureAndTag(row: FeatureTagTable): IFeatureAndTag {
-        return {
-            featureName: row.feature_name,
-            tag: {
-                type: row.tag_type,
-                value: row.tag_value,
-            },
-        };
+        throw new Error("STUB");
     }
 
     featureTagToRow({
@@ -258,16 +180,11 @@ class FeatureTagStore implements IFeatureTagStore {
         tagValue,
         createdByUserId,
     }: IFeatureTagInsert): FeatureTagTable {
-        return {
-            feature_name: featureName,
-            tag_type: tagType,
-            tag_value: tagValue,
-            created_by_user_id: createdByUserId,
-        };
+        throw new Error("STUB");
     }
 
     featureTagArray({ featureName, tagType, tagValue }: IFeatureTag): string[] {
-        return [featureName, tagType, tagValue];
+        throw new Error("STUB");
     }
 
     featureAndTagToRow(

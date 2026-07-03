@@ -51,30 +51,15 @@ export default abstract class Addon {
             allowList,
         }: IAddonConfig,
     ) {
-        this.logger = getLogger(`addon/${definition.name}`);
-        this.allowPrivateUrls = allowPrivateUrls ?? false;
-        this.allowList = allowList ?? [];
-        const { error } = addonDefinitionSchema.validate(definition);
-        if (error) {
-            this.logger.warn(
-                `Could not load addon provider ${definition.name}`,
-                error,
-            );
-            throw error;
-        }
-        this._name = definition.name;
-        this._definition = definition;
-        this.integrationEventsService = integrationEventsService;
-        this.eventBus = eventBus;
-        this.flagResolver = flagResolver;
+        throw new Error("STUB");
     }
 
     get name(): string {
-        return this._name;
+        throw new Error("STUB");
     }
 
     get definition(): IAddonDefinition {
-        return this._definition;
+        throw new Error("STUB");
     }
 
     async fetchRetry(
@@ -82,30 +67,7 @@ export default abstract class Addon {
         options: FetchRetryOptions = {},
         retries: number = 1,
     ): Promise<Response> {
-        try {
-            const validated = await validateUrl(url, {
-                allowPrivateNetworkUrls: this.allowPrivateUrls,
-                allowList: {
-                    hosts: this.allowList,
-                    suffixes: [],
-                },
-                ...options.validateUrlOptions,
-            });
-            return await fetchPinned(validated, {
-                ...options,
-                retry: retries,
-            });
-        } catch (e) {
-            const { method } = options;
-            const status = getErrorStatus(e);
-            this.logger.warn(
-                `Error querying with method ${
-                    method || 'GET'
-                } status code ${status}`,
-                { error: e, cause: (e as Error & { cause?: unknown }).cause },
-            );
-            return { status, ok: false } as Response;
-        }
+        throw new Error("STUB");
     }
 
     abstract handleEvent(
@@ -117,11 +79,7 @@ export default abstract class Addon {
     async registerEvent(
         integrationEvent: IntegrationEventWriteModel,
     ): Promise<void> {
-        await this.integrationEventsService.registerEvent(integrationEvent);
-        this.eventBus.emit(ADDON_EVENTS_HANDLED, {
-            result: integrationEvent.state,
-            destination: this.name,
-        });
+        throw new Error("STUB");
     }
 
     destroy?(): void;
@@ -131,14 +89,7 @@ export const fetchPinned = async (
     validated: ValidatedUrl,
     options: Omit<Options, 'fetch' | 'redirect' | 'throwHttpErrors'>,
 ): Promise<Response> => {
-    return ky(validated.url.href, {
-        ...options,
-        // Do not let 30x redirect to metadata/internal hosts.
-        redirect: 'manual',
-        // Important: return 30x responses instead of throwing.
-        throwHttpErrors: false,
-        fetch: (input, init) => fetchWithPinnedLookup(input, init, validated),
-    });
+    throw new Error("STUB");
 };
 
 const fetchWithPinnedLookup = async (
@@ -154,86 +105,10 @@ const fetchWithPinnedLookup = async (
     const client = requestUrl.protocol === 'https:' ? https : http;
 
     return new Promise<Response>((resolve, reject) => {
-        const req = client.request(
-            requestUrl,
-            {
-                method: request.method,
-                headers: Object.fromEntries(request.headers),
-                signal: request.signal,
-                lookup: (_hostname, options, callback) => {
-                    const cb =
-                        typeof options === 'function' ? options : callback;
-                    if (typeof cb !== 'function') {
-                        return;
-                    }
-                    if (typeof options !== 'function' && options?.all) {
-                        cb(null, [
-                            {
-                                address: validated.pinnedAddress,
-                                family: validated.family,
-                            },
-                        ]);
-                        return;
-                    }
-                    cb(null, validated.pinnedAddress, validated.family);
-                },
-            },
-            (res) => {
-                const chunks: Buffer[] = [];
-                res.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-                res.on('end', () => {
-                    const status = res.statusCode ?? 200;
-                    const headers = new Headers();
-                    for (const [key, value] of Object.entries(res.headers)) {
-                        if (Array.isArray(value)) {
-                            for (const item of value) {
-                                headers.append(key, item);
-                            }
-                        } else if (value) {
-                            headers.set(key, value);
-                        }
-                    }
-                    resolve(
-                        new Response(
-                            status === 204 || status === 304
-                                ? null
-                                : Buffer.concat(chunks),
-                            {
-                                status,
-                                statusText: res.statusMessage,
-                                headers,
-                            },
-                        ),
-                    );
-                });
-            },
-        );
-
-        req.on('error', reject);
-        req.end(body);
+        throw new Error("STUB");
     });
 };
 
 const getErrorStatus = (error: unknown): number => {
-    if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object' &&
-        'status' in error.response &&
-        typeof error.response.status === 'number'
-    ) {
-        return error.response.status;
-    }
-
-    if (
-        error &&
-        typeof error === 'object' &&
-        'code' in error &&
-        typeof error.code === 'number'
-    ) {
-        return error.code;
-    }
-    return 500;
+    throw new Error("STUB");
 };

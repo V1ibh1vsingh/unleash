@@ -24,50 +24,7 @@ class IndexRouter extends Controller {
         stores: IUnleashStores,
         db: Db,
     ) {
-        super(config);
-
-        this.use(
-            '/ready',
-            new ReadyCheckController(config, services, db).router,
-        );
-        this.use('/health', new HealthCheckController(config, services).router);
-        this.use(
-            '/invite',
-            new PublicInviteController(config, services).router,
-        );
-        this.use(
-            '/internal-backstage',
-            new BackstageController(config, services).router,
-        );
-        this.use('/logout', new LogoutController(config, services).router);
-        this.useWithMiddleware(
-            '/auth/simple',
-            new SimplePasswordProvider(config, services).router,
-            rateLimit({
-                windowMs: minutesToMilliseconds(1),
-                max: config.rateLimiting.simpleLoginMaxPerMinute,
-                validate: false,
-                standardHeaders: true,
-                legacyHeaders: false,
-            }),
-        );
-        this.use(
-            '/auth/reset',
-            new ResetPasswordController(config, services).router,
-        );
-
-        this.use(
-            '/api/admin',
-            new AdminApi(config, services, stores, db).router,
-        );
-        this.use('/api/client', new ClientApi(config, services).router);
-
-        this.use(
-            '/api/frontend',
-            new FrontendAPIController(config, services).router,
-        );
-
-        this.use('/edge', new EdgeController(config, services).router);
+        throw new Error("STUB");
     }
 }
 

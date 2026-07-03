@@ -168,14 +168,7 @@ export class UserService {
     }
 
     validatePassword(password: string): boolean {
-        if (password) {
-            const result = owasp.test(password);
-            if (!result.strong) {
-                throw new OwaspValidationError(result);
-            } else return true;
-        } else {
-            throw new PasswordUndefinedError();
-        }
+        throw new Error("STUB");
     }
 
     async initAdminUser({
@@ -232,17 +225,12 @@ export class UserService {
         );
         const userRoles = await this.accessService.getRootRoleForAllUsers();
         let users = baseUsers.map((u) => {
-            const rootRole = userRoles.find((r) => r.userId === u.id);
-            const roleId = rootRole ? rootRole.roleId : defaultRole.id;
-            return { ...u, rootRole: roleId };
+            throw new Error("STUB");
         });
 
         if (this.flagResolver.isEnabled('showUserDeviceCount')) {
             const sessionCounts = await this.sessionService.getSessionsCount();
-            users = users.map((u) => ({
-                ...u,
-                activeSessions: sessionCounts[u.id] || 0,
-            }));
+            users = users.map((u) => { throw new Error("STUB"); });
         }
 
         return users;
@@ -258,11 +246,11 @@ export class UserService {
     }
 
     async search(query: string): Promise<IUser[]> {
-        return this.store.search(query);
+        throw new Error("STUB");
     }
 
     async getByEmail(email: string): Promise<IUser> {
-        return this.store.getByQuery({ email });
+        throw new Error("STUB");
     }
 
     private validateEmail(email?: string): void {
@@ -380,73 +368,15 @@ export class UserService {
         { id, name, email, rootRole }: IUpdateUser,
         auditUser: IAuditUser,
     ): Promise<IUserWithRootRole> {
-        const preUser = await this.getUser(id);
-
-        this.validateEmail(email);
-
-        if (rootRole) {
-            await this.accessService.setUserRootRole(id, rootRole);
-        }
-
-        const payload: Partial<IUser> = {
-            name: name || preUser.name,
-            email: email || preUser.email,
-        };
-
-        // Empty updates will throw, so make sure we have something to update.
-        const user = Object.values(payload).some(isDefined)
-            ? await this.store.update(id, payload)
-            : preUser;
-
-        const storedUser = await this.getUser(user.id);
-
-        await this.eventService.storeEvent(
-            new UserUpdatedEvent({
-                auditUser,
-                preUser: preUser,
-                postUser: storedUser,
-            }),
-        );
-
-        return storedUser;
+        throw new Error("STUB");
     }
 
     async deleteUser(userId: number, auditUser: IAuditUser): Promise<void> {
-        const user = await this.getUser(userId);
-        await this.accessService.wipeUserPermissions(userId);
-        await this.sessionService.deleteSessionsForUser(userId);
-
-        await this.store.delete(userId);
-
-        await this.eventService.storeEvent(
-            new UserDeletedEvent({
-                deletedUser: user,
-                auditUser,
-            }),
-        );
+        throw new Error("STUB");
     }
 
     async deleteScimUsers(auditUser: IAuditUser): Promise<void> {
-        const users = await this.store.deleteScimUsers();
-        // Note: after deletion we can't get the role for the user. This is a simplification
-        const viewerRole = await this.accessService.getPredefinedRole(
-            RoleName.VIEWER,
-        );
-        if (users.length > 0) {
-            const deletions = users.map((user) => {
-                return new UserDeletedEvent({
-                    deletedUser: { ...user, rootRole: viewerRole.id },
-                    auditUser,
-                });
-            });
-            await this.eventService.storeEvents([
-                ...deletions,
-                new ScimUsersDeleted({
-                    data: null,
-                    auditUser,
-                }),
-            ]);
-        }
+        throw new Error("STUB");
     }
 
     async loginUser(
@@ -454,55 +384,7 @@ export class UserService {
         password: string,
         device?: { userAgent?: string; ip: string },
     ): Promise<IUser> {
-        const settings = await this.settingService.get<SimpleAuthSettings>(
-            simpleAuthSettingsKey,
-        );
-
-        if (settings?.disabled) {
-            throw new DisabledError(
-                'Logging in with username/password has been disabled.',
-            );
-        }
-
-        const idQuery = isEmail(usernameOrEmail)
-            ? { email: usernameOrEmail }
-            : { username: usernameOrEmail };
-
-        let user: IUser | undefined, passwordHash: string | undefined;
-        try {
-            user = await this.store.getByQuery(idQuery);
-            passwordHash = await this.store.getPasswordHash(user.id);
-        } catch (_error) {}
-        if (user && passwordHash) {
-            const match = await bcrypt.compare(password, passwordHash);
-            if (match) {
-                const loginOrder = await this.store.successfullyLogin(user);
-
-                const sessions = await this.sessionService.getSessionsForUser(
-                    user.id,
-                );
-                if (sessions.length >= 5 && device) {
-                    this.logger.info(
-                        `Excessive login (user id: ${user.id}, user agent: ${device.userAgent}, IP: ${device.ip})`,
-                    );
-                }
-
-                // subtract current user session that will be created
-                const deletedSessionsCount =
-                    await this.sessionService.deleteStaleSessionsForUser(
-                        user.id,
-                        Math.max(this.maxParallelSessions - 1, 0),
-                    );
-                user.deletedSessions = deletedSessionsCount;
-                user.activeSessions = this.maxParallelSessions;
-
-                this.eventBus.emit(USER_LOGIN, { loginOrder });
-                return user;
-            }
-        }
-        throw new PasswordMismatch(
-            `The combination of password and username you provided is invalid. If you have forgotten your password, visit ${this.baseUriPath}/forgotten-password or get in touch with your instance administrator.`,
-        );
+        throw new Error("STUB");
     }
 
     /**
@@ -587,34 +469,7 @@ export class UserService {
         password: string,
         { logoutUser, keepSessionId }: ChangePasswordOptions = {},
     ): Promise<void> {
-        this.validatePassword(password);
-        const passwordHash = await bcrypt.hash(password, saltRounds);
-
-        await this.store.setPasswordHash(
-            userId,
-            passwordHash,
-            disallowNPreviousPasswords,
-        );
-        await this.resetTokenService.expireExistingTokensForUser(userId);
-
-        // Invalidate active sessions whenever the password changes so that
-        // other devices/browsers are forced to re-authenticate with the new
-        // credentials (OWASP session management). When `keepSessionId` is
-        // provided we keep that session alive (the one that performed the
-        // change) and only terminate the others. Callers must opt out of
-        // invalidation entirely with `logoutUser: false` (e.g. setting an
-        // initial password during signup); a missing/undefined flag stays
-        // secure.
-        if (logoutUser !== false) {
-            if (keepSessionId) {
-                await this.sessionService.deleteSessionsForUserExcept(
-                    userId,
-                    keepSessionId,
-                );
-            } else {
-                await this.sessionService.deleteSessionsForUser(userId);
-            }
-        }
+        throw new Error("STUB");
     }
 
     async changePasswordWithPreviouslyUsedPasswordCheck(
@@ -622,16 +477,7 @@ export class UserService {
         password: string,
         options: ChangePasswordOptions = {},
     ): Promise<void> {
-        const previouslyUsed =
-            await this.store.getPasswordsPreviouslyUsed(userId);
-        const usedBefore = previouslyUsed.some((previouslyUsed) =>
-            bcrypt.compareSync(password, previouslyUsed),
-        );
-        if (usedBefore) {
-            throw new PasswordPreviouslyUsedError();
-        }
-
-        await this.changePassword(userId, password, options);
+        throw new Error("STUB");
     }
 
     async changePasswordWithVerification(
@@ -640,31 +486,11 @@ export class UserService {
         oldPassword: string,
         options: ChangePasswordOptions = {},
     ): Promise<void> {
-        const currentPasswordHash = await this.store.getPasswordHash(userId);
-        if (!currentPasswordHash) {
-            throw new PasswordMismatch(
-                `The old password you provided is invalid. If you have forgotten your password, visit ${this.baseUriPath}/forgotten-password or get in touch with your instance administrator.`,
-            );
-        }
-
-        const match = await bcrypt.compare(oldPassword, currentPasswordHash);
-        if (!match) {
-            throw new PasswordMismatch(
-                `The old password you provided is invalid. If you have forgotten your password, visit ${this.baseUriPath}/forgotten-password or get in touch with your instance administrator.`,
-            );
-        }
-
-        await this.changePasswordWithPreviouslyUsedPasswordCheck(
-            userId,
-            newPassword,
-            options,
-        );
+        throw new Error("STUB");
     }
 
     async hasPassword(userId: number): Promise<boolean> {
-        const passwordHash = await this.store.getPasswordHash(userId);
-
-        return Boolean(passwordHash);
+        throw new Error("STUB");
     }
 
     async getUserForToken(token: string): Promise<TokenUserSchema> {
@@ -693,18 +519,7 @@ export class UserService {
      * @param password - new password
      */
     async resetPassword(token: string, password: string): Promise<void> {
-        this.validatePassword(password);
-        const user = await this.getUserForToken(token);
-
-        await this.changePasswordWithPreviouslyUsedPasswordCheck(
-            user.id,
-            password,
-        );
-
-        await this.resetTokenService.useAccessToken({
-            userId: user.id,
-            token,
-        });
+        throw new Error("STUB");
     }
 
     async createResetPasswordEmail(
@@ -714,31 +529,7 @@ export class UserService {
             username: SYSTEM_USER.username,
         }),
     ): Promise<URL> {
-        const receiver = await this.getByEmail(receiverEmail);
-        if (!receiver) {
-            throw new NotFoundError(`Could not find ${receiverEmail}`);
-        }
-        if (this.passwordResetTimeouts[receiver.id]) {
-            throw new RateLimitError(
-                'You can only send one new reset password email per minute, per user. Please try again later.',
-            );
-        }
-
-        const resetLink = await this.resetTokenService.createResetPasswordUrl(
-            receiver.id,
-            user.username || user.email || SYSTEM_USER_AUDIT.username,
-        );
-
-        this.passwordResetTimeouts[receiver.id] = setTimeout(() => {
-            delete this.passwordResetTimeouts[receiver.id];
-        }, 1000 * 60); // 1 minute
-
-        await this.emailService.sendResetMail(
-            receiver.name!,
-            receiverEmail,
-            resetLink.toString(),
-        );
-        return resetLink;
+        throw new Error("STUB");
     }
 }
 

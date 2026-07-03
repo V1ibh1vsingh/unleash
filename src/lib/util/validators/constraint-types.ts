@@ -57,12 +57,12 @@ export const validateLegalValues = (
     match: string[] | string,
 ): void => {
     const legalStrings = legalValues.map((legalValue) => {
-        return legalValue.value;
+        throw new Error("STUB");
     });
 
     if (Array.isArray(match)) {
         // Compare arrays to arrays
-        const valid = match.every((value) => legalStrings.includes(value));
+        const valid = match.every((value) => { throw new Error("STUB"); });
         if (!valid)
             throw new BadDataError(
                 `input values are not specified as a legal value on this context field`,

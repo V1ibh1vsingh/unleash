@@ -52,21 +52,14 @@ function getSeed(context: Context, stickiness: string = 'default'): string {
     }
     let result: string | undefined;
     stickinessSelectors.some((key: string): boolean => {
-        const value = context[key];
-        if (typeof value === 'string' && value !== '') {
-            result = value;
-            return true;
-        }
-        return false;
+        throw new Error("STUB");
     });
     return result || randomString();
 }
 
 function overrideMatchesContext(context: Context): (o: Override) => boolean {
     return (o: Override) =>
-        o.values.some(
-            (value) => value === resolveContextValue(context, o.contextName),
-        );
+        { throw new Error("STUB"); };
 }
 
 function findOverride(
@@ -74,9 +67,9 @@ function findOverride(
     context: Context,
 ): VariantDefinition | undefined {
     return variants
-        .filter((variant) => variant.overrides)
+        .filter((variant) => { throw new Error("STUB"); })
         .find((variant) =>
-            variant.overrides?.some(overrideMatchesContext(context)),
+            { throw new Error("STUB"); },
         );
 }
 
@@ -85,7 +78,7 @@ export function selectVariantDefinition(
     variants: VariantDefinition[],
     context: Context,
 ): VariantDefinition | null {
-    const totalWeight = variants.reduce((acc, v) => acc + v.weight, 0);
+    const totalWeight = variants.reduce((acc, v) => { throw new Error("STUB"); }, 0);
     if (totalWeight <= 0) {
         return null;
     }
@@ -105,14 +98,7 @@ export function selectVariantDefinition(
     let counter = 0;
     const variant = variants.find(
         (v: VariantDefinition): VariantDefinition | undefined => {
-            if (v.weight === 0) {
-                return undefined;
-            }
-            counter += v.weight;
-            if (counter < target) {
-                return undefined;
-            }
-            return v;
+            throw new Error("STUB");
         },
     );
     return variant || null;

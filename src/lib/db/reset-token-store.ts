@@ -40,10 +40,7 @@ export class ResetTokenStore implements IResetTokenStore {
     constructor(db: Db, eventBus: EventEmitter, _getLogger: LogProvider) {
         this.db = db;
         this.timer = (action: string) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'reset-tokens',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async getActive(token: string): Promise<IResetToken> {
@@ -60,12 +57,7 @@ export class ResetTokenStore implements IResetTokenStore {
     }
 
     async getActiveTokens(): Promise<IResetToken[]> {
-        const stop = this.timer('getActiveTokens');
-        const rows = await this.db<IResetTokenTable>(TABLE)
-            .whereNull('used_at')
-            .andWhere('expires_at', '>', new Date());
-        stop();
-        return rows.map(rowToResetToken);
+        throw new Error("STUB");
     }
 
     async insert(newToken: IResetTokenCreate): Promise<IResetToken> {
@@ -84,43 +76,23 @@ export class ResetTokenStore implements IResetTokenStore {
     }
 
     async useToken(token: IResetQuery): Promise<boolean> {
-        const stop = this.timer('use_token');
-        try {
-            await this.db<IResetTokenTable>(TABLE)
-                .update({ used_at: new Date() })
-                .where({ reset_token: token.token, user_id: token.userId });
-            return true;
-        } catch (_e) {
-            return false;
-        } finally {
-            stop();
-        }
+        throw new Error("STUB");
     }
 
     async deleteFromQuery({ reset_token }: IResetTokenQuery): Promise<void> {
-        const stop = this.timer('deleteFromQuery');
-        await this.db(TABLE).where(reset_token).del();
-        stop();
+        throw new Error("STUB");
     }
 
     async deleteAll(): Promise<void> {
-        const stop = this.timer('deleteAll');
-        await this.db(TABLE).del();
-        stop();
+        throw new Error("STUB");
     }
 
     async deleteExpired(): Promise<void> {
-        const stop = this.timer('deleteExpired');
-        await this.db(TABLE).where('expires_at', '<', new Date()).del();
-        stop();
+        throw new Error("STUB");
     }
 
     async expireExistingTokensForUser(user_id: number): Promise<void> {
-        const stop = this.timer('expireExistingTokensForUser');
-        await this.db<IResetTokenTable>(TABLE).where({ user_id }).update({
-            expires_at: new Date(),
-        });
-        stop();
+        throw new Error("STUB");
     }
 
     async delete(reset_token: string): Promise<void> {

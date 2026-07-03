@@ -10,14 +10,7 @@ export const createInactiveUsersService = (
     config: IUnleashConfig,
     userService: UserService,
 ): InactiveUsersService => {
-    const { eventBus, getLogger, userInactivityThresholdInDays } = config;
-    const inactiveUsersStore = new InactiveUsersStore(db, eventBus, getLogger);
-
-    return new InactiveUsersService(
-        { inactiveUsersStore },
-        { getLogger, userInactivityThresholdInDays },
-        { userService },
-    );
+    throw new Error("STUB");
 };
 
 export const createFakeInactiveUsersService = (
@@ -27,10 +20,5 @@ export const createFakeInactiveUsersService = (
     }: Pick<IUnleashConfig, 'getLogger' | 'userInactivityThresholdInDays'>,
     userService: UserService,
 ): InactiveUsersService => {
-    const fakeStore = new FakeInactiveUsersStore();
-    return new InactiveUsersService(
-        { inactiveUsersStore: fakeStore },
-        { getLogger, userInactivityThresholdInDays },
-        { userService },
-    );
+    throw new Error("STUB");
 };

@@ -22,10 +22,10 @@ export class FakeOnboardingReadModel implements IOnboardingReadModel {
     async getOnboardingStatusesForProjects(): Promise<
         Map<string, OnboardingStatus>
     > {
-        return new Map();
+        throw new Error("STUB");
     }
 
     async getOnboardingStatusForProject(): Promise<OnboardingStatus | null> {
-        return null;
+        throw new Error("STUB");
     }
 }

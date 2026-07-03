@@ -8,7 +8,7 @@ export default class FakeSettingStore implements ISettingStore {
     }
 
     async deleteAll(): Promise<void> {
-        this.settings = new Map();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

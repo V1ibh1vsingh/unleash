@@ -5,7 +5,7 @@ export class FakeDependentFeaturesReadModel
     implements IDependentFeaturesReadModel
 {
     getDependencies(): Promise<IFeatureDependency[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
     getChildren(): Promise<string[]> {
         return Promise.resolve([]);
@@ -16,22 +16,22 @@ export class FakeDependentFeaturesReadModel
     }
 
     getPossibleParentFeatures(): Promise<string[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
 
     getPossibleParentVariants(): Promise<string[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
 
     haveDependencies(): Promise<boolean> {
-        return Promise.resolve(false);
+        throw new Error("STUB");
     }
 
     getOrphanParents(_parentsAndChildren: string[]): Promise<string[]> {
-        return Promise.resolve([]);
+        throw new Error("STUB");
     }
 
     hasAnyDependencies(): Promise<boolean> {
-        return Promise.resolve(false);
+        throw new Error("STUB");
     }
 }

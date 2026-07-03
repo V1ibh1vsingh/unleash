@@ -42,12 +42,7 @@ export default class UserFeedbackStore implements IUserFeedbackStore {
     }
 
     async getAllUserFeedback(userId: number): Promise<IUserFeedback[]> {
-        const userFeedback = await this.db
-            .table<IUserFeedbackTable>(TABLE)
-            .select()
-            .where({ user_id: userId });
-
-        return userFeedback.map(rowToField);
+        throw new Error("STUB");
     }
 
     async getFeedback(
@@ -64,14 +59,7 @@ export default class UserFeedbackStore implements IUserFeedbackStore {
     }
 
     async updateFeedback(feedback: IUserFeedback): Promise<IUserFeedback> {
-        const insertedFeedback = await this.db
-            .table<IUserFeedbackTable>(TABLE)
-            .insert(fieldToRow(feedback))
-            .onConflict(['user_id', 'feedback_id'])
-            .merge()
-            .returning(COLUMNS);
-
-        return rowToField(insertedFeedback[0] as IUserFeedbackTable);
+        throw new Error("STUB");
     }
 
     async delete({ userId, feedbackId }: IUserFeedbackKey): Promise<void> {
@@ -81,7 +69,7 @@ export default class UserFeedbackStore implements IUserFeedbackStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

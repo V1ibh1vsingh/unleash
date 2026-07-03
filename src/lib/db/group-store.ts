@@ -52,16 +52,7 @@ const rowToGroup = (row) => {
 };
 
 const rowToGroupUser = (row) => {
-    if (!row) {
-        throw new NotFoundError('No group user found');
-    }
-    return {
-        userId: row.user_id,
-        groupId: row.group_id,
-        joinedAt: row.created_at,
-        createdBy: row.created_by,
-        rootRoleId: row.root_role_id,
-    };
+    throw new Error("STUB");
 };
 
 const groupToRow = (group: IStoreGroup) => ({
@@ -106,50 +97,13 @@ export default class GroupStore implements IGroupStore {
     }
 
     async getProjectGroupRoles(projectId: string): Promise<IGroupRole[]> {
-        const rows = await this.db
-            .select('gr.group_id', 'gr.role_id', 'gr.created_at', 'r.name')
-            .from(`${T.GROUP_ROLE} as gr`)
-            .innerJoin(`${T.ROLES} as r`, 'gr.role_id', 'r.id')
-            .where('project', projectId);
-
-        return rows.map((r) => {
-            return {
-                groupId: r.group_id,
-                roleId: r.role_id,
-                createdAt: r.created_at,
-                name: r.name,
-            };
-        });
+        throw new Error("STUB");
     }
 
     async getProjectGroups(
         projectId: string,
     ): Promise<IGroupWithProjectRoles[]> {
-        const rows = await this.db
-            .select(['gr.group_id', 'gr.created_at', 'gr.role_id'])
-            .from(`${T.GROUP_ROLE} AS gr`)
-            .join(`${T.ROLES} as r`, 'gr.role_id', 'r.id')
-            .whereIn('r.type', PROJECT_ROLE_TYPES)
-            .andWhere('project', projectId);
-
-        return rows.reduce((acc, row) => {
-            const existingGroup = acc.find(
-                (group) => group.id === row.group_id,
-            );
-
-            if (existingGroup) {
-                existingGroup.roles.push(row.role_id);
-            } else {
-                acc.push({
-                    id: row.group_id,
-                    addedAt: row.created_at,
-                    roleId: row.role_id,
-                    roles: [row.role_id],
-                });
-            }
-
-            return acc;
-        }, []);
+        throw new Error("STUB");
     }
 
     async getGroupProjects(groupIds: number[]): Promise<IGroupProject[]> {
@@ -159,10 +113,7 @@ export default class GroupStore implements IGroupStore {
             .whereIn('group_id', groupIds)
             .distinct();
         return rows.map((r) => {
-            return {
-                groupId: r.group_id,
-                project: r.project,
-            };
+            throw new Error("STUB");
         });
     }
 
@@ -192,7 +143,7 @@ export default class GroupStore implements IGroupStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(T.GROUPS).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
@@ -207,12 +158,7 @@ export default class GroupStore implements IGroupStore {
     }
 
     async existsWithName(name: string): Promise<boolean> {
-        const result = await this.db.raw(
-            `SELECT EXISTS(SELECT 1 FROM ${T.GROUPS} WHERE name = ?) AS present`,
-            [name],
-        );
-        const { present } = result.rows[0];
-        return present;
+        throw new Error("STUB");
     }
 
     async get(id: number): Promise<Group> {
@@ -240,7 +186,7 @@ export default class GroupStore implements IGroupStore {
     async count(): Promise<number> {
         return this.db(T.GROUPS)
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     async addUsersToGroup(
@@ -248,33 +194,11 @@ export default class GroupStore implements IGroupStore {
         users: ICreateGroupUserModel[],
         userName: string,
     ): Promise<void> {
-        try {
-            const rows = (users || []).map((user) => {
-                return {
-                    group_id: groupId,
-                    user_id: user.user.id,
-                    created_by: userName,
-                };
-            });
-            return await this.db.batchInsert(T.GROUP_USER, rows);
-        } catch (error) {
-            if (
-                error.code === FOREIGN_KEY_VIOLATION &&
-                error.constraint === 'group_user_user_id_fkey'
-            ) {
-                throw new BadDataError('Incorrect user id in the users group');
-            }
-            throw error;
-        }
+        throw new Error("STUB");
     }
 
     async deleteUsersFromGroup(deletableUsers: IGroupUser[]): Promise<void> {
-        return this.db(T.GROUP_USER)
-            .whereIn(
-                ['group_id', 'user_id'],
-                deletableUsers.map((user) => [user.groupId, user.userId]),
-            )
-            .delete();
+        throw new Error("STUB");
     }
 
     async updateGroupUsers(
@@ -283,25 +207,14 @@ export default class GroupStore implements IGroupStore {
         deletableUsers: IGroupUser[],
         userName: string,
     ): Promise<void> {
-        await this.addUsersToGroup(groupId, newUsers, userName);
-        await this.deleteUsersFromGroup(deletableUsers);
+        throw new Error("STUB");
     }
 
     async getNewGroupsForExternalUser(
         userId: number,
         externalGroups: string[],
     ): Promise<IGroup[]> {
-        const rows = await this.db(`${T.GROUPS} as g`)
-            .leftJoin(`${T.GROUP_USER} as gs`, function () {
-                this.on('g.id', 'gs.group_id').andOnVal(
-                    'gs.user_id',
-                    '=',
-                    userId,
-                );
-            })
-            .where('gs.user_id', null)
-            .whereRaw('mappings_sso \\?| :groups', { groups: externalGroups });
-        return rows.map(rowToGroup);
+        throw new Error("STUB");
     }
 
     async addUserToGroups(
@@ -309,34 +222,14 @@ export default class GroupStore implements IGroupStore {
         groupIds: number[],
         createdBy?: string,
     ): Promise<void> {
-        const rows = groupIds.map((groupId) => {
-            return {
-                group_id: groupId,
-                user_id: userId,
-                created_by: createdBy,
-            };
-        });
-        return this.db.batchInsert(T.GROUP_USER, rows);
+        throw new Error("STUB");
     }
 
     async getOldGroupsForExternalUser(
         userId: number,
         externalGroups: string[],
     ): Promise<IGroupUser[]> {
-        const rows = await this.db(`${T.GROUP_USER} as gu`)
-            .leftJoin(`${T.GROUPS} as g`, 'g.id', 'gu.group_id')
-            .whereNotIn(
-                'g.id',
-                this.db(T.GROUPS)
-                    .select('id')
-                    .whereRaw('mappings_sso \\?| :groups', {
-                        groups: externalGroups,
-                    })
-                    .orWhereRaw('jsonb_array_length(mappings_sso) = 0'),
-            )
-            .where({ 'gu.user_id': userId, 'gu.created_by': SSO_SYNC_USER });
-
-        return rows.map(rowToGroupUser);
+        throw new Error("STUB");
     }
 
     async getGroupsForUser(userId: number): Promise<Group[]> {
@@ -347,15 +240,10 @@ export default class GroupStore implements IGroupStore {
     }
 
     async hasProjectRole(groupId: number): Promise<boolean> {
-        const result = await this.db.raw(
-            `SELECT EXISTS(SELECT 1 FROM ${T.GROUP_ROLE} WHERE group_id = ?) AS present`,
-            [groupId],
-        );
-        const { present } = result.rows[0];
-        return present;
+        throw new Error("STUB");
     }
 
     async deleteScimGroups(): Promise<void> {
-        await this.db(T.GROUPS).whereNotNull('scim_id').del();
+        throw new Error("STUB");
     }
 }

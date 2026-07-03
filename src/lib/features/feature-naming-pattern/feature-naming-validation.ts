@@ -19,29 +19,7 @@ export const checkFeatureNamingData = (
 ):
     | { state: 'valid' }
     | { state: 'invalid'; reasons: [string, ...string[]] } => {
-    const { pattern, example, description } = featureNaming;
-    const errors: string[] = [];
-
-    if (disallowedStrings.some((str) => pattern?.includes(str))) {
-        errors.push(whitespaceError(pattern as string));
-    } else if (pattern && example && !compileRegex(pattern).test(example)) {
-        errors.push(exampleMismatchError(example, pattern));
-    }
-
-    if (!pattern && example) {
-        errors.push(invalidValueError('example'));
-    }
-
-    if (!pattern && description) {
-        errors.push(invalidValueError('description'));
-    }
-
-    const [first, ...rest] = errors;
-    if (first) {
-        return { state: 'invalid', reasons: [first, ...rest] };
-    }
-
-    return { state: 'valid' };
+    throw new Error("STUB");
 };
 
 export type FeatureNameCheckResult =
@@ -58,7 +36,7 @@ export const checkFeatureFlagNamesAgainstPattern = (
     if (pattern) {
         const regex = compileRegex(pattern);
         const mismatchedNames = featureNames.filter(
-            (name) => !regex.test(name),
+            (name) => { throw new Error("STUB"); },
         );
 
         if (mismatchedNames.length > 0) {

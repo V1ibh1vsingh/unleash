@@ -42,7 +42,7 @@ export class SegmentReadModel implements ISegmentReadModel {
     }
 
     prefixColumns(): string[] {
-        return COLUMNS.map((c) => `segments.${c}`);
+        return COLUMNS.map((c) => { throw new Error("STUB"); });
     }
 
     mapRow(row?: ISegmentRow): ISegment {
@@ -76,14 +76,7 @@ export class SegmentReadModel implements ISegmentReadModel {
     }
 
     async getAllFeatureStrategySegments(): Promise<IFeatureStrategySegment[]> {
-        const rows: IFeatureStrategySegmentRow[] = await this.db
-            .select(['segment_id', 'feature_strategy_id'])
-            .from('feature_strategy_segment');
-
-        return rows.map((row) => ({
-            featureStrategyId: row.feature_strategy_id,
-            segmentId: row.segment_id,
-        }));
+        throw new Error("STUB");
     }
 
     async getActive(): Promise<ISegment[]> {
@@ -101,26 +94,10 @@ export class SegmentReadModel implements ISegmentReadModel {
     }
 
     async getActiveForClient(): Promise<IClientSegment[]> {
-        const fullSegments = await this.getActive();
-
-        return fullSegments.map((segments) => ({
-            id: segments.id,
-            name: segments.name,
-            constraints: segments.constraints,
-        }));
+        throw new Error("STUB");
     }
 
     async getAllForClientIds(ids?: number[]): Promise<IClientSegment[]> {
-        if (ids?.length === 0) {
-            return [];
-        }
-
-        const fullSegments = await this.getAll(ids);
-
-        return fullSegments.map((segments) => ({
-            id: segments.id,
-            name: segments.name,
-            constraints: segments.constraints,
-        }));
+        throw new Error("STUB");
     }
 }

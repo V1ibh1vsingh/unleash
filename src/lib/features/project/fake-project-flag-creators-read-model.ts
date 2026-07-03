@@ -6,6 +6,6 @@ export class FakeProjectFlagCreatorsReadModel
     async getFlagCreators(
         _project: string,
     ): Promise<{ id: number; name: string }[]> {
-        return [];
+        throw new Error("STUB");
     }
 }

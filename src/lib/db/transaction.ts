@@ -79,7 +79,7 @@ export async function inTransaction<R>(
     if (db.isTransaction) {
         return fn(db);
     }
-    return db.transaction(async (tx) => fn(tx));
+    return db.transaction(async (tx) => { throw new Error("STUB"); });
 }
 
 export function withTransactional<S>(
@@ -92,16 +92,7 @@ export function withTransactional<S>(
         fn: (service: S) => R,
         transactionContext?: TransactionUserParams,
     ) =>
-        db.transaction(async (trx: Knex.Transaction) => {
-            const defaultContext: TransactionUserParams = {
-                type: 'transaction',
-                id: generateTransactionId(),
-            };
-
-            trx.userParams = transactionContext || defaultContext;
-            const transactionalService = serviceFactory(trx);
-            return fn(transactionalService);
-        });
+        { throw new Error("STUB"); };
 
     return service;
 }
@@ -113,14 +104,7 @@ export function withRollbackTransaction<S>(
     const service = serviceFactory(db) as WithRollbackTransaction<S>;
 
     service.rollbackTransaction = async <R>(fn: (service: S) => R) => {
-        const trx = await db.transaction();
-        try {
-            const transactionService = serviceFactory(trx);
-            const result = await fn(transactionService);
-            return result;
-        } finally {
-            await trx.rollback();
-        }
+        throw new Error("STUB");
     };
 
     return service;
@@ -132,7 +116,7 @@ export function withFakeTransactional<S>(service: S): WithTransactional<S> {
 
     serviceWithFakeTransactional.transactional = async <R>(
         fn: (service: S) => R,
-    ) => fn(serviceWithFakeTransactional);
+    ) => { throw new Error("STUB"); };
 
     return serviceWithFakeTransactional;
 }

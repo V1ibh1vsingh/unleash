@@ -41,10 +41,7 @@ export class EdgeTokenStore implements IEdgeTokenStore {
     ) {
         this.db = db;
         this.timer = (action) =>
-            metricsHelper.wrapTimer(eventBus, DB_TIME, {
-                store: 'edge-store',
-                action,
-            });
+            { throw new Error("STUB"); };
     }
 
     async registerNonce(
@@ -62,50 +59,14 @@ export class EdgeTokenStore implements IEdgeTokenStore {
     }
 
     async saveToken(clientId: string, apiToken: IApiToken): Promise<void> {
-        const stop = this.timer('save_token');
-        const hash = scopeHash(apiToken.environment, apiToken.projects);
-        await this.db(T.edgeApiTokens).insert({
-            id: ulid(),
-            client_id: clientId,
-            environment: apiToken.environment,
-            projects: JSON.stringify(apiToken.projects),
-            scope_hash: hash,
-            token_value: apiToken.secret,
-        });
-        stop();
+        throw new Error("STUB");
     }
     async getToken(
         clientId: string,
         environment: string,
         projects: string[],
     ): Promise<IApiToken | undefined> {
-        const stop = this.timer('get_token');
-        const hash = scopeHash(environment, projects);
-        const tokens = await this.db<EdgeApiTokenRow>(T.edgeApiTokens)
-            .where('client_id', clientId)
-            .andWhere('scope_hash', hash)
-            .leftJoin(T.apiTokens, 'token_value', `${T.apiTokens}.secret`)
-            .select([
-                `${T.edgeApiTokens}.environment`,
-                `${T.edgeApiTokens}.projects`,
-                `${T.edgeApiTokens}.token_value`,
-                `${T.edgeApiTokens}.created_at`,
-                `${T.apiTokens}.token_name`,
-            ]);
-        stop();
-        if (tokens && tokens.length > 0) {
-            const token = tokens[0];
-            return {
-                createdAt: token.created_at,
-                projects: token.projects,
-                project: '',
-                environment: token.environment,
-                secret: token.token_value,
-                type: ApiTokenType.BACKEND,
-                tokenName: token.token_name,
-            };
-        }
-        return undefined;
+        throw new Error("STUB");
     }
 
     async loadClient(clientId: string): Promise<EdgeClient | undefined> {
@@ -133,11 +94,7 @@ export class EdgeTokenStore implements IEdgeTokenStore {
     }
 
     async cleanExpiredNonces(): Promise<void> {
-        const stop = this.timer('clean_expired_nonces');
-        await this.db(T.edgeHmacNonces)
-            .where('expires_at', '<', new Date())
-            .delete();
-        stop();
+        throw new Error("STUB");
     }
 
     async delete(tokenValue: string): Promise<void> {
@@ -149,16 +106,6 @@ export class EdgeTokenStore implements IEdgeTokenStore {
     }
 
     async deleteAll(): Promise<void> {
-        const stop = this.timer('delete_all_tokens');
-        await this.db.raw(`
-            WITH deleted_edge AS (
-                DELETE FROM ${T.edgeApiTokens}
-                    RETURNING token_value)
-            DELETE
-            FROM ${T.apiTokens} t
-                USING deleted_edge d
-            WHERE t.secret = d.token_value
-        `);
-        stop();
+        throw new Error("STUB");
     }
 }

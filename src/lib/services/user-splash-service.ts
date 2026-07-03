@@ -21,23 +21,7 @@ export default class UserSplashService {
     }
 
     async getAllUserSplashes(user: IUser): Promise<Record<string, boolean>> {
-        if (user.isAPI) {
-            return {};
-        }
-        try {
-            return (
-                await this.userSplashStore.getAllUserSplashes(user.id)
-            ).reduce(
-                (splashObject, splash) => ({
-                    ...splashObject,
-                    [splash.splashId]: splash.seen,
-                }),
-                {},
-            );
-        } catch (err) {
-            this.logger.error(err);
-            return {};
-        }
+        throw new Error("STUB");
     }
 
     async getSplash(user_id: number, splash_id: string): Promise<IUserSplash> {
@@ -45,11 +29,6 @@ export default class UserSplashService {
     }
 
     async updateSplash(splash: IUserSplash): Promise<IUserSplash> {
-        try {
-            return await this.userSplashStore.updateSplash(splash);
-        } catch (err) {
-            this.logger.warn(err);
-            return splash;
-        }
+        throw new Error("STUB");
     }
 }

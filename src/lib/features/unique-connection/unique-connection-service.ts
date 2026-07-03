@@ -58,45 +58,15 @@ export class UniqueConnectionService {
     }
 
     async sync(currentTime = new Date()): Promise<void> {
-        if (!this.flagResolver.isEnabled('uniqueSdkTracking')) return;
-
-        const currentHour = currentTime.getHours();
-
-        await this.syncBuckets(currentTime, 'current', 'previous');
-        await this.syncBuckets(
-            currentTime,
-            'currentBackend',
-            'previousBackend',
-        );
-        await this.syncBuckets(
-            currentTime,
-            'currentFrontend',
-            'previousFrontend',
-        );
-
-        if (this.activeHour !== currentHour) {
-            this.activeHour = currentHour;
-        }
+        throw new Error("STUB");
     }
 
     private resetHll(bucketId: BucketId) {
-        if (bucketId.toLowerCase().includes('frontend')) {
-            this.frontendHll = HyperLogLog(REGISTERS_EXPONENT);
-        } else if (bucketId.toLowerCase().includes('backend')) {
-            this.backendHll = HyperLogLog(REGISTERS_EXPONENT);
-        } else {
-            this.hll = HyperLogLog(REGISTERS_EXPONENT);
-        }
+        throw new Error("STUB");
     }
 
     private getHll(bucketId: BucketId) {
-        if (bucketId.toLowerCase().includes('frontend')) {
-            return this.frontendHll;
-        } else if (bucketId.toLowerCase().includes('backend')) {
-            return this.backendHll;
-        } else {
-            return this.hll;
-        }
+        throw new Error("STUB");
     }
 
     private async syncBuckets(
@@ -104,45 +74,6 @@ export class UniqueConnectionService {
         current: BucketId,
         previous: BucketId,
     ): Promise<void> {
-        const currentHour = currentTime.getHours();
-        const currentBucket = await this.uniqueConnectionStore.get(current);
-
-        if (this.activeHour !== currentHour && currentBucket) {
-            if (currentBucket.updatedAt.getHours() < currentHour) {
-                this.getHll(current).merge({
-                    n: REGISTERS_EXPONENT,
-                    buckets: currentBucket.hll,
-                });
-                await this.uniqueConnectionStore.insert({
-                    hll: this.getHll(current).output().buckets,
-                    id: previous,
-                });
-            } else {
-                const previousBucket =
-                    await this.uniqueConnectionStore.get(previous);
-                if (previousBucket) {
-                    this.getHll(current).merge({
-                        n: REGISTERS_EXPONENT,
-                        buckets: previousBucket.hll,
-                    });
-                }
-                await this.uniqueConnectionStore.insert({
-                    hll: this.getHll(current).output().buckets,
-                    id: previous,
-                });
-            }
-
-            this.resetHll(current);
-        } else if (currentBucket) {
-            this.getHll(current).merge({
-                n: REGISTERS_EXPONENT,
-                buckets: currentBucket.hll,
-            });
-        }
-
-        await this.uniqueConnectionStore.insert({
-            hll: this.getHll(current).output().buckets,
-            id: current,
-        });
+        throw new Error("STUB");
     }
 }

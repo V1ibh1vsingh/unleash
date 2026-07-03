@@ -40,9 +40,7 @@ export class AccountService {
         );
         const userRoles = await this.accessService.getRootRoleForAllUsers();
         const accountsWithRootRole = accounts.map((u) => {
-            const rootRole = userRoles.find((r) => r.userId === u.id);
-            const roleId = rootRole ? rootRole.roleId : defaultRole.id;
-            return { ...u, rootRole: roleId };
+            throw new Error("STUB");
         });
         return accountsWithRootRole;
     }
@@ -57,15 +55,11 @@ export class AccountService {
     }
 
     async getAdminCount(): Promise<IAdminCount> {
-        return this.store.getAdminCount();
+        throw new Error("STUB");
     }
 
     async updateLastSeen(): Promise<void> {
-        if (this.lastSeenSecrets.size > 0) {
-            const toStore = [...this.lastSeenSecrets];
-            this.lastSeenSecrets = new Set<string>();
-            await this.store.markSeenAt(toStore);
-        }
+        throw new Error("STUB");
     }
 
     addPATSeen(secret: string): void {

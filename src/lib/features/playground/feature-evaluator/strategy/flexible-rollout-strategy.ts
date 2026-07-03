@@ -10,13 +10,10 @@ const STICKINESS = {
 
 export default class FlexibleRolloutStrategy extends Strategy {
     private randomGenerator: Function = () =>
-        `${Math.round(Math.random() * 10_000) + 1}`;
+        { throw new Error("STUB"); };
 
     constructor(radnomGenerator?: Function) {
-        super('flexibleRollout');
-        if (radnomGenerator) {
-            this.randomGenerator = radnomGenerator;
-        }
+        throw new Error("STUB");
     }
 
     resolveStickiness(stickiness: string, context: Context): any {

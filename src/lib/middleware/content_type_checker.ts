@@ -18,18 +18,6 @@ export default function requireContentType(
         acceptedContentTypes.push(DEFAULT_ACCEPTED_CONTENT_TYPE);
     }
     return (req, res, next) => {
-        const contentType = req.header('Content-Type');
-        if (
-            contentType !== undefined &&
-            is(contentType, acceptedContentTypes)
-        ) {
-            next();
-        } else {
-            const error = new ContentTypeError(
-                acceptedContentTypes as [string, ...string[]],
-                contentType,
-            );
-            res.status(error.statusCode).json(error).end();
-        }
+        throw new Error("STUB");
     };
 }

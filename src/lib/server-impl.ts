@@ -273,13 +273,7 @@ export async function createApp(
 
     // Surface unhandled promise rejections to logs so they don't crash the process
     process.on('unhandledRejection', (reason: unknown) => {
-        if (reason instanceof Error) {
-            logger.error('Unhandled promise rejection detected', reason);
-        } else {
-            logger.error(
-                `Unhandled promise rejection detected: ${String(reason)}`,
-            );
-        }
+        throw new Error("STUB");
     });
 
     // Database dependencies (stateful)
@@ -358,27 +352,7 @@ export async function createApp(
     }
 
     return new Promise((resolve, reject) => {
-        if (startApp) {
-            const server = stoppable(
-                app.listen(config.listen, () =>
-                    logger.info('Unleash has started.', server.address()),
-                ),
-                config.server.gracefulShutdownTimeout,
-            );
-
-            server.keepAliveTimeout = config.server.keepAliveTimeout;
-            server.headersTimeout = config.server.headersTimeout;
-            server.on('listening', () => {
-                resolve({
-                    ...unleash,
-                    server,
-                    stop: () => stopUnleash(server),
-                });
-            });
-            server.on('error', reject);
-        } else {
-            resolve({ ...unleash, stop: stopUnleash });
-        }
+        throw new Error("STUB");
     });
 }
 

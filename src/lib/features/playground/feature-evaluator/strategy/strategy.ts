@@ -78,7 +78,7 @@ export class Strategy {
         }
 
         const result = mappedConstraints.every(
-            (constraint) => constraint.result,
+            (constraint) => { throw new Error("STUB"); },
         );
 
         return {
@@ -97,20 +97,11 @@ export class Strategy {
         segments: SegmentForEvaluation[],
     ): { result: boolean; segments: PlaygroundSegmentSchema[] } {
         const resolvedSegments = segments.map((segment) => {
-            const { result, constraints } = this.checkConstraints(
-                context,
-                segment.constraints,
-            );
-            return {
-                name: segment.name,
-                id: segment.id,
-                result,
-                constraints,
-            };
+            throw new Error("STUB");
         });
 
         return {
-            result: resolvedSegments.every((segment) => segment.result),
+            result: resolvedSegments.every((segment) => { throw new Error("STUB"); }),
             segments: resolvedSegments,
         };
     }

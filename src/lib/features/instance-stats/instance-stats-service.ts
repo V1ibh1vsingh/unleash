@@ -205,18 +205,15 @@ export class InstanceStatsService {
         this.eventStore = eventStore;
         this.clientInstanceStore = clientInstanceStore;
         this.getActiveUsers = () =>
-            this.memorize('getActiveUsers', getActiveUsers.bind(this));
+            { throw new Error("STUB"); };
         this.getLicencedUsers = () =>
-            this.memorize('getLicencedUsers', getLicencedUsers.bind(this));
+            { throw new Error("STUB"); };
         this.getReadOnlyUsers = () =>
-            this.memorize('getReadOnlyUsers', getReadOnlyUsers.bind(this));
+            { throw new Error("STUB"); };
         this.getProductionChanges = () =>
-            this.memorize(
-                'getProductionChanges',
-                getProductionChanges.bind(this),
-            );
+            { throw new Error("STUB"); };
         this.getEdgeInstances = () =>
-            this.memorize('getEdgeInstances', getEdgeInstances.bind(this));
+            { throw new Error("STUB"); };
         this.apiTokenStore = apiTokenStore;
         this.clientMetricsStore = clientMetricsStoreV2;
         this.flagResolver = flagResolver;
@@ -240,7 +237,7 @@ export class InstanceStatsService {
 
             let memoizedFunction = this.memory.get(key);
             if (!memoizedFunction) {
-                memoizedFunction = memoizee(() => fn(), {
+                memoizedFunction = memoizee(() => { throw new Error("STUB"); }, {
                     promise: true,
                     maxAge: minutesToMilliseconds(minutes),
                 });
@@ -254,80 +251,55 @@ export class InstanceStatsService {
 
     getProjectModeCount(): Promise<ProjectModeCount[]> {
         return this.memorize('getProjectModeCount', () =>
-            this.projectStore.getProjectModeCounts(),
+            { throw new Error("STUB"); },
         );
     }
 
     getToggleCount(): Promise<number> {
         return this.memorize('getToggleCount', () =>
-            this.featureToggleStore.count({
-                archived: false,
-            }),
+            { throw new Error("STUB"); },
         );
     }
 
     getArchivedToggleCount(): Promise<number> {
         return this.memorize('hasOIDC', () =>
-            this.featureToggleStore.count({
-                archived: true,
-            }),
+            { throw new Error("STUB"); },
         );
     }
 
     async hasOIDC(): Promise<boolean> {
         return this.memorize('hasOIDC', async () => {
-            const settings = await this.settingStore.get<{ enabled: boolean }>(
-                AUTH_PROVIDERS_CATALOG.OIDC.configId,
-            );
-
-            return settings?.enabled || false;
+            throw new Error("STUB");
         });
     }
 
     async hasSAML(): Promise<boolean> {
         return this.memorize('hasSAML', async () => {
-            const settings = await this.settingStore.get<{ enabled: boolean }>(
-                AUTH_PROVIDERS_CATALOG.SAML.configId,
-            );
-
-            return settings?.enabled || false;
+            throw new Error("STUB");
         });
     }
 
     async hasPasswordAuth(): Promise<boolean> {
         return this.memorize('hasPasswordAuth', async () => {
-            const settings = await this.settingStore.get<{ disabled: boolean }>(
-                AUTH_PROVIDERS_CATALOG.Simple.configId,
-            );
-
-            return (
-                typeof settings?.disabled === 'undefined' ||
-                settings.disabled === false
-            );
+            throw new Error("STUB");
         });
     }
 
     async hasSCIM(): Promise<boolean> {
         return this.memorize('hasSCIM', async () => {
-            const settings = await this.settingStore.get<{ enabled: boolean }>(
-                'scim',
-            );
-
-            return settings?.enabled || false;
+            throw new Error("STUB");
         });
     }
 
     async getReleaseTemplates(): Promise<number> {
         return this.memorize('getReleaseTemplates', async () => {
-            const count = await this.releasePlanTemplateStore.count();
-            return count;
+            throw new Error("STUB");
         });
     }
 
     async getReleasePlans(): Promise<number> {
         return this.memorize('getReleasePlans', async () => {
-            const count = await this.releasePlanStore.count();
-            return count;
+            throw new Error("STUB");
         });
     }
 
@@ -441,10 +413,7 @@ export class InstanceStatsService {
             OIDCenabled,
             passwordAuthEnabled,
             SCIMenabled,
-            clientApps: Object.entries(clientApps).map(([range, count]) => ({
-                range: range as TimeRange,
-                count,
-            })),
+            clientApps: Object.entries(clientApps).map(([range, count]) => { throw new Error("STUB"); }),
             featureExports,
             featureImports,
             productionChanges,
@@ -521,8 +490,8 @@ export class InstanceStatsService {
             featureToggles,
             users,
             projects: projectModeCount
-                .map((p) => p.count)
-                .reduce((a, b) => a + b, 0),
+                .map((p) => { throw new Error("STUB"); })
+                .reduce((a, b) => { throw new Error("STUB"); }, 0),
             contextFields,
             groups,
             roles,
@@ -567,25 +536,13 @@ export class InstanceStatsService {
 
     featuresExported(): Promise<number> {
         return this.memorize('searchEventsCountFeaturesExported', () =>
-            this.eventStore.searchEventsCount([
-                {
-                    field: 'type',
-                    operator: 'IS',
-                    values: [FEATURES_EXPORTED],
-                },
-            ]),
+            { throw new Error("STUB"); },
         );
     }
 
     featuresImported(): Promise<number> {
         return this.memorize('searchEventsCountFeaturesImported', () =>
-            this.eventStore.searchEventsCount([
-                {
-                    field: 'type',
-                    operator: 'IS',
-                    values: [FEATURES_IMPORTED],
-                },
-            ]),
+            { throw new Error("STUB"); },
         );
     }
 
@@ -593,7 +550,7 @@ export class InstanceStatsService {
         return this.memorize(
             'customStrategiesCount',
             async () =>
-                (await this.strategyStore.getEditableStrategies()).length,
+                { throw new Error("STUB"); },
         );
     }
 
@@ -601,63 +558,61 @@ export class InstanceStatsService {
         return this.memorize(
             'customStrategiesInUseCount',
             async () =>
-                await this.featureStrategiesStore.getCustomStrategiesInUseCount(),
+                { throw new Error("STUB"); },
         );
     }
 
     postgresVersion(): Promise<string> {
         return this.memorize('postgresVersion', () =>
-            this.settingStore.postgresVersion(),
+            { throw new Error("STUB"); },
         );
     }
 
     groupCount(): Promise<number> {
-        return this.memorize('groupCount', () => this.groupStore.count());
+        return this.memorize('groupCount', () => { throw new Error("STUB"); });
     }
 
     roleCount(): Promise<number> {
-        return this.memorize('roleCount', () => this.roleStore.count());
+        return this.memorize('roleCount', () => { throw new Error("STUB"); });
     }
 
     customRolesCount(): Promise<number> {
         return this.memorize('customRolesCount', () =>
-            this.roleStore.filteredCount({ type: CUSTOM_ROOT_ROLE_TYPE }),
+            { throw new Error("STUB"); },
         );
     }
 
     customRolesCountInUse(): Promise<number> {
         return this.memorize('customRolesCountInUse', () =>
-            this.roleStore.filteredCountInUse({
-                type: CUSTOM_ROOT_ROLE_TYPE,
-            }),
+            { throw new Error("STUB"); },
         );
     }
 
     segmentCount(): Promise<number> {
-        return this.memorize('segmentCount', () => this.segmentStore.count());
+        return this.memorize('segmentCount', () => { throw new Error("STUB"); });
     }
 
     contextFieldCount(): Promise<number> {
         return this.memorize('contextFieldCount', () =>
-            this.contextFieldStore.count(),
+            { throw new Error("STUB"); },
         );
     }
 
     projectContextFieldCount(): Promise<number> {
         return this.memorize('projectContextFieldCount', () =>
-            this.contextFieldStore.countProjectFields(),
+            { throw new Error("STUB"); },
         );
     }
 
     strategiesCount(): Promise<number> {
         return this.memorize('strategiesCount', () =>
-            this.strategyStore.count(),
+            { throw new Error("STUB"); },
         );
     }
 
     environmentCount(): Promise<number> {
         return this.memorize('environmentCount', () =>
-            this.environmentStore.count(),
+            { throw new Error("STUB"); },
         );
     }
 
@@ -666,37 +621,31 @@ export class InstanceStatsService {
         variantCount: number;
     }> {
         return this.memorize('countPreviousDayHourlyMetricsBuckets', () =>
-            this.clientMetricsStore.countPreviousDayHourlyMetricsBuckets(),
+            { throw new Error("STUB"); },
         );
     }
 
     countApiTokensByType(): Promise<Map<string, number>> {
         return this.memorize('countApiTokensByType', () =>
-            this.apiTokenStore.countByType(),
+            { throw new Error("STUB"); },
         );
     }
 
     getRegisteredUsers(): Promise<number> {
         return this.memorize('getRegisteredUsers', () =>
-            this.userStore.count(),
+            { throw new Error("STUB"); },
         );
     }
 
     countServiceAccounts(): Promise<number> {
         return this.memorize('countServiceAccounts', () =>
-            this.userStore.countServiceAccounts(),
+            { throw new Error("STUB"); },
         );
     }
 
     async getCurrentTrafficData(): Promise<number> {
         return this.memorize('getCurrentTrafficData', async () => {
-            const traffic =
-                await this.trafficDataUsageStore.getTrafficDataUsageForPeriod(
-                    format(new Date(), 'yyyy-MM'),
-                );
-
-            const counts = traffic.map((item) => item.count);
-            return counts.reduce((total, current) => total + current, 0);
+            throw new Error("STUB");
         });
     }
 
@@ -704,17 +653,7 @@ export class InstanceStatsService {
         Partial<{ [key in TimeRange]: number }>
     > {
         return this.memorize('getLabeledAppCounts', async () => {
-            const [t7d, t30d, allTime] = await Promise.all([
-                this.clientInstanceStore.getDistinctApplicationsCount(7),
-                this.clientInstanceStore.getDistinctApplicationsCount(30),
-                this.clientInstanceStore.getDistinctApplicationsCount(),
-            ]);
-            this.appCount = {
-                '7d': t7d,
-                '30d': t30d,
-                allTime,
-            };
-            return this.appCount;
+            throw new Error("STUB");
         });
     }
 
@@ -723,14 +662,6 @@ export class InstanceStatsService {
     }
 
     async getSignedStats(): Promise<InstanceStatsSigned> {
-        const instanceStats = await this.getStats();
-        const totalProjects = instanceStats.projects
-            .map((p) => p.count)
-            .reduce((a, b) => a + b, 0);
-
-        const sum = sha256(
-            `${instanceStats.instanceId}${instanceStats.users}${instanceStats.featureToggles}${totalProjects}${instanceStats.roles}${instanceStats.groups}${instanceStats.environments}${instanceStats.segments}`,
-        );
-        return { ...instanceStats, sum, projects: totalProjects };
+        throw new Error("STUB");
     }
 }

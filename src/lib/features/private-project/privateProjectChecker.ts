@@ -29,15 +29,7 @@ export class PrivateProjectChecker implements IPrivateProjectChecker {
         userId: number,
         projects: string[],
     ): Promise<string[]> {
-        if (!this.isEnterprise) {
-            return projects;
-        }
-        const accessibleProjects =
-            await this.privateProjectStore.getUserAccessibleProjects(userId);
-        if (accessibleProjects.mode === 'all') return projects;
-        return projects.filter((project) =>
-            accessibleProjects.projects.includes(project),
-        );
+        throw new Error("STUB");
     }
 
     async hasAccessToProject(

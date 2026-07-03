@@ -16,30 +16,7 @@ import {
 
 export const createFeatureLifecycleService =
     (config: IUnleashConfig) => (db: Db) => {
-        const { eventBus, getLogger } = config;
-        const eventStore = new EventStore(db, getLogger);
-        const featureLifecycleStore = new FeatureLifecycleStore(db, eventBus);
-        const environmentStore = new EnvironmentStore(db, eventBus, config);
-        const featureEnvironmentStore = new FeatureEnvironmentStore(
-            db,
-            eventBus,
-            config,
-        );
-        const eventService = createEventsService(db, config);
-        const featureLifecycleService = new FeatureLifecycleService(
-            {
-                eventStore,
-                featureLifecycleStore,
-                environmentStore,
-                featureEnvironmentStore,
-            },
-            {
-                eventService,
-            },
-            config,
-        );
-
-        return featureLifecycleService;
+        throw new Error("STUB");
     };
 
 export const createFakeFeatureLifecycleService = (config: IUnleashConfig) => {

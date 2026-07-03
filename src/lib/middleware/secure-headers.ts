@@ -188,19 +188,11 @@ const secureHeaders: (config: IUnleashConfig) => RequestHandler = (config) => {
         });
 
         return (req, res, next) => {
-            if (req.method === 'OPTIONS') {
-                return next();
-            } else if (
-                req.path.startsWith(`${config.server.baseUriPath}/api/`)
-            ) {
-                apiHelmet(req, res, next);
-            } else {
-                defaultHelmet(req, res, next);
-            }
+            throw new Error("STUB");
         };
     }
     return (_req, _res, next) => {
-        next();
+        throw new Error("STUB");
     };
 };
 

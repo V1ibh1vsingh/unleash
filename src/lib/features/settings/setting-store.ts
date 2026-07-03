@@ -67,13 +67,13 @@ export default class SettingStore implements ISettingStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}
 
     async getAll(): Promise<any[]> {
         const rows = await this.db(TABLE).select();
-        return rows.map((r) => r.content);
+        return rows.map((r) => { throw new Error("STUB"); });
     }
 }

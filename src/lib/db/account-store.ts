@@ -79,9 +79,7 @@ export class AccountStore implements IAccountStore {
     }
 
     async hasAccount(idQuery: IUserLookup): Promise<number | undefined> {
-        const query = this.buildSelectAccount(idQuery);
-        const item = await query.first('id');
-        return item ? item.id : undefined;
+        throw new Error("STUB");
     }
 
     async getAll(): Promise<User[]> {
@@ -90,12 +88,7 @@ export class AccountStore implements IAccountStore {
     }
 
     async search(query: string): Promise<User[]> {
-        const users = await this.activeAccounts()
-            .select(USER_COLUMNS_PUBLIC)
-            .where('name', 'ILIKE', `%${query}%`)
-            .orWhere('username', 'ILIKE', `${query}%`)
-            .orWhere('email', 'ILIKE', `${query}%`);
-        return users.map(rowToUser);
+        throw new Error("STUB");
     }
 
     async getAllWithId(userIdList: number[]): Promise<User[]> {
@@ -122,13 +115,13 @@ export class AccountStore implements IAccountStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.activeAccounts().del();
+        throw new Error("STUB");
     }
 
     async count(): Promise<number> {
         return this.activeAccounts()
             .count('*')
-            .then((res) => Number(res[0].count));
+            .then((res) => { throw new Error("STUB"); });
     }
 
     destroy(): void {}
@@ -149,7 +142,7 @@ export class AccountStore implements IAccountStore {
 
     async getAccountByPersonalAccessToken(secret: string): Promise<User> {
         const row = await this.activeAccounts()
-            .select(USER_COLUMNS.map((column) => `${TABLE}.${column}`))
+            .select(USER_COLUMNS.map((column) => { throw new Error("STUB"); }))
             .leftJoin(
                 'personal_access_tokens',
                 'personal_access_tokens.user_id',
@@ -162,71 +155,14 @@ export class AccountStore implements IAccountStore {
     }
 
     async markSeenAt(secrets: string[]): Promise<void> {
-        const now = new Date();
-        try {
-            await this.db('personal_access_tokens')
-                .whereIn('secret', secrets)
-                .update({ seen_at: now });
-        } catch (err) {
-            this.logger.error('Could not update lastSeen, error: ', err);
-        }
+        throw new Error("STUB");
     }
 
     async getAdminCount(): Promise<IAdminCount> {
-        const adminCount = await this.activeAccounts()
-            .join('role_user as ru', 'users.id', 'ru.user_id')
-            .where(
-                'ru.role_id',
-                '=',
-                this.db.raw('(SELECT id FROM roles WHERE name = ?)', ['Admin']),
-            )
-            .select(
-                this.db.raw(
-                    'COUNT(CASE WHEN users.password_hash IS NOT NULL AND users.is_service = false THEN 1 END)::integer AS password',
-                ),
-                this.db.raw(
-                    'COUNT(CASE WHEN users.password_hash IS NULL AND users.is_service = false THEN 1 END)::integer AS no_password',
-                ),
-                this.db.raw(
-                    'COUNT(CASE WHEN users.is_service = true THEN 1 END)::integer AS service',
-                ),
-            );
-
-        return {
-            password: adminCount[0].password,
-            noPassword: adminCount[0].no_password,
-            service: adminCount[0].service,
-        };
+        throw new Error("STUB");
     }
 
     async getAdmins(): Promise<MinimalUser[]> {
-        const rowToAdminUser = (row) => {
-            const user = rowToUser(row);
-            return {
-                id: user.id,
-                name: user.name,
-                username: user.username,
-                email: user.email,
-                imageUrl: user.imageUrl,
-            };
-        };
-
-        const admins = await this.activeAccounts()
-            .join('role_user as ru', 'users.id', 'ru.user_id')
-            .where(
-                'ru.role_id',
-                '=',
-                this.db.raw('(SELECT id FROM roles WHERE name = ?)', ['Admin']),
-            )
-            .andWhereNot('users.is_service', true)
-            .select(
-                'users.id',
-                'users.name',
-                'users.username',
-                'users.email',
-                'users.image_url',
-            );
-
-        return admins.map(rowToAdminUser);
+        throw new Error("STUB");
     }
 }

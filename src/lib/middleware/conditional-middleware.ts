@@ -12,11 +12,7 @@ export const conditionalMiddleware = (
     middleware: RequestHandler,
 ): RequestHandler => {
     return (req, res, next) => {
-        if (condition()) {
-            middleware(req, res, next);
-        } else {
-            next();
-        }
+        throw new Error("STUB");
     };
 };
 
@@ -37,9 +33,6 @@ export const requireFeatureEnabled = (
     flagName: IFlagKey,
 ): RequestHandler => {
     return (_req, res, next) => {
-        if (flagResolver.isEnabled(flagName)) {
-            return next();
-        }
-        return res.sendStatus(404);
+        throw new Error("STUB");
     };
 };

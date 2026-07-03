@@ -82,24 +82,20 @@ export class ProxyRepository
         this.interval = config.frontendApi.refreshIntervalInMs;
 
         this.methodTimer = (functionName) =>
-            metricsHelper.wrapTimer(config.eventBus, FUNCTION_TIME, {
-                className: 'ProxyRepository',
-                functionName,
-            });
+            { throw new Error("STUB"); };
     }
 
     getTogglesWithSegmentData(): EnhancedFeatureInterface[] {
-        // TODO: add real implementation
-        return [];
+        throw new Error("STUB");
     }
 
     getSegment(id: number): Segment | undefined {
-        return this.segments.find((segment) => segment.id === id);
+        return this.segments.find((segment) => { throw new Error("STUB"); });
     }
 
     getToggle(name: string): FeatureInterface {
         //@ts-expect-error (we must update the node SDK to allow undefined)
-        return this.features.find((feature) => feature.name === name);
+        return this.features.find((feature) => { throw new Error("STUB"); });
     }
 
     getToggles(): FeatureInterface[] {
@@ -132,15 +128,7 @@ export class ProxyRepository
     private async dataPolling() {
         this.timer = setTimeout(
             async () => {
-                if (!this.running) {
-                    clearTimeout(this.timer!);
-                    this.timer = null;
-                    this.logger.debug(
-                        'Shutting down data polling for proxy repository',
-                    );
-                    return;
-                }
-                await this.dataPolling();
+                throw new Error("STUB");
             },
             this.randomizeDelay(this.interval, this.interval * 2),
         ).unref();
@@ -164,7 +152,7 @@ export class ProxyRepository
     }
 
     private async onUpdateRevisionEvent() {
-        await this.loadDataForToken();
+        throw new Error("STUB");
     }
 
     private async featuresForToken(): Promise<FeatureInterface[]> {

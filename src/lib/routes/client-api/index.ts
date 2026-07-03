@@ -7,10 +7,6 @@ import type { IUnleashServices } from '../../services/index.js';
 
 export default class ClientApi extends Controller {
     constructor(config: IUnleashConfig, services: IUnleashServices) {
-        super(config);
-
-        this.use('/features', new FeatureController(services, config).router);
-        this.use('/metrics', new MetricsController(services, config).router);
-        this.use('/register', new RegisterController(services, config).router);
+        throw new Error("STUB");
     }
 }

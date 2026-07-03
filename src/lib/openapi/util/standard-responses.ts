@@ -222,10 +222,4 @@ type StandardResponses = typeof standardResponses;
 export const getStandardResponses = (
     ...statusCodes: (keyof StandardResponses)[]
 ): Partial<StandardResponses> =>
-    statusCodes.reduce(
-        (acc, statusCode) => ({
-            ...acc,
-            [statusCode]: standardResponses[statusCode],
-        }),
-        {} as Partial<StandardResponses>,
-    );
+    { throw new Error("STUB"); };

@@ -19,38 +19,14 @@ export default class EmailController extends Controller {
         config: IUnleashConfig,
         { emailService }: Pick<IUnleashServices, 'emailService'>,
     ) {
-        super(config);
-        this.emailService = emailService;
-        this.logger = config.getLogger('routes/admin-api/email');
-        this.get('/preview/html/:template', this.getHtmlPreview, ADMIN);
-        this.get('/preview/text/:template', this.getTextPreview, ADMIN);
+        throw new Error("STUB");
     }
 
     async getHtmlPreview(req: Request, res: Response): Promise<void> {
-        const { template } = req.params;
-        const ctx = req.query;
-        const data = await this.emailService.compileTemplate(
-            sanitize(template),
-            TemplateFormat.HTML,
-            ctx,
-        );
-        res.setHeader('Content-Type', 'text/html');
-        res.status(200);
-        res.send(data);
-        res.end();
+        throw new Error("STUB");
     }
 
     async getTextPreview(req: Request, res: Response): Promise<void> {
-        const { template } = req.params;
-        const ctx = req.query;
-        const data = await this.emailService.compileTemplate(
-            sanitize(template),
-            TemplateFormat.PLAIN,
-            ctx,
-        );
-        res.setHeader('Content-Type', 'text/plain');
-        res.status(200);
-        res.send(data);
-        res.end();
+        throw new Error("STUB");
     }
 }

@@ -39,12 +39,7 @@ export default class UserSplashStore implements IUserSplashStore {
     }
 
     async getAllUserSplashes(userId: number): Promise<IUserSplash[]> {
-        const userSplash = await this.db
-            .table<IUserSplashTable>(TABLE)
-            .select()
-            .where({ user_id: userId });
-
-        return userSplash.map(rowToField);
+        throw new Error("STUB");
     }
 
     async getSplash(userId: number, splashId: string): Promise<IUserSplash> {
@@ -58,14 +53,7 @@ export default class UserSplashStore implements IUserSplashStore {
     }
 
     async updateSplash(splash: IUserSplash): Promise<IUserSplash> {
-        const insertedSplash = await this.db
-            .table<IUserSplashTable>(TABLE)
-            .insert(fieldToRow(splash))
-            .onConflict(['user_id', 'splash_id'])
-            .merge()
-            .returning(COLUMNS);
-
-        return rowToField(insertedSplash[0] as IUserSplashTable);
+        throw new Error("STUB");
     }
 
     async delete({ userId, splashId }: IUserSplashKey): Promise<void> {
@@ -75,7 +63,7 @@ export default class UserSplashStore implements IUserSplashStore {
     }
 
     async deleteAll(): Promise<void> {
-        await this.db(TABLE).del();
+        throw new Error("STUB");
     }
 
     destroy(): void {}

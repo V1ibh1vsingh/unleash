@@ -38,84 +38,21 @@ class UiConfigController extends Controller {
             | 'uiConfigService'
         >,
     ) {
-        super(config);
-        this.openApiService = openApiService;
-        this.uiConfigService = uiConfigService;
-        this.frontendApiService = frontendApiService;
-
-        this.route({
-            method: 'get',
-            path: '',
-            handler: this.getUiConfig,
-            permission: NONE,
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Admin UI'],
-                    summary: 'Get UI configuration',
-                    description:
-                        'Retrieves the full configuration used to set up the Unleash Admin UI.',
-                    release: { stable: '4.15.0' },
-                    operationId: 'getUiConfig',
-                    responses: {
-                        200: createResponseSchema('uiConfigSchema'),
-                    },
-                }),
-            ],
-        });
-
-        this.route({
-            method: 'post',
-            path: '/cors',
-            handler: this.setCors,
-            permission: [ADMIN, UPDATE_CORS],
-            middleware: [
-                openApiService.validPath({
-                    tags: ['Admin UI'],
-                    summary: 'Sets allowed CORS origins',
-                    description:
-                        'Sets Cross-Origin Resource Sharing headers for Frontend SDK API.',
-                    release: { stable: '6.6.0' },
-                    operationId: 'setCors',
-                    requestBody: createRequestSchema('setCorsSchema'),
-                    responses: { 204: emptyResponse },
-                }),
-            ],
-        });
+        throw new Error("STUB");
     }
 
     async getUiConfig(
         req: IAuthRequest,
         res: Response<UiConfigSchema>,
     ): Promise<void> {
-        // Only pass the sessionID for logged-in sessions; otherwise it's
-        // ephemeral per request and correlates nothing.
-        const uiConfig = await this.uiConfigService.getUiConfig(
-            req.user,
-            req.session?.user ? req.sessionID : undefined,
-        );
-
-        this.openApiService.respondWithValidation(
-            200,
-            res,
-            uiConfigSchema.$id,
-            uiConfig,
-        );
+        throw new Error("STUB");
     }
 
     async setCors(
         req: IAuthRequest<void, void, SetCorsSchema>,
         res: Response<string>,
     ): Promise<void> {
-        if (req.body.frontendApiOrigins) {
-            await this.frontendApiService.setFrontendCorsSettings(
-                req.body.frontendApiOrigins,
-                req.audit,
-            );
-            res.sendStatus(204);
-            return;
-        }
-
-        throw new NotFoundError();
+        throw new Error("STUB");
     }
 }
 
